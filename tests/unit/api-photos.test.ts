@@ -144,7 +144,17 @@ describe("POST /api/photos/upload", () => {
       photo: fakePhotoRow,
       signedUrl: "https://signed.example/x",
     });
-    expect(mocks.uploadPhoto).toHaveBeenCalledWith(file, 1, fakeUser.id);
+    // El roundtrip Request → formData() reconstruye una nueva File con
+    // lastModified ≠ al original (1 ms de diferencia). Verificamos los
+    // campos manualmente en vez de comparar la instancia.
+    expect(mocks.uploadPhoto).toHaveBeenCalledOnce();
+    const [calledFile, calledPos, calledUser] =
+      mocks.uploadPhoto.mock.calls[0];
+    expect(calledFile).toBeInstanceOf(File);
+    expect(calledFile.name).toBe("x.png");
+    expect(calledFile.type).toBe("image/png");
+    expect(calledPos).toBe(1);
+    expect(calledUser).toBe(fakeUser.id);
     expect(mocks.getSignedPhotoUrl).toHaveBeenCalledWith(
       fakePhotoRow.storage_path,
     );

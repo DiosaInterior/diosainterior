@@ -1,64 +1,106 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
+import type { ReactElement } from "react";
 import type { User } from "@supabase/supabase-js";
+import type { Photo } from "@/lib/storage/photos";
 
-// vi.mock se hoistea por encima de los `const` del módulo, así que las
-// fábricas no pueden capturar variables top-level. vi.hoisted nos da
-// referencias mutables disponibles tanto dentro de la factory como en
-// los tests para configurar comportamiento por caso.
+// Mocks: vi.hoisted para que la factory pueda capturar refs antes del
+// hoist. Mockeamos requireUser/getUser de @/lib/auth/server y
+// getUserPhotos/getSignedPhotoUrl de @/lib/storage/photos.
 const mocks = vi.hoisted(() => ({
   requireUser: vi.fn(),
   getUser: vi.fn(),
+  getUserPhotos: vi.fn(),
+  getSignedPhotoUrl: vi.fn(),
 }));
 
-vi.mock("@/lib/auth/server", () => mocks);
+vi.mock("@/lib/auth/server", () => ({
+  requireUser: mocks.requireUser,
+  getUser: mocks.getUser,
+}));
+
+vi.mock("@/lib/storage/photos", async (importOriginal) => {
+  const actual = await importOriginal<typeof import("@/lib/storage/photos")>();
+  return {
+    ...actual,
+    getUserPhotos: mocks.getUserPhotos,
+    getSignedPhotoUrl: mocks.getSignedPhotoUrl,
+  };
+});
 
 import UploadPage from "@/app/(app)/upload/page";
 
 const fakeUser = {
-  id: "fake-uuid",
-  email: "ana.lopez@example.com",
-  user_metadata: { given_name: "Ana", full_name: "Ana López" },
+  id: "11111111-1111-1111-1111-111111111111",
+  email: "ana@example.com",
 } as unknown as User;
 
+function fakePhoto(position: 1 | 2 | 3 | 4): Photo {
+  return {
+    id: `p-${position}`,
+    user_id: fakeUser.id,
+    position,
+    storage_path: `${fakeUser.id}/${position}.jpg`,
+    uploaded_at: "2026-05-06T00:00:00Z",
+  };
+}
+
+type UploaderProps = {
+  initialPhotos: Array<{ photo: Photo; signedUrl: string | null }>;
+};
+
+beforeEach(() => {
+  vi.clearAllMocks();
+  mocks.requireUser.mockResolvedValue(fakeUser);
+  mocks.getUserPhotos.mockResolvedValue([]);
+  mocks.getSignedPhotoUrl.mockResolvedValue(null);
+});
+
 describe("/upload page", () => {
-  beforeEach(() => {
-    mocks.requireUser.mockReset();
-    mocks.requireUser.mockResolvedValue(fakeUser);
-  });
-
-  it("invoca requireUser y renderiza la bienvenida con el given_name", async () => {
-    const tree = await UploadPage();
+  it("invoca requireUser y getUserPhotos con el id del usuario", async () => {
+    await UploadPage();
     expect(mocks.requireUser).toHaveBeenCalledOnce();
+    expect(mocks.getUserPhotos).toHaveBeenCalledWith(fakeUser.id);
+  });
+
+  it("no llama getSignedPhotoUrl si la usuaria no tiene fotos previas", async () => {
+    await UploadPage();
+    expect(mocks.getSignedPhotoUrl).not.toHaveBeenCalled();
+  });
+
+  it("genera signed URL para cada foto previa", async () => {
+    mocks.getUserPhotos.mockResolvedValue([fakePhoto(1), fakePhoto(3)]);
+    mocks.getSignedPhotoUrl
+      .mockResolvedValueOnce("https://signed/1")
+      .mockResolvedValueOnce("https://signed/3");
+    await UploadPage();
+    expect(mocks.getSignedPhotoUrl).toHaveBeenCalledTimes(2);
+    expect(mocks.getSignedPhotoUrl).toHaveBeenCalledWith(`${fakeUser.id}/1.jpg`);
+    expect(mocks.getSignedPhotoUrl).toHaveBeenCalledWith(`${fakeUser.id}/3.jpg`);
+  });
+
+  it("renderiza <PhotoUploader /> con initialPhotos=[] cuando no hay fotos", async () => {
+    const tree = (await UploadPage()) as ReactElement<UploaderProps>;
     expect(tree).toBeTruthy();
-    const json = JSON.stringify(tree);
-    expect(json).toContain("Bienvenida");
-    expect(json).toContain("Ana");
-    expect(json).toContain("Aquí subirás tus 4 fotos en el siguiente paso");
+    expect(tree.props.initialPhotos).toEqual([]);
   });
 
-  it("cae al primer nombre del full_name si no hay given_name", async () => {
-    const userSinGivenName = {
-      id: "fake-2",
-      email: "carmen.diaz@example.com",
-      user_metadata: { full_name: "Carmen Díaz" },
-    } as unknown as User;
-    mocks.requireUser.mockResolvedValueOnce(userSinGivenName);
+  it("hidrata initialPhotos con la foto + signedUrl correspondiente", async () => {
+    const photo = fakePhoto(1);
+    mocks.getUserPhotos.mockResolvedValue([photo]);
+    mocks.getSignedPhotoUrl.mockResolvedValue("https://signed/1");
 
-    const tree = await UploadPage();
-    const json = JSON.stringify(tree);
-    expect(json).toContain("Carmen");
+    const tree = (await UploadPage()) as ReactElement<UploaderProps>;
+    expect(tree.props.initialPhotos).toHaveLength(1);
+    expect(tree.props.initialPhotos[0].photo).toEqual(photo);
+    expect(tree.props.initialPhotos[0].signedUrl).toBe("https://signed/1");
   });
 
-  it("cae al local-part del email si no hay metadata de nombre", async () => {
-    const userSinNombre = {
-      id: "fake-3",
-      email: "valeria@example.com",
-      user_metadata: {},
-    } as unknown as User;
-    mocks.requireUser.mockResolvedValueOnce(userSinNombre);
+  it("propaga signedUrl=null si getSignedPhotoUrl falló (UX defensiva)", async () => {
+    const photo = fakePhoto(2);
+    mocks.getUserPhotos.mockResolvedValue([photo]);
+    mocks.getSignedPhotoUrl.mockResolvedValue(null);
 
-    const tree = await UploadPage();
-    const json = JSON.stringify(tree);
-    expect(json).toContain("valeria");
+    const tree = (await UploadPage()) as ReactElement<UploaderProps>;
+    expect(tree.props.initialPhotos[0].signedUrl).toBeNull();
   });
 });

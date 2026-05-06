@@ -9,7 +9,7 @@ import type {
   DeleteErrorCode,
   Photo,
   UploadErrorCode,
-} from "@/lib/storage/photos";
+} from "@/lib/storage/photos.config";
 
 export type PhotoUploadResponse =
   | { ok: true; photo: Photo; signedUrl: string | null }
