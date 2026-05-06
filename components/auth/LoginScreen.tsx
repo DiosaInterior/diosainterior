@@ -52,7 +52,7 @@ export function LoginScreen() {
           <div className="font-raleway text-[15px] font-normal text-marfil/90 leading-[1.5] max-w-[340px] mx-auto">
             La primera guía de colorimetría diseñada
             <br />
-            para piel latina
+            para tu piel
           </div>
         </div>
 

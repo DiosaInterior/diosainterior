@@ -25,6 +25,7 @@ describe("LoginScreen", () => {
     expect(json).toContain("Diosa");
     expect(json).toContain("Interior");
     expect(json).toContain("La primera guía de colorimetría diseñada");
+    expect(json).toContain("para tu piel");
     expect(json).toContain("Tu paleta");
     expect(json).toContain("6 colores exactamente tuyos");
     expect(json).toContain("Tu corte");
