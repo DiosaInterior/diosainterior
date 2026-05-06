@@ -1,5 +1,5 @@
 # BIBLIA APP V2 — DIOSA INTERIOR
-## Arquitectura técnica · Versión 2.1 · Mayo 2026
+## Arquitectura técnica · Versión 2.2 · Mayo 2026
 ### Fuente única de verdad para reconstrucción desde cero
 
 > **INSTRUCCIÓN CRÍTICA PARA CLAUDE CODE:** Este archivo es la ley absoluta de la app. Reemplaza toda decisión técnica anterior. Antes de escribir cualquier línea de código, leer las secciones 1, 2 y 3. Si una decisión no está en este documento, preguntar a César — no improvisar.
@@ -360,7 +360,9 @@ diosa-interior/
 │   │   ├── guide.service.ts
 │   │   └── notification.service.ts
 │   ├── db/
-│   │   ├── client.ts                 # Supabase client
+│   │   ├── client.ts                 # Supabase client (browser)
+│   │   ├── server.ts                 # Supabase client (server) — ver nota v2.2
+│   │   ├── database.types.ts         # Tipos generados con `supabase gen types`
 │   │   ├── purchases.repo.ts
 │   │   ├── guides.repo.ts
 │   │   └── photos.repo.ts
@@ -389,6 +391,8 @@ diosa-interior/
 ├── next.config.ts
 └── package.json
 ```
+
+> **Nota sobre `lib/db/` (v2.2):** el cliente Supabase se parte en dos archivos por compatibilidad con Next App Router. `client.ts` exporta `createBrowserClient` para componentes con `"use client"`; `server.ts` exporta `createServerClient` async (lee cookies vía `next/headers`) para server components, route handlers y server actions. Mezclarlos en un solo archivo rompe el bundle de cliente porque `next/headers` solo existe en server. Convención oficial Supabase + Next App Router. El cliente con `service_role` (bypass RLS para webhooks Stripe / jobs Inngest) se añade como tercer archivo cuando llegue su primer consumidor.
 
 ---
 
@@ -594,7 +598,7 @@ Supabase resuelve los tres. Y el modelo relacional con Postgres es estrictamente
 
 ---
 
-*BIBLIA APP V2 — Versión 2.1*
+*BIBLIA APP V2 — Versión 2.2*
 *Creada: Mayo 2026*
 *Reemplaza: toda decisión técnica de versiones anteriores*
 *Próxima revisión: cuando V2 esté en producción y haya 50+ usuarias activas*
@@ -602,6 +606,10 @@ Supabase resuelve los tres. Y el modelo relacional con Postgres es estrictamente
 ---
 
 ## CHANGELOG
+
+### v2.2 — Mayo 2026
+- **§7 estructura:** `lib/db/` ahora lista `client.ts` (browser), `server.ts` (server) y `database.types.ts` por separado.
+- **§7:** nota arquitectónica explicando por qué el cliente Supabase se parte en dos archivos (incompatibilidad de `next/headers` con bundle de cliente — convención oficial Supabase + Next App Router).
 
 ### v2.1 — Mayo 2026
 - **§5 schema:** añadido `ALTER TABLE bookings ENABLE ROW LEVEL SECURITY` y policy `users_own_bookings` (FOR SELECT). La v2.0 los omitía — sin RLS cualquier usuaria autenticada podía leer las citas de cualquier otra.
