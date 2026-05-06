@@ -19,7 +19,11 @@ export const metadata = {
   title: "Sube tus fotos — Diosa Interior",
 };
 
-export default async function UploadPage() {
+export default async function UploadPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ canceled?: string }>;
+}) {
   const user = await requireUser();
   const photos = await getUserPhotos(user.id);
   const initialPhotos = await Promise.all(
@@ -29,5 +33,18 @@ export default async function UploadPage() {
     })),
   );
 
-  return <PhotoUploader initialPhotos={initialPhotos} />;
+  // Stripe redirige a /upload?canceled=1 cuando la usuaria cierra el
+  // checkout sin pagar. Le mostramos un toast suave al volver.
+  const { canceled } = await searchParams;
+  const initialToast =
+    canceled === "1"
+      ? "Pago cancelado. Cuando estés lista, vuelve a continuar."
+      : undefined;
+
+  return (
+    <PhotoUploader
+      initialPhotos={initialPhotos}
+      initialToast={initialToast}
+    />
+  );
 }

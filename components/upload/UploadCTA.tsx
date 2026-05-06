@@ -8,11 +8,22 @@ import { SignOutButton } from "@/components/auth/SignOutButton";
 type Props = {
   uploadedCount: number;
   onContinue: () => void;
+  checkoutLoading?: boolean;
 };
 
-export function UploadCTA({ uploadedCount, onContinue }: Props) {
+export function UploadCTA({
+  uploadedCount,
+  onContinue,
+  checkoutLoading = false,
+}: Props) {
   const allReady = uploadedCount === 4;
   const hint = computeHint(uploadedCount);
+
+  // El botón se deshabilita por dos razones distintas:
+  //  - !allReady: la usuaria todavía no completa las 4 fotos.
+  //  - checkoutLoading: el fetch a /api/checkout/create-session está
+  //    en curso (o redirigiendo a Stripe). Evita doble click.
+  const disabled = !allReady || checkoutLoading;
 
   // Typography swap: estados incompletos en mono uppercase tracking
   // (estilo técnico/eyebrow); estado completo en Cormorant italic
@@ -21,9 +32,11 @@ export function UploadCTA({ uploadedCount, onContinue }: Props) {
     ? "font-cormorant italic text-[15px] text-terra-diosa"
     : "font-dm-mono uppercase text-[7px] tracking-[1.5px] text-marfil/40";
 
-  const buttonClass = allReady
-    ? "bg-terra-diosa text-vino-profundo shadow-[0_4px_16px_rgba(196,114,74,0.25)] hover:bg-terra-2"
-    : "bg-marfil/15 text-marfil/40 cursor-not-allowed";
+  const buttonClass = disabled
+    ? "bg-marfil/15 text-marfil/40 cursor-not-allowed"
+    : "bg-terra-diosa text-vino-profundo shadow-[0_4px_16px_rgba(196,114,74,0.25)] hover:bg-terra-2";
+
+  const buttonText = checkoutLoading ? "Procesando..." : "Continuar →";
 
   return (
     <>
@@ -32,10 +45,10 @@ export function UploadCTA({ uploadedCount, onContinue }: Props) {
       <button
         type="button"
         onClick={onContinue}
-        disabled={!allReady}
+        disabled={disabled}
         className={`w-full py-3.5 rounded-[3px] font-raleway uppercase text-[12px] tracking-[0.3em] transition-colors ${buttonClass}`}
       >
-        Continuar →
+        {buttonText}
       </button>
 
       <div className="mt-12 text-center">
