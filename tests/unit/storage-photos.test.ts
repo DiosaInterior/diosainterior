@@ -1,22 +1,91 @@
-import { describe, expect, it } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
+
+// Mock global de @/lib/db/server: el helper createClient devuelve un
+// supabase fake que vamos configurando por test. vi.hoisted nos da las
+// refs antes del hoist de vi.mock — sin esto, la factory no puede ver
+// las vars top-level (Cannot access ... before initialization).
+const supa = vi.hoisted(() => {
+  const client = {
+    from: vi.fn(),
+    storage: { from: vi.fn() },
+  };
+  return { client };
+});
+
+vi.mock("@/lib/db/server", () => ({
+  createClient: vi.fn(async () => supa.client),
+}));
+
 import {
   PHOTO_SLOTS,
   MAX_FILE_SIZE_BYTES,
+  SIGNED_URL_TTL_SECONDS,
   isAllowedMime,
   uploadPhoto,
   deletePhoto,
   getUserPhotos,
+  getSignedPhotoUrl,
   type PhotoPosition,
   type PhotoSlotKey,
   type PhotoSlotBadge,
 } from "@/lib/storage/photos";
 
-// Tests E2E reales (con mocks de Supabase / fixtures de Storage) llegan
-// en Bloque H. Aquí cubrimos lo determinístico:
-//  - shape y orden de PHOTO_SLOTS
-//  - validators que corren ANTES de tocar Supabase (rechazo temprano)
-//  - tipos derivados (compile-time check vía asignación)
-//  - exports presentes
+// ---------------------------------------------------------------------
+// Helpers de mock — cada test arma fresh chains
+// ---------------------------------------------------------------------
+
+type TableChain = {
+  select: ReturnType<typeof vi.fn>;
+  eq: ReturnType<typeof vi.fn>;
+  upsert: ReturnType<typeof vi.fn>;
+  delete: ReturnType<typeof vi.fn>;
+  order: ReturnType<typeof vi.fn>;
+  maybeSingle: ReturnType<typeof vi.fn>;
+  single: ReturnType<typeof vi.fn>;
+};
+
+type Bucket = {
+  upload: ReturnType<typeof vi.fn>;
+  remove: ReturnType<typeof vi.fn>;
+  createSignedUrl: ReturnType<typeof vi.fn>;
+};
+
+function setupSupabase(): { table: TableChain; bucket: Bucket } {
+  const table: TableChain = {
+    select: vi.fn(),
+    eq: vi.fn(),
+    upsert: vi.fn(),
+    delete: vi.fn(),
+    order: vi.fn(),
+    maybeSingle: vi.fn(),
+    single: vi.fn(),
+  };
+  // chainable methods devuelven el mismo table para emular fluent API
+  table.select.mockReturnValue(table);
+  table.eq.mockReturnValue(table);
+  table.upsert.mockReturnValue(table);
+  table.delete.mockReturnValue(table);
+  table.order.mockReturnValue(table);
+
+  const bucket: Bucket = {
+    upload: vi.fn(),
+    remove: vi.fn(),
+    createSignedUrl: vi.fn(),
+  };
+
+  supa.client.from.mockReturnValue(table);
+  supa.client.storage.from.mockReturnValue(bucket);
+
+  return { table, bucket };
+}
+
+beforeEach(() => {
+  vi.clearAllMocks();
+});
+
+// ---------------------------------------------------------------------
+// PHOTO_SLOTS
+// ---------------------------------------------------------------------
 
 describe("PHOTO_SLOTS", () => {
   it("tiene exactamente 4 entradas", () => {
@@ -71,6 +140,10 @@ describe("PHOTO_SLOTS", () => {
   });
 });
 
+// ---------------------------------------------------------------------
+// Tipos derivados (compile-time)
+// ---------------------------------------------------------------------
+
 describe("Tipos derivados (compile-time)", () => {
   it("PhotoPosition acepta 1,2,3,4", () => {
     const positions: PhotoPosition[] = [1, 2, 3, 4];
@@ -92,6 +165,10 @@ describe("Tipos derivados (compile-time)", () => {
     expect(badges).toEqual(["clave", "numbered"]);
   });
 });
+
+// ---------------------------------------------------------------------
+// Validators puros
+// ---------------------------------------------------------------------
 
 describe("isAllowedMime", () => {
   it("acepta jpeg, png, heic, webp", () => {
@@ -115,6 +192,16 @@ describe("MAX_FILE_SIZE_BYTES", () => {
     expect(MAX_FILE_SIZE_BYTES).toBe(10485760);
   });
 });
+
+describe("SIGNED_URL_TTL_SECONDS", () => {
+  it("es 3600 (1 hora)", () => {
+    expect(SIGNED_URL_TTL_SECONDS).toBe(3600);
+  });
+});
+
+// ---------------------------------------------------------------------
+// uploadPhoto — validators (sin tocar Supabase)
+// ---------------------------------------------------------------------
 
 describe("uploadPhoto — validators sin tocar Supabase", () => {
   it("rechaza MIME inválido con error invalid_mime", async () => {
@@ -148,10 +235,124 @@ describe("uploadPhoto — validators sin tocar Supabase", () => {
   });
 });
 
+// ---------------------------------------------------------------------
+// uploadPhoto — orphan cleanup (con mock de Supabase)
+// ---------------------------------------------------------------------
+
+const photoRowFor = (path: string) => ({
+  id: "photo-id",
+  user_id: "abc-uuid",
+  position: 1,
+  storage_path: path,
+  uploaded_at: "2026-05-06T00:00:00Z",
+});
+
+describe("uploadPhoto — orphan cleanup en cambio de extensión", () => {
+  it("borra archivo viejo si la extensión cambió respecto al previo", async () => {
+    const { table, bucket } = setupSupabase();
+
+    table.maybeSingle.mockResolvedValue({
+      data: { storage_path: "abc-uuid/1.jpg" },
+      error: null,
+    });
+    bucket.remove.mockResolvedValue({ data: null, error: null });
+    bucket.upload.mockResolvedValue({ data: null, error: null });
+    table.single.mockResolvedValue({
+      data: photoRowFor("abc-uuid/1.png"),
+      error: null,
+    });
+
+    const file = new File(["data"], "x.png", { type: "image/png" });
+    const result = await uploadPhoto(file, 1, "abc-uuid");
+
+    expect(bucket.remove).toHaveBeenCalledWith(["abc-uuid/1.jpg"]);
+    expect(bucket.upload).toHaveBeenCalledWith(
+      "abc-uuid/1.png",
+      file,
+      expect.objectContaining({ upsert: true, contentType: "image/png" }),
+    );
+    expect(result.ok).toBe(true);
+  });
+
+  it("no llama remove si la extensión coincide con el previo", async () => {
+    const { table, bucket } = setupSupabase();
+
+    table.maybeSingle.mockResolvedValue({
+      data: { storage_path: "abc-uuid/1.png" },
+      error: null,
+    });
+    bucket.upload.mockResolvedValue({ data: null, error: null });
+    table.single.mockResolvedValue({
+      data: photoRowFor("abc-uuid/1.png"),
+      error: null,
+    });
+
+    const file = new File(["data"], "x.png", { type: "image/png" });
+    const result = await uploadPhoto(file, 1, "abc-uuid");
+
+    expect(bucket.remove).not.toHaveBeenCalled();
+    expect(result.ok).toBe(true);
+  });
+
+  it("no llama remove si no había foto previa en ese slot", async () => {
+    const { table, bucket } = setupSupabase();
+
+    table.maybeSingle.mockResolvedValue({ data: null, error: null });
+    bucket.upload.mockResolvedValue({ data: null, error: null });
+    table.single.mockResolvedValue({
+      data: photoRowFor("abc-uuid/1.jpg"),
+      error: null,
+    });
+
+    const file = new File(["data"], "x.jpg", { type: "image/jpeg" });
+    const result = await uploadPhoto(file, 1, "abc-uuid");
+
+    expect(bucket.remove).not.toHaveBeenCalled();
+    expect(result.ok).toBe(true);
+  });
+});
+
+// ---------------------------------------------------------------------
+// getSignedPhotoUrl
+// ---------------------------------------------------------------------
+
+describe("getSignedPhotoUrl", () => {
+  it("devuelve la URL firmada en éxito y usa TTL de 1 hora", async () => {
+    const { bucket } = setupSupabase();
+    bucket.createSignedUrl.mockResolvedValue({
+      data: { signedUrl: "https://signed.example.com/path?token=xxx" },
+      error: null,
+    });
+
+    const url = await getSignedPhotoUrl("abc-uuid/1.jpg");
+    expect(url).toBe("https://signed.example.com/path?token=xxx");
+    expect(bucket.createSignedUrl).toHaveBeenCalledWith(
+      "abc-uuid/1.jpg",
+      SIGNED_URL_TTL_SECONDS,
+    );
+  });
+
+  it("devuelve null si Supabase retorna error (defensivo, no throw)", async () => {
+    const { bucket } = setupSupabase();
+    bucket.createSignedUrl.mockResolvedValue({
+      data: null,
+      error: { message: "Object not found" },
+    });
+
+    const url = await getSignedPhotoUrl("abc-uuid/1.jpg");
+    expect(url).toBeNull();
+  });
+});
+
+// ---------------------------------------------------------------------
+// Exports
+// ---------------------------------------------------------------------
+
 describe("Exports", () => {
-  it("uploadPhoto, deletePhoto, getUserPhotos son funciones async", () => {
+  it("uploadPhoto, deletePhoto, getUserPhotos, getSignedPhotoUrl son funciones async", () => {
     expect(typeof uploadPhoto).toBe("function");
     expect(typeof deletePhoto).toBe("function");
     expect(typeof getUserPhotos).toBe("function");
+    expect(typeof getSignedPhotoUrl).toBe("function");
   });
 });

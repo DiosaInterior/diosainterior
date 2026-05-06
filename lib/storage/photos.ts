@@ -85,6 +85,7 @@ export function isAllowedMime(mime: string): mime is AllowedMime {
 }
 
 export const MAX_FILE_SIZE_BYTES = 10 * 1024 * 1024; // 10 MB; matches bucket
+export const SIGNED_URL_TTL_SECONDS = 60 * 60; // 1 h; alcanza una sesión de upload, se regenera al recargar
 const BUCKET = "photos";
 
 // ---------------------------------------------------------------------
@@ -112,16 +113,24 @@ export type DeleteResult =
 // ---------------------------------------------------------------------
 // UPLOAD
 // ---------------------------------------------------------------------
-// 1) Valida MIME y tamaño antes de tocar IO.
-// 2) Sube al bucket con upsert (reemplaza si la usuaria sube de nuevo
-//    a la misma posición).
-// 3) UPSERT en photos por (user_id, position) — el UNIQUE constraint
-//    fuerza que cada slot tenga a lo sumo una fila.
-//
-// Si la userId no coincide con auth.uid(), las policies del bucket y de
-// photos rechazarán y devolveremos storage_failed/db_failed. El caller
-// (route handler) debe pasar el id de la sesión actual.
 
+/**
+ * Sube una foto al bucket "photos" y persiste la referencia en `photos`.
+ *
+ * 1) Valida MIME y tamaño antes de tocar IO.
+ * 2) Si ya existía una foto en (user_id, position) con extensión distinta
+ *    a la nueva, borra el archivo viejo del bucket — best-effort: si la
+ *    limpieza falla la subida sigue (genera un huérfano que se puede
+ *    barrer luego). Sin esto, cambiar el MIME (ej. JPEG → PNG en el
+ *    mismo slot) deja "abc/1.jpg" huérfano cuando "abc/1.png" se sube.
+ * 3) Sube al bucket con upsert: true (mismo path se sobreescribe atómico).
+ * 4) UPSERT en `photos` por (user_id, position) — el UNIQUE constraint
+ *    fuerza que cada slot tenga a lo sumo una fila.
+ *
+ * Si `userId` no coincide con auth.uid(), las policies del bucket y de
+ * photos rechazarán y devolveremos storage_failed/db_failed. El caller
+ * (route handler) debe pasar el id de la sesión actual.
+ */
 export async function uploadPhoto(
   file: File,
   position: PhotoPosition,
@@ -138,6 +147,19 @@ export async function uploadPhoto(
   const storagePath = `${userId}/${position}.${ext}`;
 
   const supabase = await createClient();
+
+  // Best-effort: borrar archivo huérfano si la extensión cambió respecto
+  // al upload anterior en este mismo slot. Errores se ignoran — la
+  // subida nueva sigue su curso.
+  const { data: existing } = await supabase
+    .from("photos")
+    .select("storage_path")
+    .eq("user_id", userId)
+    .eq("position", position)
+    .maybeSingle();
+  if (existing && existing.storage_path !== storagePath) {
+    await supabase.storage.from(BUCKET).remove([existing.storage_path]);
+  }
 
   const { error: uploadError } = await supabase.storage
     .from(BUCKET)
@@ -244,4 +266,27 @@ export async function getUserPhotos(userId: string): Promise<Photo[]> {
     throw error;
   }
   return data ?? [];
+}
+
+// ---------------------------------------------------------------------
+// SIGNED URL
+// ---------------------------------------------------------------------
+
+/**
+ * Genera una URL firmada con TTL de 1 hora para mostrar la foto al
+ * cliente. El bucket es privado: sin signed URL no hay forma de servir
+ * el archivo via <img>. Defensivo: si falla retorna null en vez de
+ * throw — la UI muestra un placeholder en lugar de crashear.
+ */
+export async function getSignedPhotoUrl(
+  storagePath: string,
+): Promise<string | null> {
+  const supabase = await createClient();
+  const { data, error } = await supabase.storage
+    .from(BUCKET)
+    .createSignedUrl(storagePath, SIGNED_URL_TTL_SECONDS);
+  if (error || !data) {
+    return null;
+  }
+  return data.signedUrl;
 }
