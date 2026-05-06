@@ -1,5 +1,5 @@
 # BIBLIA APP V2 — DIOSA INTERIOR
-## Arquitectura técnica · Versión 2.4 · Mayo 2026
+## Arquitectura técnica · Versión 2.5 · Mayo 2026
 ### Fuente única de verdad para reconstrucción desde cero
 
 > **INSTRUCCIÓN CRÍTICA PARA CLAUDE CODE:** Este archivo es la ley absoluta de la app. Reemplaza toda decisión técnica anterior. Antes de escribir cualquier línea de código, leer las secciones 1, 2 y 3. Si una decisión no está en este documento, preguntar a César — no improvisar.
@@ -271,6 +271,8 @@ CREATE POLICY "users_own_bookings" ON bookings FOR SELECT USING (auth.uid() = us
 ```
 
 > **Nota sobre `bookings` (v2.1):** la versión 2.0 omitía habilitar RLS y crear policy para esta tabla — corregido en v2.1. La policy es `FOR SELECT` (no `FOR ALL`) por decisión arquitectónica alineada con P2: las mutaciones de bookings involucran lógica de negocio crítica (validar pago previo, validar fecha disponible, disparar email de confirmación, posibles reembolsos parciales en cancelación) y por tanto viven en route handlers con `service_role` key + validación de negocio. El frontend solo lee sus propias bookings; nunca las escribe directo. Las bookings con `user_id NULL` (guest) solo son visibles vía backend con service role.
+
+> **NOTA sobre `webhook_events` (v2.5):** `webhook_events` NO tiene RLS habilitado intencionalmente. Esta tabla es exclusiva del backend (Stripe webhooks vía service_role) para garantizar idempotencia. Habilitarle RLS sin policies bloquearía al propio backend. Ningún cliente debe tocar esta tabla directamente.
 
 ---
 
@@ -630,6 +632,9 @@ Supabase resuelve los tres. Y el modelo relacional con Postgres es estrictamente
 ---
 
 ## CHANGELOG
+
+### v2.5 — Mayo 2026
+- **§5 schema:** documentada la decisión de dejar `webhook_events` sin RLS habilitado. Es la única tabla del schema sin RLS — intencional, porque la tabla es exclusiva del backend (Stripe webhooks vía service_role) y habilitarle RLS sin policies bloquearía al propio backend. Ningún cliente debe tocar esta tabla directamente. Verificación visual en Supabase dashboard tras Bloque C.2: 6 tablas con candado verde (RLS activo) + `webhook_events` UNRESTRICTED por diseño.
 
 ### v2.4 — Mayo 2026
 - **§11 deployment:** documentado que `npx vercel` sin flags en proyecto recién creado toma `target=production` por default. Regla añadida: usar siempre flag explícito (`--target=preview` o `--prod`) para evitar deploys accidentales.
