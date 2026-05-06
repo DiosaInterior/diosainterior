@@ -1,5 +1,5 @@
 # BIBLIA APP V2 — DIOSA INTERIOR
-## Arquitectura técnica · Versión 2.0 · Mayo 2026
+## Arquitectura técnica · Versión 2.1 · Mayo 2026
 ### Fuente única de verdad para reconstrucción desde cero
 
 > **INSTRUCCIÓN CRÍTICA PARA CLAUDE CODE:** Este archivo es la ley absoluta de la app. Reemplaza toda decisión técnica anterior. Antes de escribir cualquier línea de código, leer las secciones 1, 2 y 3. Si una decisión no está en este documento, preguntar a César — no improvisar.
@@ -63,6 +63,8 @@ Estos principios tienen prioridad sobre cualquier otra consideración. Si una de
 
 ### P2 — El frontend nunca decide nada crítico
 El frontend pregunta "¿esta usuaria pagó?" — el backend responde sí o no. El frontend pregunta "¿está lista la guía?" — el backend responde. Nunca el frontend infiere estado a partir de localStorage.
+
+- **Ejemplo concreto:** la tabla `bookings` tiene RLS solo para `SELECT`. Las mutaciones (INSERT/UPDATE/DELETE) viven en route handlers que validan pago previo + disponibilidad de fecha + permisos antes de tocar la tabla. El cliente nunca escribe directo a `bookings`.
 
 ### P3 — Análisis de IA es asíncrono
 Stripe webhook → encola job en background → IA corre fuera del request → usuaria ve estado en tiempo real (o recibe email cuando termina). **Nunca más una usuaria viendo un spinner de 30 segundos rezando que no falle.**
@@ -257,6 +259,7 @@ ALTER TABLE purchases ENABLE ROW LEVEL SECURITY;
 ALTER TABLE photos ENABLE ROW LEVEL SECURITY;
 ALTER TABLE guides ENABLE ROW LEVEL SECURITY;
 ALTER TABLE analysis_jobs ENABLE ROW LEVEL SECURITY;
+ALTER TABLE bookings ENABLE ROW LEVEL SECURITY;
 
 -- Cada usuaria solo ve lo suyo
 CREATE POLICY "users_own_profile" ON profiles FOR ALL USING (auth.uid() = id);
@@ -264,7 +267,10 @@ CREATE POLICY "users_own_purchases" ON purchases FOR SELECT USING (auth.uid() = 
 CREATE POLICY "users_own_photos" ON photos FOR ALL USING (auth.uid() = user_id);
 CREATE POLICY "users_own_guides" ON guides FOR SELECT USING (auth.uid() = user_id);
 CREATE POLICY "users_own_jobs" ON analysis_jobs FOR SELECT USING (auth.uid() = user_id);
+CREATE POLICY "users_own_bookings" ON bookings FOR SELECT USING (auth.uid() = user_id);
 ```
+
+> **Nota sobre `bookings` (v2.1):** la versión 2.0 omitía habilitar RLS y crear policy para esta tabla — corregido en v2.1. La policy es `FOR SELECT` (no `FOR ALL`) por decisión arquitectónica alineada con P2: las mutaciones de bookings involucran lógica de negocio crítica (validar pago previo, validar fecha disponible, disparar email de confirmación, posibles reembolsos parciales en cancelación) y por tanto viven en route handlers con `service_role` key + validación de negocio. El frontend solo lee sus propias bookings; nunca las escribe directo. Las bookings con `user_id NULL` (guest) solo son visibles vía backend con service role.
 
 ---
 
@@ -588,7 +594,19 @@ Supabase resuelve los tres. Y el modelo relacional con Postgres es estrictamente
 
 ---
 
-*BIBLIA APP V2 — Versión 2.0*
+*BIBLIA APP V2 — Versión 2.1*
 *Creada: Mayo 2026*
 *Reemplaza: toda decisión técnica de versiones anteriores*
 *Próxima revisión: cuando V2 esté en producción y haya 50+ usuarias activas*
+
+---
+
+## CHANGELOG
+
+### v2.1 — Mayo 2026
+- **§5 schema:** añadido `ALTER TABLE bookings ENABLE ROW LEVEL SECURITY` y policy `users_own_bookings` (FOR SELECT). La v2.0 los omitía — sin RLS cualquier usuaria autenticada podía leer las citas de cualquier otra.
+- **§5 schema:** nota explicando por qué la policy de `bookings` es `FOR SELECT` y no `FOR ALL` (mutaciones vía route handlers con service role + validación de negocio).
+- **§2 P2:** añadido ejemplo concreto referenciando `bookings` como caso de aplicación del principio.
+
+### v2.0 — Mayo 2026
+- Versión inicial.
