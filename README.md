@@ -39,6 +39,13 @@ tests/       Vitest (unit) + Playwright (e2e)
 docs/        Biblias del proyecto
 ```
 
+## TODOs antes del primer deploy a producción
+
+- [ ] **Sentry — verificar captura real:** lanzar `throw new Error("test sentry")` desde una API route con `SENTRY_DSN` configurado, confirmar que el evento aparece en el dashboard de Sentry, eliminar el error.
+- [ ] **Source maps — verificar upload:** correr `next build` con `SENTRY_AUTH_TOKEN` configurado y confirmar en el build output que los source maps se subieron.
+- [ ] **Stripe webhook — modo live:** switchear `STRIPE_SECRET_KEY` y `STRIPE_WEBHOOK_SECRET` de test a live, reapuntar webhook en Stripe Dashboard.
+- [ ] **Branch protection:** confirmar que `main` está protegido con required status checks (`lint`, `typecheck`, `test`).
+
 ---
 
 © Diosa Interior · Mexico City

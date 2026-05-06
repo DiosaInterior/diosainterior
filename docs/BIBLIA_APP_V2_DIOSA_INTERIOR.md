@@ -1,5 +1,5 @@
 # BIBLIA APP V2 — DIOSA INTERIOR
-## Arquitectura técnica · Versión 2.2 · Mayo 2026
+## Arquitectura técnica · Versión 2.3 · Mayo 2026
 ### Fuente única de verdad para reconstrucción desde cero
 
 > **INSTRUCCIÓN CRÍTICA PARA CLAUDE CODE:** Este archivo es la ley absoluta de la app. Reemplaza toda decisión técnica anterior. Antes de escribir cualquier línea de código, leer las secciones 1, 2 y 3. Si una decisión no está en este documento, preguntar a César — no improvisar.
@@ -510,6 +510,19 @@ No tiramos nada que ya funcione. Esto se migra:
 - Errores en jobs Inngest
 - Source maps subidos en build
 
+#### Patrón silent-without-DSN (v2.3)
+
+Sentry SIN DSN no debe romper builds ni emitir warnings. Patrón obligatorio en cada archivo de init (`instrumentation-client.ts`, `sentry.server.config.ts`, `sentry.edge.config.ts`):
+
+```typescript
+const dsn = process.env.NEXT_PUBLIC_SENTRY_DSN; // o SENTRY_DSN en server/edge
+if (dsn) {
+  Sentry.init({ dsn, /* … */ });
+}
+```
+
+Sin DSN, el SDK no inicia y todas las funciones (`Sentry.captureException`, `Sentry.captureRequestError`, `Sentry.captureRouterTransitionStart`) degradan a no-op. Esto permite clonar el repo y correr `npm run dev` sin tener cuenta Sentry. El DSN se configura solo en `.env.local` local + Vercel — nunca commiteado.
+
 ### PostHog — eventos clave
 - `landing_viewed`
 - `signup_started` / `signup_completed`
@@ -598,7 +611,7 @@ Supabase resuelve los tres. Y el modelo relacional con Postgres es estrictamente
 
 ---
 
-*BIBLIA APP V2 — Versión 2.2*
+*BIBLIA APP V2 — Versión 2.3*
 *Creada: Mayo 2026*
 *Reemplaza: toda decisión técnica de versiones anteriores*
 *Próxima revisión: cuando V2 esté en producción y haya 50+ usuarias activas*
@@ -606,6 +619,10 @@ Supabase resuelve los tres. Y el modelo relacional con Postgres es estrictamente
 ---
 
 ## CHANGELOG
+
+### v2.3 — Mayo 2026
+- **§10 observabilidad:** documentado el patrón silent-without-DSN para Sentry — `if (dsn) { Sentry.init() }` en lugar del placeholder `___DSN___` que sugiere el SKILL oficial. Permite clonar el repo y correr dev sin cuenta Sentry.
+- Reservada implícitamente la ruta `/monitoring` para `tunnelRoute` de Sentry (evade ad-blockers). No crear página `/monitoring` sin antes mover `tunnelRoute` a otro path en `withSentryConfig`.
 
 ### v2.2 — Mayo 2026
 - **§7 estructura:** `lib/db/` ahora lista `client.ts` (browser), `server.ts` (server) y `database.types.ts` por separado.
