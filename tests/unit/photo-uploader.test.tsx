@@ -132,4 +132,33 @@ describe("PhotoUploader — estado 'Cargada'", () => {
     ]);
     expect(html).toContain("Cargada");
   });
+
+  it("photo con .heic muestra placeholder editorial en vez de <img>", () => {
+    const heicPhoto: Photo = {
+      ...fakePhoto(1),
+      storage_path: "user-1/1.heic",
+    };
+    const html = render([{ photo: heicPhoto, signedUrl: "https://x/1.heic" }]);
+    expect(html).toContain("Foto guardada");
+    expect(html).toContain("Vista previa no disponible");
+    // Sanity: el <img> de FilledThumb no se renderizó para esa foto.
+    // alt="Selfie de rostro" es exclusivo del FilledThumb (next/image).
+    expect(html).not.toContain('alt="Selfie de rostro"');
+    // El estado "Cargada" sigue apareciendo (la foto SÍ está subida).
+    expect(html).toContain("Cargada");
+  });
+
+  it("photo con .HEIC mayúscula también dispara el placeholder", () => {
+    const heicPhoto: Photo = {
+      ...fakePhoto(2),
+      storage_path: "user-1/2.HEIC",
+    };
+    const html = render([{ photo: heicPhoto, signedUrl: "https://x/2.HEIC" }]);
+    expect(html).toContain("Vista previa no disponible");
+  });
+
+  it("photo .jpg con signedUrl renderiza img normal (no placeholder)", () => {
+    const html = render([{ photo: fakePhoto(1), signedUrl: "https://x/1" }]);
+    expect(html).not.toContain("Vista previa no disponible");
+  });
 });
