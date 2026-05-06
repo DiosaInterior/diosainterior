@@ -1,0 +1,46 @@
+@import "tailwindcss";
+
+/*
+ * Diosa Interior — Tokens de marca
+ * Fuente: /docs/CLAUDE_DIOSA_INTERIOR_1.md §2 (paleta) y §2.3 (gradiente maestro)
+ * Tailwind v4: tokens en CSS via @theme inline (no tailwind.config.ts)
+ */
+
+:root {
+  /* Paleta — biblia §2.1 */
+  --vino-profundo: #1a0808;
+  --vino-medio: #2d1010;
+  --vino-suave: #3e1818;
+  --terra-diosa: #c4724a;
+  --terra-2: #d4824a;
+  --terra-suave: #c49070;
+  --marfil: #fdf0e8;
+  --marfil-suave: #f0ddd0;
+  --oro: #c4962a;
+
+  /* Gradiente maestro — biblia §2.3 (único gradiente permitido) */
+  --dark-radial: radial-gradient(ellipse at center, #3e1818 0%, #1a0808 70%);
+}
+
+@theme inline {
+  /* Mapeo a tokens de Tailwind — habilita utilities bg-*, text-*, border-*, ring-*, etc. */
+  --color-vino-profundo: var(--vino-profundo);
+  --color-vino-medio: var(--vino-medio);
+  --color-vino-suave: var(--vino-suave);
+  --color-terra-diosa: var(--terra-diosa);
+  --color-terra-2: var(--terra-2);
+  --color-terra-suave: var(--terra-suave);
+  --color-marfil: var(--marfil);
+  --color-marfil-suave: var(--marfil-suave);
+  --color-oro: var(--oro);
+
+  /* Fuentes — habilita utilities font-cormorant, font-raleway, font-dm-mono */
+  --font-cormorant: var(--font-cormorant);
+  --font-raleway: var(--font-raleway);
+  --font-dm-mono: var(--font-dm-mono);
+}
+
+/* Utility custom para el gradiente maestro */
+@utility dark-radial {
+  background: var(--dark-radial);
+}
