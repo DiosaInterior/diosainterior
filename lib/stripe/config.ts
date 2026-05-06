@@ -36,6 +36,13 @@ export const STRIPE_PRICE_ID_BASE = requireEnv("STRIPE_PRICE_ID_BASE");
 // explícito para que Stripe redirija a la URL correcta.
 export const APP_URL = process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000";
 
+// Precio del producto base "Diosa Interior" en centavos MXN. Stripe
+// enforza el precio real desde el Price object al crear la session
+// (le pasamos `price_id`, no `amount`); este número vive en BD como
+// registro contable. Si Stripe Dashboard cambia el precio, actualizar
+// acá Y migrar las purchases existentes si aplica.
+export const STRIPE_AMOUNT_BASE_CENTS = 49900;
+
 export type StripeMode = "test" | "live";
 
 /**
