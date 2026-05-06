@@ -3,6 +3,7 @@
 // sesión expirada. Pure functions: testeables sin React, switches
 // exhaustivos para que TS rompa build si se añade un código nuevo.
 
+import type { CheckoutSessionResponse } from "@/lib/api/checkout.types";
 import type {
   PhotoDeleteResponse,
   PhotoUploadResponse,
@@ -15,6 +16,11 @@ export type UploadFailureCode = Extract<
 
 export type DeleteFailureCode = Extract<
   PhotoDeleteResponse,
+  { ok: false }
+>["error"];
+
+export type CheckoutFailureCode = Extract<
+  CheckoutSessionResponse,
   { ok: false }
 >["error"];
 
@@ -45,6 +51,38 @@ export function uploadFailureToToast(code: UploadFailureCode): FailureToast {
     case "no_file":
       return {
         message: "Algo salió mal. Refresca la página.",
+        triggerLogin: false,
+      };
+  }
+}
+
+export function checkoutFailureToToast(
+  code: CheckoutFailureCode,
+): FailureToast {
+  switch (code) {
+    case "unauthenticated":
+      return {
+        message: "Sesión expirada. Volvemos al login.",
+        triggerLogin: true,
+      };
+    case "no_photos":
+      return {
+        message: "Subí tus 4 fotos primero",
+        triggerLogin: false,
+      };
+    case "incomplete_photos":
+      return {
+        message: "Te faltan fotos para continuar",
+        triggerLogin: false,
+      };
+    case "stripe_failed":
+      return {
+        message: "Error al iniciar el pago. Intenta de nuevo.",
+        triggerLogin: false,
+      };
+    case "db_failed":
+      return {
+        message: "Error temporal. Intenta de nuevo.",
         triggerLogin: false,
       };
   }

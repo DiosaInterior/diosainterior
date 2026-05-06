@@ -46,7 +46,14 @@ function fakePhoto(position: 1 | 2 | 3 | 4): Photo {
 
 type UploaderProps = {
   initialPhotos: Array<{ photo: Photo; signedUrl: string | null }>;
+  initialToast?: string;
 };
+
+// La page recibe searchParams como Promise (Next 15+). Helper para
+// construir el arg desde un objeto plano.
+function callPage(params: { canceled?: string } = {}) {
+  return UploadPage({ searchParams: Promise.resolve(params) });
+}
 
 beforeEach(() => {
   vi.clearAllMocks();
@@ -57,13 +64,13 @@ beforeEach(() => {
 
 describe("/upload page", () => {
   it("invoca requireUser y getUserPhotos con el id del usuario", async () => {
-    await UploadPage();
+    await callPage();
     expect(mocks.requireUser).toHaveBeenCalledOnce();
     expect(mocks.getUserPhotos).toHaveBeenCalledWith(fakeUser.id);
   });
 
   it("no llama getSignedPhotoUrl si la usuaria no tiene fotos previas", async () => {
-    await UploadPage();
+    await callPage();
     expect(mocks.getSignedPhotoUrl).not.toHaveBeenCalled();
   });
 
@@ -72,14 +79,14 @@ describe("/upload page", () => {
     mocks.getSignedPhotoUrl
       .mockResolvedValueOnce("https://signed/1")
       .mockResolvedValueOnce("https://signed/3");
-    await UploadPage();
+    await callPage();
     expect(mocks.getSignedPhotoUrl).toHaveBeenCalledTimes(2);
     expect(mocks.getSignedPhotoUrl).toHaveBeenCalledWith(`${fakeUser.id}/1.jpg`);
     expect(mocks.getSignedPhotoUrl).toHaveBeenCalledWith(`${fakeUser.id}/3.jpg`);
   });
 
   it("renderiza <PhotoUploader /> con initialPhotos=[] cuando no hay fotos", async () => {
-    const tree = (await UploadPage()) as ReactElement<UploaderProps>;
+    const tree = (await callPage()) as ReactElement<UploaderProps>;
     expect(tree).toBeTruthy();
     expect(tree.props.initialPhotos).toEqual([]);
   });
@@ -89,7 +96,7 @@ describe("/upload page", () => {
     mocks.getUserPhotos.mockResolvedValue([photo]);
     mocks.getSignedPhotoUrl.mockResolvedValue("https://signed/1");
 
-    const tree = (await UploadPage()) as ReactElement<UploaderProps>;
+    const tree = (await callPage()) as ReactElement<UploaderProps>;
     expect(tree.props.initialPhotos).toHaveLength(1);
     expect(tree.props.initialPhotos[0].photo).toEqual(photo);
     expect(tree.props.initialPhotos[0].signedUrl).toBe("https://signed/1");
@@ -100,7 +107,24 @@ describe("/upload page", () => {
     mocks.getUserPhotos.mockResolvedValue([photo]);
     mocks.getSignedPhotoUrl.mockResolvedValue(null);
 
-    const tree = (await UploadPage()) as ReactElement<UploaderProps>;
+    const tree = (await callPage()) as ReactElement<UploaderProps>;
     expect(tree.props.initialPhotos[0].signedUrl).toBeNull();
+  });
+
+  it("pasa initialToast cuando searchParams.canceled === '1'", async () => {
+    const tree = (await callPage({ canceled: "1" })) as ReactElement<UploaderProps>;
+    expect(tree.props.initialToast).toBe(
+      "Pago cancelado. Cuando estés lista, vuelve a continuar.",
+    );
+  });
+
+  it("no pasa initialToast si searchParams.canceled está ausente", async () => {
+    const tree = (await callPage()) as ReactElement<UploaderProps>;
+    expect(tree.props.initialToast).toBeUndefined();
+  });
+
+  it("no pasa initialToast si canceled tiene otro valor", async () => {
+    const tree = (await callPage({ canceled: "false" })) as ReactElement<UploaderProps>;
+    expect(tree.props.initialToast).toBeUndefined();
   });
 });

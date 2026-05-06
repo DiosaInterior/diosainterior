@@ -96,50 +96,6 @@ export type Database = {
           },
         ]
       }
-      bookings: {
-        Row: {
-          created_at: string | null
-          email: string
-          id: string
-          name: string
-          notes: string | null
-          phone: string | null
-          preferred_date: string | null
-          status: string | null
-          user_id: string | null
-        }
-        Insert: {
-          created_at?: string | null
-          email: string
-          id?: string
-          name: string
-          notes?: string | null
-          phone?: string | null
-          preferred_date?: string | null
-          status?: string | null
-          user_id?: string | null
-        }
-        Update: {
-          created_at?: string | null
-          email?: string
-          id?: string
-          name?: string
-          notes?: string | null
-          phone?: string | null
-          preferred_date?: string | null
-          status?: string | null
-          user_id?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "bookings_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
       guides: {
         Row: {
           app_version: string
@@ -265,10 +221,13 @@ export type Database = {
           created_at: string | null
           currency: string
           id: string
+          metadata: Json | null
           paid_at: string | null
           product: string
           status: string
+          stripe_customer_id: string | null
           stripe_payment_intent: string | null
+          stripe_price_id: string | null
           stripe_session_id: string | null
           user_id: string
         }
@@ -277,10 +236,13 @@ export type Database = {
           created_at?: string | null
           currency?: string
           id?: string
+          metadata?: Json | null
           paid_at?: string | null
           product: string
           status: string
+          stripe_customer_id?: string | null
           stripe_payment_intent?: string | null
+          stripe_price_id?: string | null
           stripe_session_id?: string | null
           user_id: string
         }
@@ -289,10 +251,13 @@ export type Database = {
           created_at?: string | null
           currency?: string
           id?: string
+          metadata?: Json | null
           paid_at?: string | null
           product?: string
           status?: string
+          stripe_customer_id?: string | null
           stripe_payment_intent?: string | null
+          stripe_price_id?: string | null
           stripe_session_id?: string | null
           user_id?: string
         }

@@ -18,6 +18,7 @@ vi.mock("next/navigation", () => ({
 globalThis.fetch = vi.fn();
 
 import { PhotoUploader } from "@/components/upload/PhotoUploader";
+import { UploadCTA } from "@/components/upload/UploadCTA";
 import type { Photo, PhotoPosition } from "@/lib/storage/photos";
 
 function fakePhoto(position: PhotoPosition): Photo {
@@ -160,5 +161,54 @@ describe("PhotoUploader — estado 'Cargada'", () => {
   it("photo .jpg con signedUrl renderiza img normal (no placeholder)", () => {
     const html = render([{ photo: fakePhoto(1), signedUrl: "https://x/1" }]);
     expect(html).not.toContain("Vista previa no disponible");
+  });
+});
+
+// ---------------------------------------------------------------------
+// UploadCTA — checkoutLoading
+// ---------------------------------------------------------------------
+// Tests directos al sub-componente porque el state checkoutLoading vive
+// dentro de useCheckout (interno a PhotoUploader) y no se puede setear
+// desde fuera. Pasamos la prop directo a UploadCTA y verificamos la UI.
+
+describe("UploadCTA — checkoutLoading", () => {
+  it("4 fotos + checkoutLoading=false: botón habilitado, texto 'Continuar →'", () => {
+    const html = renderToStaticMarkup(
+      <UploadCTA
+        uploadedCount={4}
+        onContinue={() => {}}
+        checkoutLoading={false}
+      />,
+    );
+    expect(html).toContain("Continuar →");
+    expect(html).not.toContain("Procesando");
+    // Disabled state class ausente (botón habilitado)
+    expect(html).not.toContain("bg-marfil/15 text-marfil/40");
+  });
+
+  it("4 fotos + checkoutLoading=true: botón disabled, texto 'Procesando...'", () => {
+    const html = renderToStaticMarkup(
+      <UploadCTA
+        uploadedCount={4}
+        onContinue={() => {}}
+        checkoutLoading={true}
+      />,
+    );
+    expect(html).toContain("Procesando...");
+    expect(html).not.toContain("Continuar →");
+    // Disabled durante checkout incluso con allReady
+    expect(html).toContain("bg-marfil/15 text-marfil/40");
+  });
+
+  it("<4 fotos + checkoutLoading=false: deshabilitado por allReady=false, texto 'Continuar →'", () => {
+    const html = renderToStaticMarkup(
+      <UploadCTA
+        uploadedCount={2}
+        onContinue={() => {}}
+        checkoutLoading={false}
+      />,
+    );
+    expect(html).toContain("Continuar →");
+    expect(html).toContain("bg-marfil/15 text-marfil/40");
   });
 });
