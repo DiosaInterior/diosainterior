@@ -1,5 +1,5 @@
 # BIBLIA APP V2 — DIOSA INTERIOR
-## Arquitectura técnica · Versión 2.3 · Mayo 2026
+## Arquitectura técnica · Versión 2.4 · Mayo 2026
 ### Fuente única de verdad para reconstrucción desde cero
 
 > **INSTRUCCIÓN CRÍTICA PARA CLAUDE CODE:** Este archivo es la ley absoluta de la app. Reemplaza toda decisión técnica anterior. Antes de escribir cualquier línea de código, leer las secciones 1, 2 y 3. Si una decisión no está en este documento, preguntar a César — no improvisar.
@@ -573,6 +573,17 @@ NEXT_PUBLIC_POSTHOG_KEY=
 - Tests E2E corren en CI obligatoriamente
 - Migración de DB se aplica vía Supabase CLI antes de deploy de código
 
+#### Vercel CLI — comportamiento default (v2.4)
+
+`npx vercel` sin flags en un proyecto recién creado **sin deploy de producción previo** toma `target=production` por default. Para forzar un deploy de preview en cualquier estado del proyecto, usar siempre el flag explícito:
+
+```bash
+npx vercel --target=preview   # preview
+npx vercel --prod              # production explícito
+```
+
+Una vez que el proyecto tiene su primer deploy de producción y un repo Git conectado, `npx vercel` sin flags pasa a comportarse como preview por default — pero la regla "siempre con flag explícito" elimina ambigüedad y previene deploys accidentales a prod en el primer uso.
+
 ---
 
 ## 12. CHECKLIST DE MIGRACIÓN
@@ -611,7 +622,7 @@ Supabase resuelve los tres. Y el modelo relacional con Postgres es estrictamente
 
 ---
 
-*BIBLIA APP V2 — Versión 2.3*
+*BIBLIA APP V2 — Versión 2.4*
 *Creada: Mayo 2026*
 *Reemplaza: toda decisión técnica de versiones anteriores*
 *Próxima revisión: cuando V2 esté en producción y haya 50+ usuarias activas*
@@ -619,6 +630,9 @@ Supabase resuelve los tres. Y el modelo relacional con Postgres es estrictamente
 ---
 
 ## CHANGELOG
+
+### v2.4 — Mayo 2026
+- **§11 deployment:** documentado que `npx vercel` sin flags en proyecto recién creado toma `target=production` por default. Regla añadida: usar siempre flag explícito (`--target=preview` o `--prod`) para evitar deploys accidentales.
 
 ### v2.3 — Mayo 2026
 - **§10 observabilidad:** documentado el patrón silent-without-DSN para Sentry — `if (dsn) { Sentry.init() }` en lugar del placeholder `___DSN___` que sugiere el SKILL oficial. Permite clonar el repo y correr dev sin cuenta Sentry.
