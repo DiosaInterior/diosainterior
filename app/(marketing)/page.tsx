@@ -1,16 +1,9 @@
-import Image from "next/image";
+import { Logo } from "@/components/brand/Logo";
 
 export default function Home() {
   return (
     <main className="dark-radial min-h-dvh flex flex-col items-center justify-center px-8 py-16">
-      <Image
-        src="/logo.png"
-        alt="Diosa Interior"
-        width={120}
-        height={120}
-        priority
-        className="mb-12 opacity-90"
-      />
+      <Logo size={120} className="mb-12 opacity-90" />
 
       <p className="font-raleway text-[14px] tracking-[0.4em] uppercase text-terra-diosa/85 mb-8">
         En construcción
