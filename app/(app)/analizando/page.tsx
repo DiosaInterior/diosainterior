@@ -1,20 +1,25 @@
 // Server component de /analizando — landing post-pago.
 //
-// Stub provisional. Stripe redirige acá tras un Checkout exitoso con
+// Stripe redirige acá tras un Checkout exitoso con
 // `?session_id={CHECKOUT_SESSION_ID}`. Validamos que el session_id
-// pertenece a la usuaria autenticada (defensiva contra URL guessing)
-// y mostramos copy editorial. La lógica real de "encolar análisis IA"
-// vive en el webhook handler (E.4) y el job Inngest (Bloque F).
+// pertenece a la usuaria autenticada (defensiva contra URL guessing).
+// La lógica real de "encolar análisis IA" vive en el webhook handler
+// (E.4) y el job Inngest (Bloque F).
+//
+// Voz §13 de la biblia: íntima-experta, declarativa, sin promesas
+// vendedoras ni frases tipo coach motivacional. La usuaria queda con
+// sesión vigente y puede cerrar la página — su guía la espera al
+// volver. No hay email ni notificación push en esta fase.
 
+import Link from "next/link";
 import { redirect } from "next/navigation";
 
 import { Logo } from "@/components/brand/Logo";
-import { SignOutButton } from "@/components/auth/SignOutButton";
 import { requireUser } from "@/lib/auth/server";
 import { createClient } from "@/lib/db/server";
 
 export const metadata = {
-  title: "Tu análisis está en camino — Diosa Interior",
+  title: "Tu análisis está en proceso — Diosa Interior",
 };
 
 export default async function AnalizandoPage({
@@ -47,30 +52,27 @@ export default async function AnalizandoPage({
   return (
     <main className="dark-radial min-h-dvh flex flex-col items-center">
       <div className="w-full max-w-[420px] min-h-dvh flex flex-col justify-center px-8 py-12 box-border mx-auto text-center">
-        <Logo size={90} className="mx-auto mb-8" />
+        <Logo size={90} className="mx-auto mb-10" />
 
-        <p className="font-dm-mono uppercase text-[10px] tracking-[0.4em] text-terra-diosa/85 mb-3">
-          Pago recibido · Análisis en proceso
-        </p>
-
-        <h1 className="font-cormorant italic font-light text-marfil text-[34px] leading-[1.05] tracking-tight">
-          Tu análisis está
-          <br />
-          en camino
+        <h1 className="font-cormorant italic font-light text-marfil text-[34px] leading-[1.1] tracking-tight">
+          Tu análisis está en proceso.
         </h1>
 
-        <p className="font-cormorant italic text-marfil-suave/65 text-[18px] leading-[1.4] mt-6">
-          Te avisaremos por email cuando tu guía personalizada esté lista.
+        <p className="font-raleway text-[15px] text-marfil/85 mt-8 leading-[1.55] max-w-[340px] mx-auto">
+          Estamos leyendo cada foto con la precisión que merece tu piel.
         </p>
 
-        <p className="font-raleway text-[12px] text-marfil/40 mt-12 leading-[1.5] max-w-[320px] mx-auto">
-          (Esta página es provisional. El flujo de análisis con IA llega
-          en el siguiente bloque.)
+        <p className="font-raleway text-[15px] text-marfil/85 mt-4 leading-[1.55] max-w-[340px] mx-auto">
+          Puedes cerrar esta página y volver cuando quieras — tu guía
+          estará aquí.
         </p>
 
-        <div className="mt-16">
-          <SignOutButton />
-        </div>
+        <Link
+          href="/"
+          className="mt-16 font-dm-mono uppercase text-[10px] tracking-[0.4em] text-marfil/55 hover:text-marfil/85 transition-colors"
+        >
+          VOLVER AL INICIO
+        </Link>
       </div>
     </main>
   );
