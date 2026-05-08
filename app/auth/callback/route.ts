@@ -9,12 +9,19 @@ import { createClient } from "@/lib/db/server";
 export async function GET(request: Request) {
   const { searchParams, origin } = new URL(request.url);
   const code = searchParams.get("code");
+  // Sanitizar next: solo paths internos. Si viene malformado o ausente,
+  // default a /upload (entry point post-pago/post-login canónico).
+  const nextRaw = searchParams.get("next");
+  const next =
+    nextRaw && nextRaw.startsWith("/") && !nextRaw.startsWith("//")
+      ? nextRaw
+      : "/upload";
 
   if (code) {
     const supabase = await createClient();
     const { error } = await supabase.auth.exchangeCodeForSession(code);
     if (!error) {
-      return NextResponse.redirect(`${origin}/upload`);
+      return NextResponse.redirect(`${origin}${next}`);
     }
   }
 
