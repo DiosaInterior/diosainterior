@@ -23,6 +23,7 @@
 import "server-only";
 import type Stripe from "stripe";
 
+import { inngest } from "@/inngest/client";
 import { getAdminClient } from "@/lib/db/admin";
 import { getStripe } from "./client";
 
@@ -124,6 +125,31 @@ export async function handleCheckoutCompleted(
       error: `db_update_failed: ${updateError.message}`,
     };
   }
+
+  // Emitir evento a Inngest para encolar el análisis colorimétrico (F.4).
+  // Defense in depth: webhook_events.id ya provee idempotencia primaria;
+  // pasamos `id: purchase-paid-<purchaseId>` como segundo nivel — Inngest
+  // deduplica eventos con misma id durante 24h.
+  // Si inngest.send falla, NO devolvemos 500 a Stripe — el purchase ya
+  // quedó marcado paid. Loggeamos y dejamos que el alerting externo
+  // (Sentry) o un retry manual recupere.
+  try {
+    await inngest.send({
+      id: `purchase-paid-${purchaseId}`,
+      name: "purchase/paid",
+      data: {
+        purchaseId,
+        userId,
+      },
+    });
+  } catch (sendError) {
+    console.error(
+      `[F.4] inngest.send failed for purchase ${purchaseId}:`,
+      sendError,
+    );
+    // No re-throw: el webhook devuelve OK al final.
+  }
+
   return { ok: true };
 }
 
