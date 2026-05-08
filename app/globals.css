@@ -44,3 +44,11 @@
 @utility dark-radial {
   background: var(--dark-radial);
 }
+
+/* ----- Progress bar (G.1) ----- */
+
+@utility progress-fill {
+  background: var(--terra-diosa);
+  height: 2px;
+  transition: width 600ms cubic-bezier(0.4, 0, 0.2, 1);
+}
