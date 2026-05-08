@@ -18,11 +18,12 @@ V2 nace con disciplina arquitectónica estricta. **Ninguna decisión técnica im
 
 ## 2. Documentos canónicos (leer antes de codear)
 
-Las 3 biblias viven en `/docs/` y son la fuente de verdad del proyecto. Léelas en este orden:
+Las 4 biblias viven en `/docs/` y son la fuente de verdad del proyecto. Léelas en este orden:
 
 1. **[`/docs/BIBLIA_APP_V2_DIOSA_INTERIOR.md`](/docs/BIBLIA_APP_V2_DIOSA_INTERIOR.md)** — arquitectura técnica, schema Postgres, flujo crítico de usuaria, plan de 12 fases.
 2. **[`/docs/CLAUDE_DIOSA_INTERIOR_1.md`](/docs/CLAUDE_DIOSA_INTERIOR_1.md)** — sistema de marca: paleta, tipografía, ornamentos, voz, safe zone Instagram.
 3. **[`/docs/CLAUDE_DIOSA_INTERIOR_UPDATES_APR2026.md`](/docs/CLAUDE_DIOSA_INTERIOR_UPDATES_APR2026.md)** — actualizaciones Abril 2026 (prioridad sobre el anterior si hay conflicto).
+4. **[`/docs/BIBLIA_IMAGEN_DIOSA_INTERIOR.md`](/docs/BIBLIA_IMAGEN_DIOSA_INTERIOR.md)** — sistema colorimétrico científico (12 estaciones, Notación Munsell, Fitzpatrick, irradian/apagan) + reglas de fotografía con IA. Fuente del knowledge base de F.1 (Bloque F).
 
 Si una decisión no está en estos documentos, **preguntar al dueño (César) — no improvisar.**
 
