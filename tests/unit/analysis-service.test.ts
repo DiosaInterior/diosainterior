@@ -173,6 +173,9 @@ describe("runColorimetricAnalysis — happy path", () => {
     });
     expect(callArgs.tools).toHaveLength(1);
     expect(callArgs.system).toContain("Diosa Interior");
+    // temperature: 0.3 — clasificación estable + prosa natural (fix
+    // determinismo: default 1.0 producía season swings cross-run).
+    expect(callArgs.temperature).toBe(0.3);
     // 4 image blocks + 1 text block in user message.
     expect(callArgs.messages[0].content).toHaveLength(5);
   });

@@ -19,6 +19,12 @@ import { APP_VERSION } from "@/lib/version";
 
 const MODEL = "claude-sonnet-4-6";
 const MAX_TOKENS = 4096;
+// Sweet spot entre determinismo (clasificación de season, fitzpatrick,
+// hue/value/chroma) y variabilidad natural (prosa del rationale en voz
+// §13). Default 1.0 producía season swings completos (warm autumn ↔
+// true winter) sobre fotos casi idénticas. Si después se observa drift
+// residual, considerar bajar a 0.
+const TEMPERATURE = 0.3;
 
 type AnalysisJob = {
   id: string;
@@ -155,6 +161,7 @@ async function callAnthropic(photos: Base64Photo[]): Promise<unknown> {
   const response = await client.messages.create({
     model: MODEL,
     max_tokens: MAX_TOKENS,
+    temperature: TEMPERATURE,
     system: buildColorimetryPrompt(),
     tools: [colorimetryTool],
     tool_choice: { type: "tool", name: COLORIMETRY_TOOL_NAME },
