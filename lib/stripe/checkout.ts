@@ -45,6 +45,7 @@ export async function createCheckoutSession(opts: {
     const session = await stripe.checkout.sessions.create(
       {
         mode: "payment",
+        allow_promotion_codes: true,
         line_items: [{ price: STRIPE_PRICE_ID_BASE, quantity: 1 }],
         client_reference_id: opts.userId,
         metadata: {
