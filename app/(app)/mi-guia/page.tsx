@@ -13,7 +13,11 @@
 import { redirect } from "next/navigation";
 
 import { Logo } from "@/components/brand/Logo";
+import { CorteCard } from "@/components/guide/CorteCard";
 import { EvitarList } from "@/components/guide/EvitarList";
+import { MaquillajeCard } from "@/components/guide/MaquillajeCard";
+import { MetalesCard } from "@/components/guide/MetalesCard";
+import { OcasionesGrid } from "@/components/guide/OcasionesGrid";
 import { PaletaGrid } from "@/components/guide/PaletaGrid";
 import { PerfilCard } from "@/components/guide/PerfilCard";
 import { requireUser } from "@/lib/auth/server";
@@ -48,9 +52,27 @@ export default async function MiGuiaPage() {
           <EvitarList avoid={guide.palette.avoid ?? []} />
         </div>
 
-        <p className="mt-24 text-center font-dm-mono text-xs uppercase tracking-widest text-marfil-suave/40">
-          G.2.2.B — ocasiones, maquillaje, joyería, corte pendientes
-        </p>
+        <div className="mt-20">
+          <OcasionesGrid colors={guide.palette.colors} />
+        </div>
+
+        <div className="mt-20">
+          <MaquillajeCard makeup={guide.makeup} />
+        </div>
+
+        <div className="mt-20">
+          <MetalesCard jewelry={guide.jewelry} />
+        </div>
+
+        <div className="mt-20">
+          <CorteCard haircut={guide.haircut} />
+        </div>
+
+        <div className="mt-32 mb-8 text-center">
+          <p className="font-dm-mono text-xs uppercase tracking-widest text-marfil-suave/30">
+            Diosa Interior · diosainterior.app
+          </p>
+        </div>
       </div>
     </main>
   );

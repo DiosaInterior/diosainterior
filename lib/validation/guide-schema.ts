@@ -181,5 +181,7 @@ export type ScientificProfile = z.infer<typeof ScientificProfileSchema>;
 export type Palette = z.infer<typeof PaletteSchema>;
 export type PaletteColor = z.infer<typeof PaletteColorSchema>;
 export type Makeup = z.infer<typeof MakeupSchema>;
+export type MakeupItem = z.infer<typeof MakeupItemSchema>;
 export type Jewelry = z.infer<typeof JewelrySchema>;
 export type Haircut = z.infer<typeof HaircutSchema>;
+export type Occasion = z.infer<typeof OccasionEnum>;

@@ -2,7 +2,11 @@ import { renderToStaticMarkup } from "react-dom/server";
 import type { ReactElement } from "react";
 import { describe, expect, it } from "vitest";
 
+import { CorteCard } from "@/components/guide/CorteCard";
 import { EvitarList } from "@/components/guide/EvitarList";
+import { MaquillajeCard } from "@/components/guide/MaquillajeCard";
+import { MetalesCard } from "@/components/guide/MetalesCard";
+import { OcasionesGrid } from "@/components/guide/OcasionesGrid";
 import { PaletaGrid } from "@/components/guide/PaletaGrid";
 import { PaletaSwatch } from "@/components/guide/PaletaSwatch";
 import { PerfilCard } from "@/components/guide/PerfilCard";
@@ -64,5 +68,76 @@ describe("EvitarList", () => {
     const html = renderHTML(<EvitarList avoid={[]} />);
 
     expect(html).toBe("");
+  });
+});
+
+describe("OcasionesGrid", () => {
+  it("con colors poblados con occasions renderiza los display labels", () => {
+    const html = renderHTML(
+      <OcasionesGrid colors={validGuide.palette.colors} />,
+    );
+
+    // El fixture cubre los 6 valores de OccasionEnum.
+    expect(html).toContain("Día a día");
+    expect(html).toContain("Trabajo");
+    expect(html).toContain("Noche");
+    expect(html).toContain("Formal");
+    expect(html).toContain("Casual");
+    expect(html).toContain("Evento");
+  });
+
+  it("con colors sin occasions (todos undefined) renderiza null", () => {
+    const stripped = validGuide.palette.colors.map((c) => ({
+      hex: c.hex,
+      nombre: c.nombre,
+      usage: c.usage,
+    }));
+    const html = renderHTML(<OcasionesGrid colors={stripped} />);
+
+    expect(html).toBe("");
+  });
+});
+
+describe("MaquillajeCard", () => {
+  it("con makeup completo renderiza LABIAL, RUBOR, ambos hex y nombres", () => {
+    const html = renderHTML(<MaquillajeCard makeup={validGuide.makeup} />);
+
+    expect(html).toContain("LABIAL");
+    expect(html).toContain("RUBOR");
+    expect(html).toContain(validGuide.makeup.lipstick.name);
+    expect(html.toLowerCase()).toContain(
+      validGuide.makeup.lipstick.hex.toLowerCase(),
+    );
+    expect(html).toContain(validGuide.makeup.blush!.name);
+    expect(html.toLowerCase()).toContain(
+      validGuide.makeup.blush!.hex.toLowerCase(),
+    );
+  });
+
+  it("con makeup sin blush renderiza LABIAL pero NO RUBOR", () => {
+    const html = renderHTML(
+      <MaquillajeCard makeup={{ lipstick: validGuide.makeup.lipstick }} />,
+    );
+
+    expect(html).toContain("LABIAL");
+    expect(html).not.toContain("RUBOR");
+  });
+});
+
+describe("MetalesCard", () => {
+  it("con jewelry.type=gold_yellow renderiza 'Oro amarillo' y el rationale", () => {
+    const html = renderHTML(<MetalesCard jewelry={validGuide.jewelry} />);
+
+    expect(html).toContain("Oro amarillo");
+    expect(html).toContain(validGuide.jewelry.rationale);
+  });
+});
+
+describe("CorteCard", () => {
+  it("renderiza description y rationale", () => {
+    const html = renderHTML(<CorteCard haircut={validGuide.haircut} />);
+
+    expect(html).toContain(validGuide.haircut.description);
+    expect(html).toContain(validGuide.haircut.rationale);
   });
 });
