@@ -19,12 +19,42 @@ export const validGuide: Guide = {
   },
   palette: {
     colors: [
-      { hex: "#FFBE8C", nombre: "melocotón luminoso", usage: "blusas, vestidos formales" },
-      { hex: "#FF7F5C", nombre: "coral cálido", usage: "labial, accesorios" },
-      { hex: "#C8E08C", nombre: "verde manzana", usage: "tops casuales, sweaters" },
-      { hex: "#F4DEB3", nombre: "crema dorada", usage: "neutros base, capas" },
-      { hex: "#F8E59B", nombre: "amarillo claro", usage: "verano, eventos diurnos" },
-      { hex: "#E8785A", nombre: "melocotón intenso", usage: "labial principal, foco" },
+      {
+        hex: "#FFBE8C",
+        nombre: "melocotón luminoso",
+        usage: "blusas, vestidos formales",
+        occasions: ["formal", "diario", "evento"],
+      },
+      {
+        hex: "#FF7F5C",
+        nombre: "coral cálido",
+        usage: "labial, accesorios",
+        occasions: ["evento", "noche"],
+      },
+      {
+        hex: "#C8E08C",
+        nombre: "verde manzana",
+        usage: "tops casuales, sweaters",
+        occasions: ["diario", "casual"],
+      },
+      {
+        hex: "#F4DEB3",
+        nombre: "crema dorada",
+        usage: "neutros base, capas",
+        occasions: ["diario", "trabajo"],
+      },
+      {
+        hex: "#F8E59B",
+        nombre: "amarillo claro",
+        usage: "verano, eventos diurnos",
+        occasions: ["diario", "evento"],
+      },
+      {
+        hex: "#E8785A",
+        nombre: "melocotón intenso",
+        usage: "labial principal, foco",
+        occasions: ["evento", "noche"],
+      },
     ],
     avoid: ["negro puro", "gris frío", "azul marino", "burdeos oscuro"],
   },

@@ -183,7 +183,21 @@ Your output goes inside the tool call 'submit_colorimetric_analysis'. Field-by-f
 
 **palette.colors** (array of exactly 6):
 - Six harmonious colors from the user's season's irradian list (Section 4)
-- Each with hex (#RRGGBB uppercase), nombre (Spanish), and usage (Spanish, e.g. "blusas, vestidos formales")
+- Each with:
+  - hex (#RRGGBB uppercase)
+  - nombre (Spanish, descriptive — e.g. "melocotón luminoso")
+  - usage (Spanish free text, prose form — e.g. "blusas, vestidos formales")
+  - occasions (REQUIRED): array of 1-4 strings from this enum:
+    - "diario" (everyday wear, casual contexts)
+    - "trabajo" (workplace, professional, business casual)
+    - "noche" (evening, dinner, going out)
+    - "formal" (events with formality requirement, weddings, ceremonies)
+    - "casual" (relaxed weekend, leisure)
+    - "evento" (special occasion, party, celebration)
+    Choose occasions where the color GENUINELY belongs based on:
+    - Saturation level (high → "evento" or "noche", muted → "diario")
+    - Cultural codes in LATAM (negros/oscuros pertenecen a "noche" + "formal")
+    - Practical wearability (a saturated red rarely fits "trabajo" except as accent)
 
 **palette.avoid** (array of strings):
 - 5 descriptive concepts in Spanish (NOT hex codes), e.g. "negro puro", "gris frío"
