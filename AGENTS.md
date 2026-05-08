@@ -72,7 +72,7 @@ app/
 │   ├── photos/upload/  ← genera URL firmada Supabase
 │   ├── checkout/       ← crea Stripe session
 │   ├── webhooks/stripe/ ← webhook handler idempotente
-│   └── jobs/analyze/   ← endpoint Inngest
+│   └── inngest/        ← endpoint Inngest (convención oficial del SDK)
 └── layout.tsx
 components/
 ├── ui/                 ← componentes base
