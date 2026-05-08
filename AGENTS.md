@@ -37,7 +37,7 @@ Si una decisión no está en estos documentos, **preguntar al dueño (César) �
 | Base de datos | Supabase Postgres con Row Level Security |
 | Storage | Supabase Storage con URLs firmadas |
 | Pagos | Stripe Checkout + webhook handler idempotente |
-| IA | Anthropic API (`claude-sonnet-4-5` con tool use) |
+| IA | Anthropic API (`claude-sonnet-4-6` con tool use) |
 | Jobs background | Inngest |
 | Email | Resend |
 | Hosting | Vercel |
@@ -65,7 +65,7 @@ app/
 ├── (marketing)/        ← landing pública (no auth)
 ├── (app)/              ← app autenticada (auth check en layout)
 │   ├── upload/
-│   ├── analyzing/
+│   ├── analizando/
 │   ├── guide/
 │   └── booking/
 ├── api/
