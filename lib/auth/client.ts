@@ -21,10 +21,19 @@ import { createClient } from "@/lib/db/client";
 
 export async function signInWithGoogle() {
   const supabase = createClient();
+  // Leer ?next= de la URL actual (ej: /login?next=/analizando) para que el
+  // callback OAuth nos devuelva a la misma página que originó el login.
+  // Sanitizamos: solo permitimos paths internos que empiecen con "/" y no
+  // con "//" (que abrirían un open redirect a hosts externos).
+  const nextRaw = new URLSearchParams(window.location.search).get("next");
+  const next =
+    nextRaw && nextRaw.startsWith("/") && !nextRaw.startsWith("//")
+      ? nextRaw
+      : "/upload";
   return supabase.auth.signInWithOAuth({
     provider: "google",
     options: {
-      redirectTo: `${window.location.origin}/auth/callback`,
+      redirectTo: `${window.location.origin}/auth/callback?next=${encodeURIComponent(next)}`,
     },
   });
 }

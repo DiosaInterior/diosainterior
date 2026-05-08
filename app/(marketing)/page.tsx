@@ -1,6 +1,48 @@
-import { Logo } from "@/components/brand/Logo";
+import { redirect } from "next/navigation";
 
-export default function Home() {
+import { Logo } from "@/components/brand/Logo";
+import { getUser } from "@/lib/auth/server";
+
+type SearchParams = Promise<{
+  code?: string;
+  next?: string;
+  error?: string;
+  error_description?: string;
+}>;
+
+export default async function Home({
+  searchParams,
+}: {
+  searchParams: SearchParams;
+}) {
+  const params = await searchParams;
+
+  // Caso 1: Llegó ?code= a la raíz (Supabase Site URL fallback por
+  // redirectTo no whitelisteado, o link directo). Reenviamos al callback
+  // handler que sabe procesar el exchange — evita perder la sesión.
+  // Si vino ?next= junto con el code lo preservamos con la misma
+  // sanitización que client.ts y callback/route.ts (path interno, no //).
+  if (params.code) {
+    const nextRaw = params.next;
+    const next =
+      nextRaw && nextRaw.startsWith("/") && !nextRaw.startsWith("//")
+        ? nextRaw
+        : "/upload";
+    const cbParams = new URLSearchParams({
+      code: params.code,
+      next,
+    });
+    redirect(`/auth/callback?${cbParams.toString()}`);
+  }
+
+  // Caso 2: Usuaria con sesión activa que aterrizó en raíz (bookmark,
+  // navegación manual) → directo a /upload, su entry point canónico.
+  const user = await getUser();
+  if (user) {
+    redirect("/upload");
+  }
+
+  // Caso 3: Anónima sin code → landing actual (placeholder G.3).
   return (
     <main className="dark-radial min-h-dvh flex flex-col items-center justify-center px-8 py-16">
       <Logo size={120} className="mb-12 opacity-90" />
