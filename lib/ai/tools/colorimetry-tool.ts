@@ -19,6 +19,7 @@
 // =====================================================================
 
 import "server-only";
+import type Anthropic from "@anthropic-ai/sdk";
 import { z } from "zod";
 
 import { GuideSchema } from "@/lib/validation/guide-schema";
@@ -38,8 +39,12 @@ const inputSchema = z.toJSONSchema(GuideSchema, {
   reused: "inline",
 });
 
-export const colorimetryTool = {
+// El tipo nominal Anthropic.Messages.Tool exige input_schema.type === "object".
+// z.toJSONSchema retorna un JSONSchema7 cuyo `type` es una unión amplia, así
+// que tipamos el cast en el assignment (no hay riesgo: GuideSchema es un
+// z.object → siempre genera type:"object" en runtime).
+export const colorimetryTool: Anthropic.Messages.Tool = {
   name: COLORIMETRY_TOOL_NAME,
   description: TOOL_DESCRIPTION,
-  input_schema: inputSchema,
-} as const;
+  input_schema: inputSchema as Anthropic.Messages.Tool["input_schema"],
+};

@@ -12,8 +12,8 @@ describe("colorimetryTool — Anthropic tool definition", () => {
   });
 
   it("description tiene contenido (no string vacío)", () => {
-    expect(typeof colorimetryTool.description).toBe("string");
-    expect(colorimetryTool.description.length).toBeGreaterThan(40);
+    expect(colorimetryTool.description).toBeTruthy();
+    expect(colorimetryTool.description).toMatch(/.{40,}/);
   });
 
   it("input_schema.type === 'object'", () => {
