@@ -55,6 +55,7 @@ describe("createCheckoutSession()", () => {
     expect(stripeMock.checkout.sessions.create).toHaveBeenCalledOnce();
     const [args, opts] = stripeMock.checkout.sessions.create.mock.calls[0];
     expect(args.mode).toBe("payment");
+    expect(args.allow_promotion_codes).toBe(true);
     expect(args.line_items).toEqual([
       { price: STRIPE_PRICE_ID_BASE, quantity: 1 },
     ]);
