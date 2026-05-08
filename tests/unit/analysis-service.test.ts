@@ -63,6 +63,22 @@ function chainInsert(resolveValue: unknown) {
   };
 }
 
+// Helper: junta los args de TODOS los .update({...}) que se llamaron en
+// cualquier chain durante el test. Útil para asertar sobre el shape de
+// los UPDATEs intermedios (substage transitions de G.0).
+function allUpdateCalls(): Array<Record<string, unknown>> {
+  return fromMock.mock.results.flatMap((r) => {
+    const chain = r.value as {
+      update?: { mock?: { calls?: unknown[][] } };
+    };
+    return (
+      chain.update?.mock?.calls?.map(
+        (c) => c[0] as Record<string, unknown>,
+      ) ?? []
+    );
+  });
+}
+
 // ---------------------------------------------------------------------
 // Fixtures
 // ---------------------------------------------------------------------
@@ -122,9 +138,11 @@ describe("runColorimetricAnalysis — happy path", () => {
       .mockReturnValueOnce(
         chainSelectEqSingle({ data: queuedJob, error: null }),
       ) // 1. SELECT job
-      .mockReturnValueOnce(chainUpdateEq({ error: null })) // 2. UPDATE running
-      .mockReturnValueOnce(chainInsert({ error: null })) // 3. INSERT guide
-      .mockReturnValueOnce(chainUpdateEq({ error: null })); // 4. UPDATE succeeded
+      .mockReturnValueOnce(chainUpdateEq({ error: null })) // 2. UPDATE running + loading_photos
+      .mockReturnValueOnce(chainUpdateEq({ error: null })) // 3. UPDATE calling_ai
+      .mockReturnValueOnce(chainUpdateEq({ error: null })) // 4. UPDATE persisting
+      .mockReturnValueOnce(chainInsert({ error: null })) // 5. INSERT guide
+      .mockReturnValueOnce(chainUpdateEq({ error: null })); // 6. UPDATE succeeded + done
 
     messagesCreate.mockResolvedValue(makeToolUseResponse(validGuide));
 
@@ -132,7 +150,20 @@ describe("runColorimetricAnalysis — happy path", () => {
 
     expect(loadPhotosMock).toHaveBeenCalledWith(USER_ID);
     expect(messagesCreate).toHaveBeenCalledOnce();
-    expect(fromMock).toHaveBeenCalledTimes(4);
+    // 6 .from() calls: SELECT + 4 UPDATEs + 1 INSERT (G.0 progress ticks).
+    expect(fromMock).toHaveBeenCalledTimes(6);
+
+    // Verify substage transitions emitted in order (G.0).
+    const updates = allUpdateCalls();
+    expect(updates).toEqual([
+      expect.objectContaining({
+        status: "running",
+        substage: "loading_photos",
+      }),
+      { substage: "calling_ai" },
+      { substage: "persisting" },
+      expect.objectContaining({ status: "succeeded", substage: "done" }),
+    ]);
 
     // Verify Anthropic call shape — tool_choice forces submit_colorimetric_analysis.
     const callArgs = messagesCreate.mock.calls[0]?.[0];
@@ -177,16 +208,25 @@ describe("runColorimetricAnalysis — early failures (don't reach mark-running)"
 });
 
 describe("runColorimetricAnalysis — failures during analysis (mark failed)", () => {
+  // setupThroughRunning: mockea SELECT job + UPDATE running+loading_photos.
+  // Tests que fallan ANTES de Anthropic (loadPhotos throws) usan solo esto.
   function setupThroughRunning() {
     fromMock
       .mockReturnValueOnce(
         chainSelectEqSingle({ data: queuedJob, error: null }),
       )
-      .mockReturnValueOnce(chainUpdateEq({ error: null })); // mark running
+      .mockReturnValueOnce(chainUpdateEq({ error: null })); // mark running + loading_photos
+  }
+
+  // setupThroughCallingAi: extiende setupThroughRunning con UPDATE calling_ai.
+  // Tests que fallan DURANTE/POST Anthropic call usan esto.
+  function setupThroughCallingAi() {
+    setupThroughRunning();
+    fromMock.mockReturnValueOnce(chainUpdateEq({ error: null })); // UPDATE calling_ai
   }
 
   it("marks failed when Anthropic returns no tool_use block", async () => {
-    setupThroughRunning();
+    setupThroughCallingAi();
     fromMock.mockReturnValueOnce(chainUpdateEq({ error: null })); // mark failed
 
     messagesCreate.mockResolvedValue({
@@ -197,12 +237,15 @@ describe("runColorimetricAnalysis — failures during analysis (mark failed)", (
     await expect(runColorimetricAnalysis(JOB_ID)).rejects.toThrow(
       /did not contain a tool_use/,
     );
-    // SELECT + UPDATE running + UPDATE failed = 3 calls.
-    expect(fromMock).toHaveBeenCalledTimes(3);
+    // SELECT + UPDATE running + UPDATE calling_ai + UPDATE failed = 4 calls.
+    expect(fromMock).toHaveBeenCalledTimes(4);
+    expect(allUpdateCalls()).toContainEqual(
+      expect.objectContaining({ substage: "failed", status: "failed" }),
+    );
   });
 
   it("marks failed when tool_use name is wrong", async () => {
-    setupThroughRunning();
+    setupThroughCallingAi();
     fromMock.mockReturnValueOnce(chainUpdateEq({ error: null }));
 
     messagesCreate.mockResolvedValue(
@@ -212,10 +255,13 @@ describe("runColorimetricAnalysis — failures during analysis (mark failed)", (
     await expect(runColorimetricAnalysis(JOB_ID)).rejects.toThrow(
       /Unexpected tool_use name/,
     );
+    expect(allUpdateCalls()).toContainEqual(
+      expect.objectContaining({ substage: "failed" }),
+    );
   });
 
   it("marks failed when tool input fails Zod validation", async () => {
-    setupThroughRunning();
+    setupThroughCallingAi();
     fromMock.mockReturnValueOnce(chainUpdateEq({ error: null }));
 
     messagesCreate.mockResolvedValue(
@@ -223,6 +269,9 @@ describe("runColorimetricAnalysis — failures during analysis (mark failed)", (
     );
 
     await expect(runColorimetricAnalysis(JOB_ID)).rejects.toThrow();
+    expect(allUpdateCalls()).toContainEqual(
+      expect.objectContaining({ substage: "failed" }),
+    );
   });
 
   it("marks failed when photos loader throws", async () => {
@@ -236,20 +285,32 @@ describe("runColorimetricAnalysis — failures during analysis (mark failed)", (
     await expect(runColorimetricAnalysis(JOB_ID)).rejects.toThrow(/got 2/);
     // Anthropic should never have been called.
     expect(messagesCreate).not.toHaveBeenCalled();
+    // SELECT + UPDATE running + UPDATE failed = 3 calls (skips calling_ai tick).
+    expect(fromMock).toHaveBeenCalledTimes(3);
+    expect(allUpdateCalls()).toContainEqual(
+      expect.objectContaining({ substage: "failed" }),
+    );
   });
 
   it("marks failed when persist guide returns DB error", async () => {
-    setupThroughRunning();
+    setupThroughCallingAi();
     fromMock
+      .mockReturnValueOnce(chainUpdateEq({ error: null })) // UPDATE persisting
       .mockReturnValueOnce(
         chainInsert({ error: { message: "constraint violation" } }),
-      ) // INSERT guide
+      ) // INSERT guide → fails
       .mockReturnValueOnce(chainUpdateEq({ error: null })); // UPDATE failed
 
     messagesCreate.mockResolvedValue(makeToolUseResponse(validGuide));
 
     await expect(runColorimetricAnalysis(JOB_ID)).rejects.toThrow(
       /constraint violation/,
+    );
+    expect(allUpdateCalls()).toContainEqual(
+      expect.objectContaining({ substage: "persisting" }),
+    );
+    expect(allUpdateCalls()).toContainEqual(
+      expect.objectContaining({ substage: "failed" }),
     );
   });
 });
@@ -269,10 +330,12 @@ describe("runColorimetricAnalysis — soft hex cross-validation", () => {
     fromMock
       .mockReturnValueOnce(
         chainSelectEqSingle({ data: queuedJob, error: null }),
-      )
-      .mockReturnValueOnce(chainUpdateEq({ error: null }))
-      .mockReturnValueOnce(chainInsert({ error: null }))
-      .mockReturnValueOnce(chainUpdateEq({ error: null }));
+      ) // SELECT job
+      .mockReturnValueOnce(chainUpdateEq({ error: null })) // UPDATE running + loading_photos
+      .mockReturnValueOnce(chainUpdateEq({ error: null })) // UPDATE calling_ai
+      .mockReturnValueOnce(chainUpdateEq({ error: null })) // UPDATE persisting
+      .mockReturnValueOnce(chainInsert({ error: null })) // INSERT guide
+      .mockReturnValueOnce(chainUpdateEq({ error: null })); // UPDATE succeeded + done
 
     messagesCreate.mockResolvedValue(makeToolUseResponse(guideWithBadHex));
 
@@ -282,5 +345,9 @@ describe("runColorimetricAnalysis — soft hex cross-validation", () => {
     const warnArgs = warnSpy.mock.calls.flat().map(String).join(" ");
     expect(warnArgs).toMatch(/#ABCDEF/i);
     expect(warnArgs).toMatch(/true_spring/);
+    // Substage transitions emitted as in happy path.
+    expect(allUpdateCalls()).toContainEqual(
+      expect.objectContaining({ substage: "done", status: "succeeded" }),
+    );
   });
 });
