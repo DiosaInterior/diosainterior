@@ -51,6 +51,7 @@ export type Database = {
           purchase_id: string
           started_at: string | null
           status: string
+          substage: string
           user_id: string
         }
         Insert: {
@@ -64,6 +65,7 @@ export type Database = {
           purchase_id: string
           started_at?: string | null
           status?: string
+          substage?: string
           user_id: string
         }
         Update: {
@@ -77,6 +79,7 @@ export type Database = {
           purchase_id?: string
           started_at?: string | null
           status?: string
+          substage?: string
           user_id?: string
         }
         Relationships: [

@@ -71,13 +71,16 @@ export async function runColorimetricAnalysis(jobId: string): Promise<void> {
     );
   }
 
-  // 2. Marcar running
+  // 2. Marcar running + arrancar substage 'loading_photos'.
+  // Un solo UPDATE atómico mueve status y substage juntos para que la
+  // usuaria vea progreso desde el primer poll (G.0/G.1).
   await supabase
     .from("analysis_jobs")
     .update({
       status: "running",
       started_at: new Date().toISOString(),
       attempts: 1,
+      substage: "loading_photos",
     })
     .eq("id", jobId);
 
@@ -85,7 +88,11 @@ export async function runColorimetricAnalysis(jobId: string): Promise<void> {
     // 3. Cargar fotos
     const photos = await loadPhotosForUser(job.user_id);
 
-    // 4. Llamar Anthropic
+    // 4. Substage tick → llamar Anthropic
+    await supabase
+      .from("analysis_jobs")
+      .update({ substage: "calling_ai" })
+      .eq("id", jobId);
     const toolInput = await callAnthropic(photos);
 
     // 5. Validar shape con Zod
@@ -100,19 +107,24 @@ export async function runColorimetricAnalysis(jobId: string): Promise<void> {
       );
     }
 
-    // 7. Persistir guide
+    // 7. Substage tick → persistir guide
+    await supabase
+      .from("analysis_jobs")
+      .update({ substage: "persisting" })
+      .eq("id", jobId);
     await persistGuide({
       jobId: job.id,
       userId: job.user_id,
       guide,
     });
 
-    // 8. Marcar succeeded
+    // 8. Marcar succeeded + substage 'done' en un solo UPDATE atómico.
     await supabase
       .from("analysis_jobs")
       .update({
         status: "succeeded",
         completed_at: new Date().toISOString(),
+        substage: "done",
       })
       .eq("id", jobId);
   } catch (error) {
@@ -125,6 +137,7 @@ export async function runColorimetricAnalysis(jobId: string): Promise<void> {
         status: "failed",
         completed_at: new Date().toISOString(),
         error_message: message.slice(0, 500), // cap a 500 chars
+        substage: "failed",
       })
       .eq("id", jobId);
 
