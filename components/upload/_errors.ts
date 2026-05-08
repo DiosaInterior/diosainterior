@@ -46,6 +46,16 @@ export function uploadFailureToToast(code: UploadFailureCode): FailureToast {
         message: "Error al subir. Intenta de nuevo.",
         triggerLogin: false,
       };
+    case "conversion_failed":
+      // F.0.2: HEIC→JPEG falló server-side. Copy editorial §13: voz
+      // declarativa, segunda persona, sin frases de coach.
+      // TODO(F.0.3): si E2E muestra UX confusa con toast top-of-screen,
+      // considerar per-slot error state inline en PhotoSlot.
+      return {
+        message:
+          "No pudimos procesar esta imagen. Intenta con una foto distinta.",
+        triggerLogin: false,
+      };
     case "invalid_position":
     case "invalid_body":
     case "no_file":

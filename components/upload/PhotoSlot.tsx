@@ -3,8 +3,10 @@
 // Un slot individual del PhotoUploader. Tres estados visuales:
 //   1) vacío: ícono del slot + label + sublabel + badge + CTA "ELEGIR →"
 //   2) lleno con signedUrl: <img> del thumbnail + ✓ Cargada + botón ✕
-//   3) lleno sin signedUrl: ícono del slot semi-transparente + ✓ Cargada
-//      + botón ✕ (UX defensiva si la firma falla)
+//   3) lleno sin signedUrl: ícono del slot semi-transparente (UX
+//      defensiva si la firma falla — antes dispara también para HEIC,
+//      pero F.0.2 normaliza HEIC→JPEG server-side, así que el caso
+//      sólo ocurre cuando getSignedPhotoUrl falla).
 // Mientras uploading, el contenido se atenúa y aparece un spinner.
 
 import { useRef } from "react";
@@ -18,10 +20,6 @@ import type {
 import { CheckIcon, CloseIcon, SLOT_ICONS } from "./_icons";
 
 const ACCEPT_MIME = "image/jpeg,image/png,image/heic,image/webp";
-
-function isHeic(photo: Photo): boolean {
-  return photo.storage_path.toLowerCase().endsWith(".heic");
-}
 
 type Props = {
   slot: PhotoSlotType;
@@ -57,14 +55,10 @@ export function PhotoSlot({
 
   const Icon = SLOT_ICONS[slot.position];
   const filled = photo !== null;
-  // Chrome/Firefox no renderizan HEIC nativamente; la foto se subió y
-  // firmó OK pero el <img> del thumbnail aparece roto. Detect por
-  // extensión del storage_path y cae a FilledFallback con copy editorial.
-  // Trade-off: Safari sí soporta HEIC pero igual mostrará el placeholder
-  // — preferimos UX uniforme cross-browser sobre UA-sniff. Cuando Bloque
-  // F normalice HEIC→JPEG server-side con sharp, este branch puede irse.
-  const photoIsHeic = photo !== null && isHeic(photo);
-  const showThumb = filled && signedUrl !== null && !photoIsHeic;
+  // F.0.2: HEIC se convierte a JPEG server-side, así que cualquier
+  // photo guardada renderiza nativa en <img>. FilledFallback queda
+  // como rama defensiva si la signed URL falla (ej. token expirado).
+  const showThumb = filled && signedUrl !== null;
 
   return (
     <div
@@ -203,16 +197,8 @@ function FilledThumb({
 
 function FilledFallback({ Icon }: { Icon: () => React.JSX.Element }) {
   return (
-    <div className="flex-1 flex flex-col items-center justify-center gap-1 px-1">
-      <div className="opacity-30">
-        <Icon />
-      </div>
-      <p className="font-cormorant italic text-[14px] text-marfil/85 leading-[1.1]">
-        Foto guardada
-      </p>
-      <p className="font-dm-mono uppercase text-[7px] tracking-[1px] text-marfil/40 leading-[1.3] text-center">
-        Vista previa no disponible
-      </p>
+    <div className="flex-1 flex items-center justify-center opacity-30">
+      <Icon />
     </div>
   );
 }
