@@ -12,11 +12,11 @@ import {
 // Mocks (declared before imports of SUT — vi.mock is hoisted)
 // ---------------------------------------------------------------------
 
-const requireUserMock = vi.fn();
+const getUserMock = vi.fn();
 const fromMock = vi.fn();
 
 vi.mock("@/lib/auth/server", () => ({
-  requireUser: () => requireUserMock(),
+  getUser: () => getUserMock(),
 }));
 
 vi.mock("@/lib/db/server", () => ({
@@ -64,7 +64,7 @@ let errorSpy: MockInstance<typeof console.error>;
 
 beforeEach(() => {
   vi.clearAllMocks();
-  requireUserMock.mockResolvedValue(fakeUser);
+  getUserMock.mockResolvedValue(fakeUser);
   errorSpy = vi.spyOn(console, "error").mockImplementation(() => {});
 });
 afterEach(() => {
@@ -123,6 +123,21 @@ describe("GET /api/jobs/[jobId] — happy path", () => {
     const body = await res.json();
     expect(body.status).toBe("failed");
     expect(body.error_message).toBe("Anthropic timeout");
+  });
+});
+
+describe("GET /api/jobs/[jobId] — auth", () => {
+  it("returns 401 JSON cuando getUser() retorna null", async () => {
+    getUserMock.mockResolvedValue(null);
+
+    const res = await GET(fakeRequest, makeArgs(JOB_ID));
+
+    expect(res.status).toBe(401);
+    expect(res.headers.get("content-type")).toMatch(/application\/json/);
+    const body = await res.json();
+    expect(body).toEqual({ error: "unauthenticated" });
+    // No debe haber tocado la DB.
+    expect(fromMock).not.toHaveBeenCalled();
   });
 });
 

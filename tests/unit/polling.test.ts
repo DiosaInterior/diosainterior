@@ -199,6 +199,44 @@ describe("pollOnce — network errors", () => {
     expect(out).toEqual({ type: "network_error" });
   });
 
+  it("returns 'network_error' cuando endpoint retorna 401 (cookie inválida)", async () => {
+    // G.2.1: el route handler ahora retorna 401 JSON cuando getUser()
+    // es null (en vez del 200+HTML del bug previo). pollOnce debe
+    // tratarlo como network_error (transient, sigue polleando) — la
+    // recuperación es responsabilidad del caller (ej: redirect a /login
+    // tras N reintentos consecutivos).
+    const fetchFn = vi
+      .fn()
+      .mockResolvedValue(
+        new Response(JSON.stringify({ error: "unauthenticated" }), {
+          status: 401,
+          headers: { "Content-Type": "application/json" },
+        }),
+      );
+    const ctx = makeContext({ fetchFn });
+
+    const out = await pollOnce(ctx);
+    expect(out).toEqual({ type: "network_error" });
+  });
+
+  it("envía credentials: 'include' en el fetch (defensive, G.2.1)", async () => {
+    const fetchFn = vi.fn().mockResolvedValue(
+      makeJsonResponse({
+        status: "running",
+        substage: "calling_ai",
+        error_message: null,
+      }),
+    );
+    const ctx = makeContext({ fetchFn });
+
+    await pollOnce(ctx);
+
+    expect(fetchFn).toHaveBeenCalledWith(
+      `/api/jobs/${JOB_ID}`,
+      expect.objectContaining({ credentials: "include" }),
+    );
+  });
+
   it("returns 'network_error' cuando fetch throws non-AbortError", async () => {
     const fetchFn = vi.fn().mockRejectedValue(new Error("ENETUNREACH"));
     const ctx = makeContext({ fetchFn });

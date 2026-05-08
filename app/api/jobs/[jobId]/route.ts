@@ -1,6 +1,6 @@
 import { NextResponse, type NextRequest } from "next/server";
 
-import { requireUser } from "@/lib/auth/server";
+import { getUser } from "@/lib/auth/server";
 import { createClient } from "@/lib/db/server";
 
 /**
@@ -26,7 +26,21 @@ export async function GET(
   _req: NextRequest,
   { params }: { params: Promise<{ jobId: string }> },
 ) {
-  const user = await requireUser();
+  // En route handlers usamos getUser() (no requireUser): si retornamos
+  // redirect("/login") como hace requireUser, Next sirve la respuesta como
+  // 200 + HTML del login page, lo que el cliente fetch parsea como JSON
+  // inválido y se queda atascado polleando con substage=null indefinido.
+  // El 401 JSON explícito permite al cliente reaccionar (logging, redirect
+  // a /login si elige). Patrón canónico ya usado en /api/checkout,
+  // /api/photos/upload, /api/photos/delete.
+  const user = await getUser();
+  if (!user) {
+    return NextResponse.json(
+      { error: "unauthenticated" },
+      { status: 401 },
+    );
+  }
+
   const { jobId } = await params;
 
   // Shape check minimal del jobId — un UUID v4 tiene 36 chars (con

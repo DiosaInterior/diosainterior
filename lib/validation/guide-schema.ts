@@ -98,11 +98,29 @@ export const ScientificProfileSchema = z.object({
   contrast_level: ContrastSchema,
 });
 
+export const OccasionEnum = z.enum([
+  "diario",
+  "trabajo",
+  "noche",
+  "formal",
+  "casual",
+  "evento",
+]);
+
 export const PaletteColorSchema = z.object({
   hex: HexColorSchema,
   nombre: z.string().min(1),
   // Cómo y cuándo usar este color. ej: "blusas, vestidos formales".
   usage: z.string().min(1),
+  // Categoría estructurada de ocasiones donde brilla el color.
+  // Min 1, max 4 — un color rara vez sirve para >4 contextos.
+  // Cubre los contextos más comunes en LATAM. Permite OcasionesGrid (G.2).
+  //
+  // Optional a nivel Zod para no romper guides legacy en BD (las creadas
+  // antes de G.2.0 NO tienen este campo). El prompt sí lo pide REQUIRED
+  // a Anthropic — guides nuevas siempre llegan con occasions populadas.
+  // UI G.2 hace defensive render: `color.occasions ?? []`.
+  occasions: z.array(OccasionEnum).min(1).max(4).optional(),
 });
 
 export const PaletteSchema = z.object({

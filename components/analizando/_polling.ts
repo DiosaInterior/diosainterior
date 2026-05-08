@@ -56,12 +56,16 @@ export async function pollOnce(ctx: PollContext): Promise<PollOutcome> {
     return { type: "timeout" };
   }
 
-  // 2. Hacer fetch.
+  // 2. Hacer fetch. credentials:"include" defensivo — el default
+  // "same-origin" debería bastar (mismo dominio), pero algunos edges/CDNs
+  // strippean cookies en condiciones raras. Explicitamos para garantizar
+  // que la cookie de auth siempre viaja al route handler.
   let res: Response;
   try {
     res = await ctx.fetchFn(`/api/jobs/${ctx.jobId}`, {
       signal: ctx.signal,
       cache: "no-store",
+      credentials: "include",
     });
   } catch (err) {
     if (err instanceof Error && err.name === "AbortError") {
