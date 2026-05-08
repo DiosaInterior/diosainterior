@@ -54,8 +54,8 @@ CREATE TABLE analysis_jobs (
   status TEXT NOT NULL DEFAULT 'queued', -- 'queued' | 'running' | 'succeeded' | 'failed'
   attempts INTEGER DEFAULT 0,
   error_message TEXT,
-  prompt_version TEXT NOT NULL, -- '2.0', '2.1' — para A/B testing
-  model TEXT NOT NULL, -- 'claude-sonnet-4-5'
+  prompt_version TEXT NOT NULL, -- '2.0.0', '2.1.0' — semver, para A/B testing
+  model TEXT NOT NULL, -- 'claude-sonnet-4-6'
   started_at TIMESTAMPTZ,
   completed_at TIMESTAMPTZ,
   created_at TIMESTAMPTZ DEFAULT NOW()
@@ -68,7 +68,7 @@ CREATE TABLE guides (
   job_id UUID NOT NULL REFERENCES analysis_jobs(id),
   -- Datos del análisis colorimétrico
   fitzpatrick INTEGER CHECK (fitzpatrick BETWEEN 1 AND 6),
-  season TEXT, -- 'true_spring' | 'warm_autumn' | etc
+  season TEXT, -- 'true_spring' | 'true_autumn' | 'soft_autumn' | etc — ver lib/ai/knowledge/seasons-database.ts para las 11 canónicas V2
   undertone TEXT, -- 'warm_golden' | 'neutral_olive' | etc
   munsell_notation TEXT, -- '5YR 6/4' por ejemplo
   cie_lab JSONB, -- {L: 65, a: 12, b: 20}
