@@ -20,7 +20,11 @@ export type PhotoUploadResponse =
         | "invalid_position"
         | "no_file"
         | "invalid_body"
-        | "unauthenticated";
+        | "unauthenticated"
+        // F.0.2: HEIC/HEIF subido por iPhone se convierte a JPEG con sharp
+        // server-side antes de subir a Storage. Si la conversión falla,
+        // devolvemos 422 con copy editorial mapeado en _errors.ts.
+        | "conversion_failed";
       message?: string;
     };
 
