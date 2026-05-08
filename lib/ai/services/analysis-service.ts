@@ -19,12 +19,12 @@ import { APP_VERSION } from "@/lib/version";
 
 const MODEL = "claude-sonnet-4-6";
 const MAX_TOKENS = 4096;
-// Sweet spot entre determinismo (clasificación de season, fitzpatrick,
-// hue/value/chroma) y variabilidad natural (prosa del rationale en voz
-// §13). Default 1.0 producía season swings completos (warm autumn ↔
-// true winter) sobre fotos casi idénticas. Si después se observa drift
-// residual, considerar bajar a 0.
-const TEMPERATURE = 0.3;
+// Clasificación 100% determinística. Prueba empírica con G.X.5 mostró que
+// 0.3 producía drift entre seasons adyacentes warm (true_autumn vs soft_autumn)
+// con valores numéricos idénticos (Munsell + CIE Lab + Fitzpatrick bit-for-bit).
+// La marca requiere una sola etiqueta estable por usuaria. La prosa del rationale
+// sigue siendo natural por la riqueza del system prompt + voz §13 templeted.
+const TEMPERATURE = 0;
 
 type AnalysisJob = {
   id: string;
