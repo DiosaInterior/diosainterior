@@ -13,6 +13,9 @@
 import { redirect } from "next/navigation";
 
 import { Logo } from "@/components/brand/Logo";
+import { EvitarList } from "@/components/guide/EvitarList";
+import { PaletaGrid } from "@/components/guide/PaletaGrid";
+import { PerfilCard } from "@/components/guide/PerfilCard";
 import { requireUser } from "@/lib/auth/server";
 import { getLatestGuideForUser } from "@/lib/db/guides";
 
@@ -29,45 +32,24 @@ export default async function MiGuiaPage() {
   }
 
   return (
-    <main className="dark-radial min-h-dvh flex flex-col items-center">
-      <div className="w-full max-w-[640px] min-h-dvh flex flex-col px-8 py-12 box-border mx-auto">
-        <Logo size={70} className="mx-auto mb-10" />
-
-        <h1 className="font-cormorant italic font-light text-marfil text-[40px] leading-[1.05] tracking-tight text-center">
-          Tu guía.
-        </h1>
-
-        <p className="font-raleway text-[15px] text-marfil/85 mt-8 leading-[1.6] text-center">
-          {guide.scientific.season.replace(/_/g, " ")} · Fitzpatrick{" "}
-          {guide.scientific.fitzpatrick}
-        </p>
-
-        <div className="mt-12 grid grid-cols-3 gap-3">
-          {guide.palette.colors.map((color) => (
-            <div key={color.hex} className="flex flex-col items-center">
-              <div
-                className="w-full aspect-square rounded-sm"
-                style={{ backgroundColor: color.hex }}
-                aria-label={color.nombre}
-              />
-              <p className="font-dm-mono text-[10px] text-marfil/65 mt-2 uppercase tracking-wider">
-                {color.hex}
-              </p>
-              <p className="font-raleway text-[11px] text-marfil/85 mt-1 text-center">
-                {color.nombre}
-              </p>
-            </div>
-          ))}
+    <main className="dark-radial min-h-screen">
+      <div className="mx-auto max-w-[640px] px-8 py-12">
+        <div className="flex justify-center mb-12">
+          <Logo size={48} />
         </div>
 
-        <div className="mt-12 max-w-[480px] mx-auto">
-          <p className="font-raleway text-[15px] text-marfil/85 leading-[1.6] italic">
-            {guide.rationale}
-          </p>
+        <PerfilCard guide={guide} />
+
+        <div className="mt-20">
+          <PaletaGrid colors={guide.palette.colors} />
         </div>
 
-        <p className="font-dm-mono uppercase text-[9px] tracking-[0.4em] text-marfil/40 mt-16 text-center">
-          G.2 — COMPONENTES VISUALES PENDIENTES
+        <div className="mt-20">
+          <EvitarList avoid={guide.palette.avoid ?? []} />
+        </div>
+
+        <p className="mt-24 text-center font-dm-mono text-xs uppercase tracking-widest text-marfil-suave/40">
+          G.2.2.B — ocasiones, maquillaje, joyería, corte pendientes
         </p>
       </div>
     </main>

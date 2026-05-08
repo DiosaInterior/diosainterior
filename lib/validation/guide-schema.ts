@@ -179,6 +179,7 @@ export const GuideSchema = z.object({
 export type Guide = z.infer<typeof GuideSchema>;
 export type ScientificProfile = z.infer<typeof ScientificProfileSchema>;
 export type Palette = z.infer<typeof PaletteSchema>;
+export type PaletteColor = z.infer<typeof PaletteColorSchema>;
 export type Makeup = z.infer<typeof MakeupSchema>;
 export type Jewelry = z.infer<typeof JewelrySchema>;
 export type Haircut = z.infer<typeof HaircutSchema>;
