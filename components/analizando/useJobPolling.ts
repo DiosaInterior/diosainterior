@@ -65,7 +65,7 @@ export function useJobPolling(jobId: string | null): PollState {
         jobId: jobId!,
         prevSubstage: prevSubstageRef.current,
         startedAtMs: startedAtMsRef.current,
-        fetchFn: fetch,
+        fetchFn: (...args) => fetch(...args),
         nowMs: Date.now,
         signal: abortController.signal,
         maxDurationMs: MAX_POLL_DURATION_MS,
@@ -145,6 +145,7 @@ export function useJobPolling(jobId: string | null): PollState {
     });
 
     return () => {
+      console.log("[POLL-CLEANUP] useEffect cleanup running");
       mounted = false;
       abortController.abort();
       stopInterval();
