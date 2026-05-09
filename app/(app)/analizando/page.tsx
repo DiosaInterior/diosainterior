@@ -56,36 +56,13 @@ export default async function AnalizandoPage({
   // 2) Lookup del analysis_job para esta purchase. Inngest crea uno por
   // purchase de forma idempotente (F.4) — tomamos el más reciente por
   // si en el futuro hubiera retries con multiple jobs.
-  const { data: job, error: jobError } = await supabase
+  const { data: job } = await supabase
     .from("analysis_jobs")
-    .select("id, status, substage, created_at")
+    .select("id")
     .eq("purchase_id", purchase.id)
     .order("created_at", { ascending: false })
     .limit(1)
     .maybeSingle();
-
-  // [G.1-PAGE] Instrumentación server-side: visibilizar el branch
-  // que decide WaitingForJob vs AnalizandoClient. Todos los errores de
-  // la query (RLS denial, timeout, conexión) se descartaban silenciosamente
-  // y caían al branch !job idéntico a "no existe row" — imposible
-  // distinguir desde el usuario. Estos logs van a Vercel Runtime Logs.
-  console.log("[G.1-PAGE] state", {
-    userId: user.id,
-    sessionId: session_id,
-    purchaseId: purchase.id,
-    purchaseStatus: purchase.status,
-    jobFound: !!job,
-    jobId: job?.id,
-    jobStatus: job?.status,
-    jobSubstage: job?.substage,
-    jobError: jobError
-      ? { code: jobError.code, message: jobError.message }
-      : null,
-  });
-
-  if (jobError) {
-    console.error("[G.1-PAGE] job query failed", jobError);
-  }
 
   // Race condition: Inngest todavía no creó el job (ventana ~1s entre
   // webhook y create-job step). meta refresh recupera sin endpoint extra.

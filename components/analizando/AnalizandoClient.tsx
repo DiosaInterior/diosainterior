@@ -19,7 +19,6 @@ export function AnalizandoClient({ jobId }: Props) {
   const router = useRouter();
   const { substage, status, errorMessage, substageStartedAt, timedOut } =
     useJobPolling(jobId);
-  console.log("[POLL-A] AnalizandoClient mounted", { jobId });
 
   // Auto-redirect a /mi-guia cuando el job entra en substage='done'.
   // Delay 1.5s para que la usuaria vea la barra al 100% antes del cambio.
