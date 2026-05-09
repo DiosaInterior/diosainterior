@@ -1,6 +1,6 @@
 # Diosa Interior
 
-La primera guía de colorimetría diseñada específicamente para piel latina.
+La primera guía de colorimetría calibrada para la diversidad de la piel.
 
 Este repositorio contiene la **V2** de la aplicación — reconstrucción desde cero con arquitectura profesional.
 
