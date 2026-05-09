@@ -62,6 +62,10 @@ export async function pollOnce(ctx: PollContext): Promise<PollOutcome> {
   // que la cookie de auth siempre viaja al route handler.
   let res: Response;
   try {
+    console.log("[POLL-E] about to fetch", {
+      url: "/api/jobs/" + ctx.jobId,
+      signalAborted: ctx.signal.aborted,
+    });
     res = await ctx.fetchFn(`/api/jobs/${ctx.jobId}`, {
       signal: ctx.signal,
       cache: "no-store",

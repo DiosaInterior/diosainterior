@@ -48,6 +48,7 @@ export function useJobPolling(jobId: string | null): PollState {
 
   useEffect(() => {
     if (!jobId) return;
+    console.log("[POLL-B] useEffect ran", { jobId });
     if (startedAtMsRef.current === 0) {
       startedAtMsRef.current = Date.now();
     }
@@ -57,6 +58,9 @@ export function useJobPolling(jobId: string | null): PollState {
     let intervalId: ReturnType<typeof setInterval> | null = null;
 
     async function tick() {
+      console.log("[POLL-D] tick() started", {
+        startedAtMs: startedAtMsRef.current,
+      });
       const outcome = await pollOnce({
         jobId: jobId!,
         prevSubstage: prevSubstageRef.current,
@@ -131,6 +135,7 @@ export function useJobPolling(jobId: string | null): PollState {
       }
     }
 
+    console.log("[POLL-C] about to call first tick()");
     void tick().then((shouldContinue) => {
       if (!shouldContinue || !mounted) return;
       intervalId = setInterval(async () => {
