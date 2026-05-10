@@ -62,3 +62,27 @@
     display: none;
   }
 }
+
+/* ----- Bounce suave para ScrollIndicator hero mobile (G.3) ----- */
+
+@keyframes bounce-soft {
+  0%,
+  100% {
+    transform: translateY(0);
+    opacity: 0.7;
+  }
+  50% {
+    transform: translateY(6px);
+    opacity: 1;
+  }
+}
+
+@utility animate-bounce-soft {
+  animation: bounce-soft 2s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-bounce-soft {
+    animation: none;
+  }
+}

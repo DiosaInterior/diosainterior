@@ -4,6 +4,7 @@ import Link from "next/link";
 import { Logo } from "@/components/brand/Logo";
 
 import { RevealOnScroll } from "./_RevealOnScroll";
+import { ScrollIndicator } from "./_ScrollIndicator";
 
 const CTA_CLASSES =
   "inline-block bg-terra-diosa text-marfil font-dm-mono uppercase tracking-widest text-sm px-10 py-5 hover:bg-terra-2 hover:scale-[1.02] transition-all duration-200";
@@ -64,13 +65,16 @@ export function Hero() {
             </RevealOnScroll>
           </div>
 
-          <RevealOnScroll delay={600} className="mb-32 flex flex-col items-center gap-4">
+          <RevealOnScroll delay={600} className="mb-16 flex flex-col items-center gap-4">
             <Link href="/login" className={CTA_CLASSES}>
               Descubrir mi paleta →
             </Link>
             <p className="font-dm-mono text-[18px] tracking-[0.3em] uppercase text-marfil-suave/75">
               En menos de 5 minutos
             </p>
+            <div className="mt-8">
+              <ScrollIndicator />
+            </div>
           </RevealOnScroll>
         </div>
       </div>
