@@ -2,15 +2,24 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import type { ReactElement } from "react";
 import type { User } from "@supabase/supabase-js";
 import type { Photo } from "@/lib/storage/photos";
+import type { Guide } from "@/lib/validation/guide-schema";
 
 // Mocks: vi.hoisted para que la factory pueda capturar refs antes del
-// hoist. Mockeamos requireUser/getUser de @/lib/auth/server y
-// getUserPhotos/getSignedPhotoUrl de @/lib/storage/photos.
+// hoist. Mockeamos requireUser/getUser de @/lib/auth/server,
+// getUserPhotos/getSignedPhotoUrl de @/lib/storage/photos,
+// getLatestGuideForUser de @/lib/db/guides (G.4.2 guard),
+// y redirect de next/navigation (para verificar el guard).
 const mocks = vi.hoisted(() => ({
   requireUser: vi.fn(),
   getUser: vi.fn(),
   getUserPhotos: vi.fn(),
   getSignedPhotoUrl: vi.fn(),
+  getLatestGuideForUser: vi.fn(),
+  redirect: vi.fn((url: string) => {
+    // El redirect real de Next tira una excepción interna; simulamos
+    // ese throw para que el control flow del page handler corte aquí.
+    throw new Error(`NEXT_REDIRECT:${url}`);
+  }),
 }));
 
 vi.mock("@/lib/auth/server", () => ({
@@ -26,6 +35,14 @@ vi.mock("@/lib/storage/photos", async (importOriginal) => {
     getSignedPhotoUrl: mocks.getSignedPhotoUrl,
   };
 });
+
+vi.mock("@/lib/db/guides", () => ({
+  getLatestGuideForUser: mocks.getLatestGuideForUser,
+}));
+
+vi.mock("next/navigation", () => ({
+  redirect: mocks.redirect,
+}));
 
 import UploadPage from "@/app/(app)/upload/page";
 
@@ -60,6 +77,15 @@ beforeEach(() => {
   mocks.requireUser.mockResolvedValue(fakeUser);
   mocks.getUserPhotos.mockResolvedValue([]);
   mocks.getSignedPhotoUrl.mockResolvedValue(null);
+  // Default: usuaria sin guía. Los 9 cases originales asumen este
+  // estado (no testean el guard). El guard solo dispara cuando un
+  // case explícitamente devuelve un guide truthy.
+  mocks.getLatestGuideForUser.mockResolvedValue(null);
+  // Re-instalar la implementación del redirect tras clearAllMocks
+  // (clearAllMocks resetea implementations, no solo call history).
+  mocks.redirect.mockImplementation((url: string) => {
+    throw new Error(`NEXT_REDIRECT:${url}`);
+  });
 });
 
 describe("/upload page", () => {
@@ -126,5 +152,38 @@ describe("/upload page", () => {
   it("no pasa initialToast si canceled tiene otro valor", async () => {
     const tree = (await callPage({ canceled: "false" })) as ReactElement<UploaderProps>;
     expect(tree.props.initialToast).toBeUndefined();
+  });
+});
+
+describe("/upload guard contra doble compra (G.4.2)", () => {
+  it("redirige a /mi-guia si la usuaria ya tiene guía", async () => {
+    // Cualquier objeto truthy dispara el guard. La forma exacta de Guide
+    // no importa para esta lógica — el page solo chequea `if (guide)`.
+    const fakeGuide = {} as unknown as Guide;
+    mocks.getLatestGuideForUser.mockResolvedValue(fakeGuide);
+
+    // El mock de redirect tira `Error("NEXT_REDIRECT:/mi-guia")` para
+    // emular el corte de control-flow real de Next.
+    await expect(callPage()).rejects.toThrow("NEXT_REDIRECT:/mi-guia");
+    expect(mocks.redirect).toHaveBeenCalledWith("/mi-guia");
+    expect(mocks.getLatestGuideForUser).toHaveBeenCalledWith(fakeUser.id);
+    // Sin redirect: no debería haberse llegado a fetchear fotos.
+    expect(mocks.getUserPhotos).not.toHaveBeenCalled();
+  });
+
+  it("no redirige si la usuaria no tiene guía (flow normal)", async () => {
+    mocks.getLatestGuideForUser.mockResolvedValue(null);
+    const tree = (await callPage()) as ReactElement<UploaderProps>;
+    expect(mocks.redirect).not.toHaveBeenCalled();
+    expect(tree).toBeTruthy();
+    expect(tree.props.initialPhotos).toEqual([]);
+  });
+
+  it("si getLatestGuideForUser tira excepción, fallback a /upload (no rompe la página)", async () => {
+    mocks.getLatestGuideForUser.mockRejectedValue(new Error("DB timeout"));
+    // El try/catch del page atrapa el error; el flow continúa a /upload.
+    const tree = (await callPage()) as ReactElement<UploaderProps>;
+    expect(mocks.redirect).not.toHaveBeenCalled();
+    expect(tree).toBeTruthy();
   });
 });
