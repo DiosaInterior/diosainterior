@@ -2,7 +2,12 @@ import Image from "next/image";
 
 import { RevealOnScroll } from "./_RevealOnScroll";
 
-const STEPS = [
+const STEPS: {
+  n: string;
+  title: string;
+  desc: string;
+  extra?: string;
+}[] = [
   {
     n: "01",
     title: "Subes 4 fotos",
@@ -17,6 +22,7 @@ const STEPS = [
     n: "03",
     title: "Tu paleta",
     desc: "Más de un siglo de ciencia. En 5 minutos.",
+    extra: "Guardada en tu celular, para siempre.",
   },
 ];
 
@@ -43,6 +49,11 @@ export function ComoFunciona() {
               <p className="font-raleway text-marfil-suave/70 text-base leading-relaxed max-w-sm">
                 {step.desc}
               </p>
+              {step.extra && (
+                <p className="font-cormorant italic text-terra-2 text-base leading-relaxed max-w-sm mt-3">
+                  {step.extra}
+                </p>
+              )}
             </div>
           </RevealOnScroll>
         ))}
