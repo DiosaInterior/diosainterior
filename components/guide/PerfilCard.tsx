@@ -25,7 +25,7 @@ export function PerfilCard({ guide }: { guide: Guide }) {
 
       <div className="mt-8 h-px w-12 bg-marfil/10" />
 
-      <p className="font-cormorant italic text-lg md:text-xl text-marfil leading-relaxed mt-8 max-w-prose">
+      <p className="font-cormorant text-lg md:text-xl text-marfil leading-relaxed mt-8 max-w-prose">
         {rationale}
       </p>
     </section>
