@@ -2,7 +2,7 @@ import { RevealOnScroll } from "./_RevealOnScroll";
 
 const RECEIVES = [
   {
-    title: "Tus seis colores",
+    title: "Tus colores",
     desc: "Con código exacto y nombre. Tu paleta personal.",
   },
   {

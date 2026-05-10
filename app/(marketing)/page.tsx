@@ -7,7 +7,7 @@ import { getUser } from "@/lib/auth/server";
 export const metadata: Metadata = {
   title: "Diosa Interior — Descubre los colores que te pertenecen",
   description:
-    "La primera guía de colorimetría calibrada para la diversidad de la piel. Seis colores exactos para tu piel, calibrados con ciencia.",
+    "La primera guía de colorimetría calibrada para la diversidad de la piel. Tu paleta exacta, calibrada con ciencia.",
   openGraph: {
     title: "Diosa Interior",
     description:

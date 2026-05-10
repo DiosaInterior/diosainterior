@@ -38,7 +38,7 @@ export function CierreIdentitario() {
 
           <RevealOnScroll delay={300}>
             <p className="font-raleway text-base sm:text-lg text-marfil-suave/80 leading-relaxed mt-10 max-w-md">
-              Seis colores. Tu base, tu metal, tu maquillaje. Calibrados con la
+              Colores. Tu base, tu metal, tu maquillaje. Calibrados con la
               ciencia de tu piel.
             </p>
           </RevealOnScroll>
