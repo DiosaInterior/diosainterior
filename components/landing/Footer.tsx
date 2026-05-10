@@ -16,12 +16,12 @@ export function Footer() {
         <RevealOnScroll delay={100}>
           <p className="font-dm-mono text-xs text-marfil-suave/70 mt-12 flex flex-wrap justify-center gap-x-3 gap-y-2">
             <a
-              href="https://instagram.com/diosainterior"
+              href="https://instagram.com/diosainterior.app"
               target="_blank"
               rel="noopener noreferrer"
               className="hover:text-terra-diosa transition-colors"
             >
-              @diosainterior
+              @diosainterior.app
             </a>
             <span aria-hidden="true">·</span>
             <a

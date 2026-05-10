@@ -8,7 +8,7 @@
 
 import { RevealOnScroll } from "./_RevealOnScroll";
 
-const INSTAGRAM_URL = "https://instagram.com/diosainterior";
+const INSTAGRAM_URL = "https://instagram.com/diosainterior.app";
 
 export function InstagramCTA() {
   return (
@@ -45,7 +45,7 @@ export function InstagramCTA() {
               <line x1="17.5" y1="6.5" x2="17.51" y2="6.5" />
             </svg>
             <span className="font-dm-mono text-marfil text-xs sm:text-sm tracking-[0.3em] uppercase">
-              @diosainterior
+              @diosainterior.app
             </span>
           </a>
         </RevealOnScroll>
