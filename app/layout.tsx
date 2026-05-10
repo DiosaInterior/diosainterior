@@ -25,9 +25,9 @@ const dmMono = DM_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Diosa Interior — Tu paleta de colorimetría latina",
+  title: "Diosa Interior — Tu paleta de colorimetría",
   description:
-    "La primera guía de colorimetría diseñada específicamente para piel latina.",
+    "La primera guía de colorimetría calibrada para la diversidad de la piel.",
 };
 
 export default function RootLayout({
