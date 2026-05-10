@@ -41,8 +41,13 @@ export async function GET(request: Request) {
     return NextResponse.redirect(`${origin}/login?error=auth_failed`);
   }
 
-  // Caso (1): next explícito y válido → siempre respetarlo.
-  if (next) {
+  // Caso (1): next explícito y válido → respetarlo, EXCEPTO cuando es
+  // exactamente "/upload" (el default que setea signInWithGoogle). Si
+  // respetáramos siempre, el smart redirect nunca se activaría para el
+  // flow normal de Google OAuth (que es el 99% del tráfico). Con esta
+  // condición, links externos / magic links / password recovery con un
+  // next explícito distinto de /upload siguen aterrizando donde piden.
+  if (next && next !== "/upload") {
     return NextResponse.redirect(`${origin}${next}`);
   }
 
