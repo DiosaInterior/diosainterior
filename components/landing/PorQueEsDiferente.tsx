@@ -4,7 +4,7 @@ import { RevealOnScroll } from "./_RevealOnScroll";
 
 export function PorQueEsDiferente() {
   return (
-    <section className="relative py-24 lg:py-32 px-6 overflow-hidden">
+    <section className="relative py-24 lg:py-32 px-6 sm:px-8 lg:px-12 overflow-hidden">
       {/* Background image + vino overlay */}
       <div className="absolute inset-0 -z-10">
         <Image
@@ -41,7 +41,7 @@ export function PorQueEsDiferente() {
         </RevealOnScroll>
 
         <RevealOnScroll delay={450}>
-          <p className="font-cormorant italic text-2xl sm:text-3xl lg:text-4xl text-terra-diosa leading-relaxed mt-12">
+          <p className="font-cormorant italic text-2xl sm:text-3xl lg:text-4xl text-terra-2 leading-relaxed mt-12">
             Tu paleta no es una aproximación. Es tuya.
           </p>
         </RevealOnScroll>

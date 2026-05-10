@@ -8,12 +8,67 @@ import { RevealOnScroll } from "./_RevealOnScroll";
 const CTA_CLASSES =
   "inline-block bg-terra-diosa text-marfil font-dm-mono uppercase tracking-widest text-sm px-10 py-5 hover:bg-terra-2 hover:scale-[1.02] transition-all duration-200";
 
+const HERO_IMAGE = "/landing/hero-paleta-diversa.png";
+const HERO_ALT =
+  "Mujeres de espaldas con globos de colores tierra reflejándose en el agua de Hierve el Agua. Representa la diversidad de pieles que Diosa Interior calibra.";
+
 export function Hero() {
   return (
     <section className="dark-radial">
-      <div className="grid grid-cols-1 lg:grid-cols-[45fr_55fr] lg:min-h-dvh">
-        {/* Texto — order-2 mobile, order-1 desktop */}
-        <div className="order-2 lg:order-1 flex flex-col justify-center px-6 sm:px-10 lg:px-16 py-20 lg:py-16">
+      {/* MOBILE (<lg): full-bleed image, text overlay, CTA above-the-fold */}
+      <div className="lg:hidden relative min-h-dvh overflow-hidden">
+        <Image
+          src={HERO_IMAGE}
+          alt={HERO_ALT}
+          fill
+          sizes="100vw"
+          quality={85}
+          priority
+          className="object-cover object-center"
+        />
+        <div className="absolute inset-0 bg-gradient-to-b from-vino-profundo/85 via-vino-profundo/30 to-vino-profundo/70" />
+
+        <div className="relative z-10 min-h-dvh flex flex-col justify-between px-6 py-12">
+          <div>
+            <RevealOnScroll>
+              <p className="font-raleway text-xs uppercase tracking-[0.4em] text-terra-diosa mt-8">
+                Diosa Interior
+              </p>
+            </RevealOnScroll>
+
+            <RevealOnScroll delay={150}>
+              <h1 className="font-cormorant font-light text-marfil text-4xl sm:text-5xl leading-[0.95] tracking-tight mt-6">
+                Descubre los <em className="italic">colores</em> que te{" "}
+                <em className="italic">pertenecen</em>.
+              </h1>
+            </RevealOnScroll>
+
+            <RevealOnScroll delay={300}>
+              <p className="font-raleway text-base text-marfil-suave/80 mt-6 leading-relaxed max-w-prose">
+                La primera guía de colorimetría calibrada para la diversidad de
+                la piel.
+              </p>
+            </RevealOnScroll>
+
+            <RevealOnScroll delay={450}>
+              <p className="font-cormorant italic text-sm text-terra-2 mt-4">
+                Tu paleta, tu base, tu metal, tu maquillaje — calibrados con
+                ciencia.
+              </p>
+            </RevealOnScroll>
+          </div>
+
+          <RevealOnScroll delay={600} className="mb-8">
+            <Link href="/login" className={CTA_CLASSES}>
+              Descubrir mi paleta →
+            </Link>
+          </RevealOnScroll>
+        </div>
+      </div>
+
+      {/* DESKTOP (≥lg): split 45/55, sin cambios respecto al diseño aprobado */}
+      <div className="hidden lg:grid lg:grid-cols-[45fr_55fr] lg:min-h-dvh">
+        <div className="flex flex-col justify-center px-16 py-16">
           <RevealOnScroll>
             <Logo size={64} className="mb-12" />
           </RevealOnScroll>
@@ -25,21 +80,21 @@ export function Hero() {
           </RevealOnScroll>
 
           <RevealOnScroll delay={200}>
-            <h1 className="font-cormorant font-light text-marfil text-5xl sm:text-6xl lg:text-7xl xl:text-[80px] leading-[0.95] tracking-tight">
+            <h1 className="font-cormorant font-light text-marfil text-7xl xl:text-[80px] leading-[0.95] tracking-tight">
               Descubre los <em className="italic">colores</em> que te{" "}
               <em className="italic">pertenecen</em>.
             </h1>
           </RevealOnScroll>
 
           <RevealOnScroll delay={350}>
-            <p className="font-raleway text-base sm:text-lg text-marfil-suave/80 mt-10 leading-relaxed max-w-md">
+            <p className="font-raleway text-lg text-marfil-suave/80 mt-10 leading-relaxed max-w-md">
               La primera guía de colorimetría calibrada para la diversidad de
               la piel.
             </p>
           </RevealOnScroll>
 
           <RevealOnScroll delay={450}>
-            <p className="font-cormorant italic text-base sm:text-lg text-terra-suave mt-6 leading-relaxed max-w-md">
+            <p className="font-cormorant italic text-lg text-terra-suave mt-6 leading-relaxed max-w-md">
               Tu paleta, tu base, tu metal, tu maquillaje — calibrados con
               ciencia.
             </p>
@@ -52,13 +107,12 @@ export function Hero() {
           </RevealOnScroll>
         </div>
 
-        {/* Imagen — order-1 mobile (arriba), order-2 desktop (derecha) */}
-        <div className="order-1 lg:order-2 relative h-[70vh] lg:h-auto">
+        <div className="relative">
           <Image
-            src="/landing/hero-paleta-diversa.png"
-            alt="Mujeres de espaldas con globos de colores tierra reflejándose en el agua de Hierve el Agua. Representa la diversidad de pieles que Diosa Interior calibra."
+            src={HERO_IMAGE}
+            alt={HERO_ALT}
             fill
-            sizes="(max-width: 1024px) 100vw, 55vw"
+            sizes="55vw"
             quality={85}
             priority
             className="object-cover"

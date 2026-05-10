@@ -41,7 +41,7 @@ export function LoQueRecibes() {
           {RECEIVES.map((card, i) => (
             <RevealOnScroll key={card.title} delay={(i % 3) * 80}>
               <article className="group h-full p-8 border border-terra-diosa/15 rounded-lg bg-vino-medio/30 hover:border-terra-diosa/35 hover:-translate-y-0.5 transition-all duration-300">
-                <h3 className="font-cormorant italic text-marfil text-2xl lg:text-3xl leading-tight">
+                <h3 className="font-cormorant italic text-marfil text-xl lg:text-2xl leading-tight">
                   {card.title}
                 </h3>
                 <div className="mt-3 h-px w-6 bg-terra-diosa group-hover:w-12 transition-all duration-300" />

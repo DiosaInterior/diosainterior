@@ -1,3 +1,5 @@
+import Image from "next/image";
+
 import { RevealOnScroll } from "./_RevealOnScroll";
 
 const STEPS = [
@@ -25,10 +27,17 @@ export function ComoFunciona() {
         {STEPS.map((step, i) => (
           <RevealOnScroll key={step.n} delay={i * 120}>
             <div className="border-t border-terra-diosa/20 pt-8">
-              <p className="font-dm-mono font-light text-terra-diosa text-5xl lg:text-6xl mb-6 tracking-tight">
+              <Image
+                src="/logo.png"
+                alt=""
+                width={40}
+                height={40}
+                className="opacity-55 mb-4 lg:mb-6 w-8 h-8 lg:w-10 lg:h-10"
+              />
+              <p className="font-dm-mono font-light text-terra-diosa text-4xl lg:text-6xl mb-6 tracking-tight">
                 {step.n}
               </p>
-              <h3 className="font-cormorant italic text-marfil text-3xl lg:text-4xl leading-tight mb-4 max-w-sm">
+              <h3 className="font-cormorant italic text-marfil text-2xl lg:text-3xl leading-tight mb-4 max-w-sm">
                 {step.title}
               </h3>
               <p className="font-raleway text-marfil-suave/70 text-base leading-relaxed max-w-sm">

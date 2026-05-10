@@ -31,7 +31,7 @@ export function CierreIdentitario() {
           </RevealOnScroll>
 
           <RevealOnScroll delay={150}>
-            <h2 className="font-cormorant italic font-light text-marfil text-5xl sm:text-6xl lg:text-7xl leading-[1.0] tracking-tight mt-8">
+            <h2 className="font-cormorant italic font-light text-marfil text-4xl sm:text-5xl lg:text-7xl leading-[1.0] tracking-tight mt-8">
               Tu paleta te está esperando.
             </h2>
           </RevealOnScroll>
