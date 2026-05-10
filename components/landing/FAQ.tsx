@@ -16,8 +16,8 @@ const FAQS: QA[] = [
     a: "Una foto de tu rostro sin maquillaje en luz natural, una de tu cabello, y dos de tu piel desnuda en zonas distintas (brazo, cuello). No necesitás cámara profesional — tu celular es suficiente.",
   },
   {
-    q: "¿Es seguro subir mis fotos?",
-    a: "Sí. Tus fotos se procesan únicamente para generar tu paleta y se eliminan automáticamente a los 90 días. Nunca las compartimos, vendemos ni publicamos.",
+    q: "¿Cuánto cuesta?",
+    a: "$499 MXN. Una sola vez. Tu paleta queda guardada en tu cuenta para siempre, sin renovaciones ni cargos ocultos.",
   },
   {
     q: "¿Funciona para todos los tipos de piel?",
