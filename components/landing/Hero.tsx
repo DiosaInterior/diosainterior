@@ -64,10 +64,13 @@ export function Hero() {
             </RevealOnScroll>
           </div>
 
-          <RevealOnScroll delay={600} className="mb-32 flex justify-center">
+          <RevealOnScroll delay={600} className="mb-32 flex flex-col items-center gap-4">
             <Link href="/login" className={CTA_CLASSES}>
               Descubrir mi paleta →
             </Link>
+            <p className="font-dm-mono text-[11px] tracking-[0.3em] uppercase text-marfil-suave/60">
+              En menos de 5 minutos
+            </p>
           </RevealOnScroll>
         </div>
       </div>
