@@ -68,7 +68,7 @@ export function Hero() {
             <Link href="/login" className={CTA_CLASSES}>
               Descubrir mi paleta →
             </Link>
-            <p className="font-dm-mono text-[11px] tracking-[0.3em] uppercase text-marfil-suave/60">
+            <p className="font-dm-mono text-[18px] tracking-[0.3em] uppercase text-marfil-suave/75">
               En menos de 5 minutos
             </p>
           </RevealOnScroll>

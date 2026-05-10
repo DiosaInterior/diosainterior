@@ -16,7 +16,7 @@ const STEPS = [
   {
     n: "03",
     title: "Tu paleta",
-    desc: "Colores que te pertenecen. Y la ciencia que los respalda.",
+    desc: "Más de un siglo de ciencia. En 5 minutos.",
   },
 ];
 
