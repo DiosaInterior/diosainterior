@@ -31,34 +31,40 @@ export function Hero() {
         <div className="relative z-10 min-h-dvh flex flex-col justify-between px-6 py-12">
           <div>
             <RevealOnScroll>
-              <p className="font-raleway text-xs uppercase tracking-[0.4em] text-terra-diosa mt-8">
+              <div className="flex justify-center mt-8">
+                <Logo size={56} className="opacity-90" />
+              </div>
+            </RevealOnScroll>
+
+            <RevealOnScroll>
+              <p className="font-raleway text-xs uppercase tracking-[0.4em] text-terra-diosa mt-6 text-center">
                 Diosa Interior
               </p>
             </RevealOnScroll>
 
             <RevealOnScroll delay={150}>
-              <h1 className="font-cormorant font-light text-marfil text-4xl sm:text-5xl leading-[0.95] tracking-tight mt-6">
+              <h1 className="font-cormorant font-light text-marfil text-5xl sm:text-6xl leading-[0.95] tracking-tight mt-8 text-center">
                 Descubre los <em className="italic">colores</em> que te{" "}
                 <em className="italic">pertenecen</em>.
               </h1>
             </RevealOnScroll>
 
             <RevealOnScroll delay={300}>
-              <p className="font-raleway text-base text-marfil-suave/80 mt-6 leading-relaxed max-w-prose">
+              <p className="font-raleway text-base sm:text-lg font-medium text-marfil-suave/90 mt-6 leading-relaxed max-w-prose mx-auto text-center">
                 La primera guía de colorimetría calibrada para la diversidad de
                 la piel.
               </p>
             </RevealOnScroll>
 
             <RevealOnScroll delay={450}>
-              <p className="font-cormorant italic text-sm text-terra-2 mt-4">
+              <p className="font-cormorant italic font-medium text-base sm:text-lg text-terra-2 mt-6 text-center max-w-prose mx-auto">
                 Tu paleta, tu base, tu metal, tu maquillaje — calibrados con
                 ciencia.
               </p>
             </RevealOnScroll>
           </div>
 
-          <RevealOnScroll delay={600} className="mb-8">
+          <RevealOnScroll delay={600} className="mb-32">
             <Link href="/login" className={CTA_CLASSES}>
               Descubrir mi paleta →
             </Link>
