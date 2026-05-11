@@ -54,14 +54,62 @@ describe("PaletaGrid (G.6.B — hero + extended)", () => {
     }
   });
 
-  it("renderiza los hex de palette.extended cuando hay entries", () => {
+  it("renderiza los complementarios de extended (no-overlap con hero)", () => {
     const html = renderHTML(<PaletaGrid palette={validGuide.palette} />);
 
-    for (const color of validGuide.palette.extended) {
+    const heroHexes = new Set(
+      validGuide.palette.hero.map((c) => c.hex.toLowerCase()),
+    );
+    const complementarios = validGuide.palette.extended.filter(
+      (c) => !heroHexes.has(c.hex.toLowerCase()),
+    );
+
+    for (const color of complementarios) {
       expect(html.toLowerCase()).toContain(color.hex.toLowerCase());
     }
     // Y muestra el copy de la sección extended.
     expect(html).toContain("Tus matices complementarios");
+  });
+
+  // G.6.B.1 hotfix — extended ahora INCLUYE hero por diseño. El render
+  // filtra los hex duplicados para no mostrarlos dos veces visualmente.
+  // El test cuenta cuántas veces aparece un hex que está en AMBOS arrays.
+  it("dedupe: hex que está en hero+extended aparece solo en la sección hero (no en extended)", () => {
+    // El fixture tiene los 6 hex de hero también en extended (overlap
+    // completo de los primeros 6 entries). El render debe mostrarlos
+    // solo una vez (en la sección hero, no en la extendida).
+    const html = renderHTML(<PaletaGrid palette={validGuide.palette} />);
+
+    const heroHex = validGuide.palette.hero[0].hex; // ej. "#FFBE8C"
+    // Contar ocurrencias del hex en el HTML. Aparece una vez como
+    // background-color del swatch + una vez como texto del hex code en
+    // el caption del hero. NO debe aparecer una tercera vez en la
+    // sección extended.
+    const matches = html.toLowerCase().match(
+      new RegExp(heroHex.toLowerCase(), "g"),
+    );
+    // Esperamos 2 ocurrencias (background + caption text). Si fueran
+    // 4 ocurrencias significaría que también aparece en extended.
+    expect(matches?.length).toBe(2);
+  });
+
+  it("edge case: si extended === hero (todos duplicados), no renderiza la sección extended", () => {
+    const paletteFullOverlap = {
+      ...validGuide.palette,
+      // extended === hero × 2 para llegar a 12 entries (min 8): los 6
+      // hero originales + 2 hero repetidos no son válidos por
+      // PaletteColorSchema duplicados, pero el schema NO valida unicidad
+      // dentro de extended. Usamos los 6 hero + 2 hero más para 8 total.
+      extended: [
+        ...validGuide.palette.hero,
+        validGuide.palette.hero[0],
+        validGuide.palette.hero[1],
+      ],
+    };
+    const html = renderHTML(<PaletaGrid palette={paletteFullOverlap} />);
+
+    // Solo render de hero, NO de extended.
+    expect(html).not.toContain("Tus matices complementarios");
   });
 });
 

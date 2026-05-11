@@ -23,7 +23,7 @@ import {
   type SeasonId,
 } from "@/lib/ai/knowledge/seasons-database";
 
-export const PROMPT_VERSION = "2.2.0";
+export const PROMPT_VERSION = "2.2.1";
 
 // ---------------------------------------------------------------------
 // HELPERS (private — not exported)
@@ -229,10 +229,10 @@ Your output goes inside the tool call 'submit_colorimetric_analysis'. Field-by-f
       - "evento" (special occasion, party, celebration)
 
   **palette.extended** (array of 8-15 PaletteColor objects):
-  - Pool ampliado del irradian list de la season. La IA elige cuántos según el balance editorial — 8 mínimo, 15 máximo.
-  - MUST NOT include any hex already in palette.hero (no duplicates).
+  - palette.extended is the COMPLETE working palette for combinations (8-15 hex from the season's irradian list). It SHOULD include the 6 hex from palette.hero PLUS additional hex from the irradian pool. Think of hero as "the most representative 6" and extended as "the full palette including hero plus complementary colors".
   - DO NOT invent hex. Solo del irradian list de Section 4.
   - Same shape as hero entries.
+  - Overlap with palette.hero is INTENTIONAL — render will dedupe visually.
 
   **palette.avoid** (array of 8-12 objects, NOT strings):
   - Each object has shape { hex (#RRGGBB uppercase), nombre (Spanish, max 50 chars) }

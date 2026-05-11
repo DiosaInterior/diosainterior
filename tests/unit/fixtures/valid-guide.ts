@@ -66,7 +66,47 @@ export const validGuide: Guide = {
         occasions: ["evento", "noche"],
       },
     ],
+    // G.6.B.1 hotfix — extended INCLUYE los hex de hero (overlap intencional)
+    // más complementarios. El render PaletaGrid filtra los duplicados.
     extended: [
+      // Hero overlap (6 primeros = los 6 hex del hero):
+      {
+        hex: "#FFBE8C",
+        nombre: "Melocotón luminoso",
+        usage: "blusas, vestidos formales",
+        occasions: ["formal", "diario", "evento"],
+      },
+      {
+        hex: "#FF7F5C",
+        nombre: "Coral cálido",
+        usage: "labial, accesorios",
+        occasions: ["evento", "noche"],
+      },
+      {
+        hex: "#C8E08C",
+        nombre: "Verde manzana",
+        usage: "tops casuales, sweaters",
+        occasions: ["diario", "casual"],
+      },
+      {
+        hex: "#F5E6C8",
+        nombre: "Crema dorada",
+        usage: "neutros base, capas",
+        occasions: ["diario", "trabajo"],
+      },
+      {
+        hex: "#FFE680",
+        nombre: "Amarillo claro",
+        usage: "verano, eventos diurnos",
+        occasions: ["diario", "evento"],
+      },
+      {
+        hex: "#FFA060",
+        nombre: "Durazno cálido",
+        usage: "labial principal, foco",
+        occasions: ["evento", "noche"],
+      },
+      // Complementarios (no en hero):
       {
         hex: "#A8D870",
         nombre: "Verde primavera",
@@ -90,30 +130,6 @@ export const validGuide: Guide = {
         nombre: "Verde menta cálido",
         usage: "tops frescos",
         occasions: ["casual"],
-      },
-      {
-        hex: "#FFC080",
-        nombre: "Albaricoque",
-        usage: "vestidos diurnos",
-        occasions: ["diario", "evento"],
-      },
-      {
-        hex: "#E8B870",
-        nombre: "Miel clara",
-        usage: "neutros cálidos, capas",
-        occasions: ["trabajo", "diario"],
-      },
-      {
-        hex: "#FF6040",
-        nombre: "Coral mandarina",
-        usage: "accesorios de noche",
-        occasions: ["noche"],
-      },
-      {
-        hex: "#E85838",
-        nombre: "Salmón intenso",
-        usage: "labial profundo",
-        occasions: ["evento", "noche"],
       },
     ],
     avoid: [

@@ -79,6 +79,26 @@ describe("GuideSchema — rechazos", () => {
     };
     expect(() => GuideSchema.parse(bad)).toThrow();
   });
+
+  // G.6.B.1 hotfix — overlap entre hero y extended es INTENCIONAL.
+  // El KB tiene 12 irradian/estación: si exigiéramos disjoint con
+  // hero=6 y extended.min(8), serían 14 hex únicos > 12 disponibles.
+  // El render dedupe visualmente.
+  it("acepta palette.extended con overlap completo con hero (G.6.B.1)", () => {
+    const guideWithFullOverlap = {
+      ...validGuide,
+      palette: {
+        ...validGuide.palette,
+        // Extended de 8: los 6 hero + 2 complementarios (overlap parcial)
+        extended: [
+          ...validGuide.palette.hero,
+          validGuide.palette.extended[6], // primer complementario del fixture
+          validGuide.palette.extended[7], // segundo complementario
+        ],
+      },
+    };
+    expect(() => GuideSchema.parse(guideWithFullOverlap)).not.toThrow();
+  });
 });
 
 describe("GuideSchema — G.6.A endurecimiento", () => {
