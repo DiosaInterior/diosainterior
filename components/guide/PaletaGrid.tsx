@@ -7,7 +7,17 @@ import { PaletaSwatch } from "./PaletaSwatch";
 // extended (8-15 swatches más chicos). El copy hardcoded "Los seis
 // colores que te pertenecen" se retiró: la paleta puede tener más de 6
 // tras la sección hero.
+//
+// G.6.B.1 hotfix — palette.extended ahora INCLUYE los hex de hero por
+// diseño (overlap intencional, fix aritmético). Filtramos ese overlap
+// acá para que la usuaria no vea swatches duplicados visualmente. Lo
+// que realmente muestra la sección "extendida" son los complementarios.
 export function PaletaGrid({ palette }: { palette: Palette }) {
+  const heroHexes = new Set(palette.hero.map((c) => c.hex.toLowerCase()));
+  const extendedOnly = palette.extended.filter(
+    (c) => !heroHexes.has(c.hex.toLowerCase()),
+  );
+
   return (
     <section>
       <p className="font-dm-mono text-xs uppercase tracking-widest text-terra-diosa">
@@ -24,9 +34,10 @@ export function PaletaGrid({ palette }: { palette: Palette }) {
         ))}
       </div>
 
-      {/* Extended — pool ampliado, swatches más chicos para diferenciar
-          jerarquía. Solo render si hay extended (defensivo). */}
-      {palette.extended.length > 0 && (
+      {/* Extended deduped — solo los complementarios que NO están en hero.
+          Edge case: si la IA devolvió un extended idéntico a hero (todos
+          duplicados), extendedOnly queda vacío y no rendereamos la sección. */}
+      {extendedOnly.length > 0 && (
         <div className="mt-20">
           <p className="font-dm-mono text-xs uppercase tracking-widest text-terra-diosa">
             Paleta extendida
@@ -35,7 +46,7 @@ export function PaletaGrid({ palette }: { palette: Palette }) {
             Tus matices complementarios
           </h3>
           <div className="mt-8 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 md:gap-6">
-            {palette.extended.map((c) => (
+            {extendedOnly.map((c) => (
               <figure key={c.hex}>
                 <div
                   className="w-full aspect-square rounded-sm border border-marfil/15"

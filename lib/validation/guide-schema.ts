@@ -205,8 +205,15 @@ export const PaletteSchema = z.object({
   // G.6.B — hero (6 colores fijos) reemplaza al legacy palette.colors.
   // Son los 6 más representativos del pool irradian de la estación.
   hero: z.array(PaletteColorSchema).length(6),
-  // Pool extendido 8-15 del irradian (12 hex disponibles por estación).
-  // La IA elige cuántos según el balance editorial de cada paleta.
+  // Pool extendido 8-15. INCLUYE los hex de hero por diseño (overlap
+  // intencional) más colores complementarios del irradian list.
+  //
+  // G.6.B.1 hotfix: en la primera versión de G.6.B (2.2.0) el prompt
+  // exigía que extended fuera DISJUNTO con hero. Con KB=12 hex/estación
+  // y hero=6, eso dejaba solo 6 hex disponibles para un extended con
+  // min=8 → imposibilidad aritmética y rechazo Zod de TODAS las guides
+  // post-G.6.B. El fix permite overlap; el render en PaletaGrid filtra
+  // los duplicados visualmente.
   extended: z.array(PaletteColorSchema).min(8).max(15),
   // 8-12 colores a evitar, derivados del listado `apagan` de la estación
   // canónica. El prompt pide a la IA convertir descriptores cualitativos
