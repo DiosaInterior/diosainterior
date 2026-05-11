@@ -170,6 +170,35 @@ describe("handleCheckoutCompleted()", () => {
     expect(updateChain.eq).toHaveBeenCalledWith("status", "pending");
   });
 
+  it("G.8 — Adaptive Pricing: UPDATE incluye currency real del cobro (COP) no 'mxn' hardcoded", async () => {
+    const lookupChain = makeChain({
+      data: { user_id: "u-1" },
+      error: null,
+    });
+    const updateChain = makeChain({ error: null });
+    const fromMock = vi.fn();
+    fromMock.mockReturnValueOnce(lookupChain); // SELECT user_id
+    fromMock.mockReturnValueOnce(updateChain); // UPDATE
+    mocks.getAdminClient.mockReturnValue({ from: fromMock });
+
+    // Stripe Adaptive Pricing convirtió 499 MXN → ~95,000 COP para una
+    // usuaria de Colombia. amount_total y currency vienen en COP.
+    const result = await handleCheckoutCompleted(
+      fakeSession({
+        amount_total: 9500000, // 95,000 COP en cents
+        currency: "cop",
+      }),
+    );
+
+    expect(result).toEqual({ ok: true });
+    const updateArg = updateChain.update.mock.calls[0][0];
+    expect(updateArg.amount_cents).toBe(9500000);
+    // Antes de G.8 el código NO actualizaba currency y la row quedaba
+    // como 'mxn' hardcoded del INSERT inicial (incorrecto para analytics
+    // internas). Ahora reflejamos el cobro real.
+    expect(updateArg.currency).toBe("cop");
+  });
+
   it("retorna error si el UPDATE falla", async () => {
     const lookupChain = makeChain({
       data: { user_id: "u-1" },
