@@ -3,7 +3,7 @@ import type { ReactElement } from "react";
 import { describe, expect, it } from "vitest";
 
 import { CorteCard } from "@/components/guide/CorteCard";
-import { EvitarList } from "@/components/guide/EvitarList";
+import { EvitarGrid } from "@/components/guide/EvitarGrid";
 import { MaquillajeCard } from "@/components/guide/MaquillajeCard";
 import { MetalesCard } from "@/components/guide/MetalesCard";
 import { OcasionesGrid } from "@/components/guide/OcasionesGrid";
@@ -36,7 +36,7 @@ describe("PerfilCard", () => {
 
 describe("PaletaSwatch", () => {
   it("renderiza hex, nombre y usage del color", () => {
-    const color = validGuide.palette.colors[0];
+    const color = validGuide.palette.hero[0];
     const html = renderHTML(<PaletaSwatch color={color} />);
 
     expect(html.toLowerCase()).toContain(color.hex.toLowerCase());
@@ -45,84 +45,107 @@ describe("PaletaSwatch", () => {
   });
 });
 
-describe("PaletaGrid", () => {
-  it("renderiza los 6 hex codes de la paleta", () => {
-    const html = renderHTML(
-      <PaletaGrid colors={validGuide.palette.colors} />,
-    );
+describe("PaletaGrid (G.6.B — hero + extended)", () => {
+  it("renderiza los 6 hex de palette.hero", () => {
+    const html = renderHTML(<PaletaGrid palette={validGuide.palette} />);
 
-    for (const color of validGuide.palette.colors) {
+    for (const color of validGuide.palette.hero) {
       expect(html.toLowerCase()).toContain(color.hex.toLowerCase());
     }
   });
+
+  it("renderiza los hex de palette.extended cuando hay entries", () => {
+    const html = renderHTML(<PaletaGrid palette={validGuide.palette} />);
+
+    for (const color of validGuide.palette.extended) {
+      expect(html.toLowerCase()).toContain(color.hex.toLowerCase());
+    }
+    // Y muestra el copy de la sección extended.
+    expect(html).toContain("Tus matices complementarios");
+  });
 });
 
-describe("EvitarList", () => {
-  it("con avoid populado renderiza los nombres de los colores", () => {
-    const html = renderHTML(<EvitarList avoid={validGuide.palette.avoid} />);
+describe("EvitarGrid (G.6.B — reemplaza EvitarList)", () => {
+  it("con avoid populado renderiza los hex y nombres de los colores", () => {
+    const html = renderHTML(<EvitarGrid avoid={validGuide.palette.avoid} />);
 
-    // G.6.A — avoid ahora es AvoidColor[{hex, nombre}], antes string[].
-    // Renderiza el nombre; el hex se aprovechará en G.6.B con swatches.
+    // Cada avoid item ahora tiene hex visible como background-color y
+    // nombre como texto. El componente muestra ambos.
     expect(html).toContain(validGuide.palette.avoid[0].nombre);
+    expect(html.toLowerCase()).toContain(
+      validGuide.palette.avoid[0].hex.toLowerCase(),
+    );
   });
 
   it("con avoid vacío renderiza null (HTML vacío)", () => {
-    const html = renderHTML(<EvitarList avoid={[]} />);
+    const html = renderHTML(<EvitarGrid avoid={[]} />);
 
     expect(html).toBe("");
   });
 });
 
-describe("OcasionesGrid", () => {
-  it("con colors poblados con occasions renderiza los display labels", () => {
-    const html = renderHTML(
-      <OcasionesGrid colors={validGuide.palette.colors} />,
-    );
+describe("OcasionesGrid (G.6.B — consume guide.occasions directo)", () => {
+  it("renderiza los 6 labels de las 6 ocasiones canónicas", () => {
+    const html = renderHTML(<OcasionesGrid occasions={validGuide.occasions} />);
 
-    // El fixture cubre los 6 valores de OccasionEnum.
-    expect(html).toContain("Día a día");
-    expect(html).toContain("Trabajo");
-    expect(html).toContain("Noche");
-    expect(html).toContain("Formal");
-    expect(html).toContain("Casual");
-    expect(html).toContain("Evento");
+    // El fixture tiene las 6 ocasiones canónicas con sus labels en español.
+    for (const occ of validGuide.occasions) {
+      expect(html).toContain(occ.label);
+    }
   });
 
-  it("con colors sin occasions (todos undefined) renderiza null", () => {
-    const stripped = validGuide.palette.colors.map((c) => ({
-      hex: c.hex,
-      nombre: c.nombre,
-      usage: c.usage,
-    }));
-    const html = renderHTML(<OcasionesGrid colors={stripped} />);
+  it("renderiza la description de cada ocasión", () => {
+    const html = renderHTML(<OcasionesGrid occasions={validGuide.occasions} />);
 
+    for (const occ of validGuide.occasions) {
+      expect(html).toContain(occ.description);
+    }
+  });
+
+  it("con array vacío renderiza null", () => {
+    const html = renderHTML(<OcasionesGrid occasions={[]} />);
     expect(html).toBe("");
   });
 });
 
-describe("MaquillajeCard", () => {
-  it("con makeup completo renderiza LABIAL, RUBOR, ambos hex y nombres", () => {
+describe("MaquillajeCard (G.6.B — 5 categorías)", () => {
+  it("renderiza la narrative global", () => {
     const html = renderHTML(<MaquillajeCard makeup={validGuide.makeup} />);
 
-    expect(html).toContain("LABIAL");
-    expect(html).toContain("RUBOR");
-    expect(html).toContain(validGuide.makeup.lipstick.name);
-    expect(html.toLowerCase()).toContain(
-      validGuide.makeup.lipstick.hex.toLowerCase(),
-    );
-    expect(html).toContain(validGuide.makeup.blush!.name);
-    expect(html.toLowerCase()).toContain(
-      validGuide.makeup.blush!.hex.toLowerCase(),
-    );
+    expect(html).toContain(validGuide.makeup.narrative);
   });
 
-  it("con makeup sin blush renderiza LABIAL pero NO RUBOR", () => {
-    const html = renderHTML(
-      <MaquillajeCard makeup={{ lipstick: validGuide.makeup.lipstick }} />,
-    );
+  it("renderiza las 5 eyebrows de categorías (LABIOS, RUBOR, SOMBRAS, DELINEADOR, BASE)", () => {
+    const html = renderHTML(<MaquillajeCard makeup={validGuide.makeup} />);
 
-    expect(html).toContain("LABIAL");
-    expect(html).not.toContain("RUBOR");
+    // Los eyebrows pueden estar uppercased por la clase CSS — testeamos
+    // el contenido textual literal que el componente inyecta.
+    expect(html).toContain("Labios");
+    expect(html).toContain("Rubor");
+    expect(html).toContain("Sombras");
+    expect(html).toContain("Delineador");
+    expect(html).toContain("Base");
+  });
+
+  it("renderiza el rationale de cada categoría", () => {
+    const html = renderHTML(<MaquillajeCard makeup={validGuide.makeup} />);
+
+    for (const cat of validGuide.makeup.categories) {
+      expect(html).toContain(cat.rationale);
+    }
+  });
+
+  it("renderiza los hex de los 5 lipsticks de la categoría lipstick", () => {
+    const html = renderHTML(<MaquillajeCard makeup={validGuide.makeup} />);
+
+    const lipstickCat = validGuide.makeup.categories.find(
+      (c) => c.category === "lipstick",
+    );
+    expect(lipstickCat).toBeDefined();
+    expect(lipstickCat?.colors).toHaveLength(5);
+    for (const color of lipstickCat!.colors) {
+      expect(html.toLowerCase()).toContain(color.hex.toLowerCase());
+    }
   });
 });
 

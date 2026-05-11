@@ -324,7 +324,8 @@ describe("runColorimetricAnalysis — soft hex cross-validation", () => {
       ...validGuide,
       palette: {
         ...validGuide.palette,
-        colors: validGuide.palette.colors.map((c, i) =>
+        // G.6.B — antes era palette.colors, ahora palette.hero.
+        hero: validGuide.palette.hero.map((c, i) =>
           i === 0 ? { ...c, hex: "#ABCDEF" } : c,
         ),
       },

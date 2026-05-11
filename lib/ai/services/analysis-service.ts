@@ -202,11 +202,14 @@ async function callAnthropic(photos: Base64Photo[]): Promise<unknown> {
 }
 
 /**
- * Soft cross-validation: cada hex en palette.colors debería estar en
- * la lista canónica irradian de la season retornada. Si no, log
- * warning pero NO rechazar (decisión Q4).
+ * Soft cross-validation: cada hex en palette.hero y palette.extended
+ * debería estar en la lista canónica irradian de la season retornada.
+ * Si no, log warning pero NO rechazar (decisión Q4).
  *
- * Si en F.5 vemos >20% de jobs con warnings, ajustamos prompt en v2.1.0.
+ * G.6.B — antes iteraba sobre palette.colors (6 fijos); ahora sobre
+ * hero (6) + extended (8-15) que es el pool ampliado.
+ *
+ * Si en F.5 vemos >20% de jobs con warnings, ajustamos prompt.
  */
 function validateHexCrossReference(guide: Guide): string[] {
   const warnings: string[] = [];
@@ -215,7 +218,8 @@ function validateHexCrossReference(guide: Guide): string[] {
     getValidHexesForSeason(seasonId).map((h) => h.toLowerCase()),
   );
 
-  for (const color of guide.palette.colors) {
+  const allPaletteColors = [...guide.palette.hero, ...guide.palette.extended];
+  for (const color of allPaletteColors) {
     if (!validHexes.has(color.hex.toLowerCase())) {
       warnings.push(
         `Hex ${color.hex} (${color.nombre}) not in canonical irradian list for ${seasonId}`,

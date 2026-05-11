@@ -1,36 +1,12 @@
-import type { Occasion, PaletteColor } from "@/lib/validation/guide-schema";
+import type { Occasions } from "@/lib/validation/guide-schema";
 
-const OCCASION_LABEL: Record<Occasion, string> = {
-  diario: "Día a día",
-  trabajo: "Trabajo",
-  noche: "Noche",
-  formal: "Formal",
-  casual: "Casual",
-  evento: "Evento",
-};
-
-const OCCASION_ORDER: Occasion[] = [
-  "diario",
-  "trabajo",
-  "noche",
-  "formal",
-  "casual",
-  "evento",
-];
-
-export function OcasionesGrid({ colors }: { colors: PaletteColor[] }) {
-  const buckets = new Map<Occasion, PaletteColor[]>();
-  for (const color of colors) {
-    for (const occ of color.occasions ?? []) {
-      const bucket = buckets.get(occ) ?? [];
-      bucket.push(color);
-      buckets.set(occ, bucket);
-    }
-  }
-
-  const rows = OCCASION_ORDER.filter((occ) => (buckets.get(occ)?.length ?? 0) > 0);
-
-  if (rows.length === 0) return null;
+// G.6.B — antes recibía `colors: PaletteColor[]` y filtraba por
+// `color.occasions`. Ahora recibe `occasions` como bloque independiente
+// del Guide (6 entradas fijas con label + description + hex propios).
+// Cada ocasión tiene su narrativa Cormorant y un row de swatches del
+// pool extended de la paleta.
+export function OcasionesGrid({ occasions }: { occasions: Occasions }) {
+  if (occasions.length === 0) return null;
 
   return (
     <section>
@@ -41,31 +17,31 @@ export function OcasionesGrid({ colors }: { colors: PaletteColor[] }) {
         Cuándo usar cada color
       </h2>
 
-      <div className="mt-12">
-        {rows.map((occ) => {
-          const bucket = buckets.get(occ) ?? [];
-          return (
-            <div
-              key={occ}
-              className="grid grid-cols-[140px_1fr] md:grid-cols-[180px_1fr] gap-6 items-center py-5 border-b border-marfil/10 last:border-b-0"
-            >
-              <p className="font-cormorant italic text-xl md:text-2xl text-marfil">
-                {OCCASION_LABEL[occ]}
-              </p>
-              <div className="flex flex-wrap gap-3">
-                {bucket.map((color) => (
-                  <span
-                    key={color.hex}
-                    title={color.nombre}
-                    style={{ backgroundColor: color.hex }}
-                    className="w-8 h-8 border border-marfil/15 rounded-sm"
-                    aria-label={color.nombre}
-                  />
-                ))}
-              </div>
+      <div className="mt-12 flex flex-col gap-10">
+        {occasions.map((occ) => (
+          <article
+            key={occ.id}
+            className="border-b border-marfil/10 pb-8 last:border-b-0 last:pb-0"
+          >
+            <p className="font-cormorant italic text-2xl md:text-3xl text-marfil leading-tight">
+              {occ.label}
+            </p>
+            <p className="mt-3 font-cormorant italic text-base md:text-lg text-marfil-suave leading-relaxed max-w-prose">
+              {occ.description}
+            </p>
+            <div className="mt-5 flex flex-wrap gap-3">
+              {occ.colors.map((hex) => (
+                <span
+                  key={hex}
+                  title={hex}
+                  style={{ backgroundColor: hex }}
+                  className="w-10 h-10 border border-marfil/15 rounded-sm"
+                  aria-label={hex}
+                />
+              ))}
             </div>
-          );
-        })}
+          </article>
+        ))}
       </div>
     </section>
   );

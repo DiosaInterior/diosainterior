@@ -48,6 +48,12 @@ Diosa Interior uses 14 canonical colorimetric seasons. Below is the complete ref
 - Colors that dull: negro puro, gris frío, azul marino, burdeos oscuro, blanco frío
 - Jewelry: gold_yellow
 - Validation phrase: "All warm, bright, luminous — True Spring is never muted or cool."
+- Makeup palettes (use LITERAL hex when populating 'makeup.categories'):
+  - lipstick (5): Melocotón vivo #E8785A, Coral cálido #FF7F5C, Coral mandarina #FF6040, Salmón intenso #E85838, Durazno luminoso #F08060
+  - blush (3): Coral suave #FFB49A, Melocotón rosado #FF9878, Albaricoque #F0A088
+  - eyeshadow (6): Crema dorada #F5E6C8, Miel clara #E8B870, Bronce cálido #C49060, Verde menta cálido #88C898, Albaricoque luminoso #FFC080, Caramelo dorado #A87850
+  - eyeliner (3): Marrón cálido #5C3820, Café espresso cálido #3C2820, Bronce profundo #88683C
+  - foundation (3): Marfil cálido (claro) #F8D8B8, Beige melocotón (medio) #E8C098, Beige dorado (oscuro) #D8A878
 
 ### LIGHT SPRING (light_spring)
 - Categorization: warm · light · muted
@@ -56,6 +62,12 @@ Diosa Interior uses 14 canonical colorimetric seasons. Below is the complete ref
 - Colors that dull: colores oscuros o muy saturados, negro
 - Jewelry: gold_yellow
 - Validation phrase: "All warm, light, soft — Light Spring is never deep or saturated."
+- Makeup palettes (use LITERAL hex when populating 'makeup.categories'):
+  - lipstick (5): Coral pálido #FFB098, Melocotón claro #E8A890, Salmón pastel #F0A080, Durazno suave #E89878, Rosa coral apagado #D89888
+  - blush (3): Rosa coral pálido #FFC8B8, Melocotón pastel #F8B8A0, Coral suave #F0A898
+  - eyeshadow (6): Vainilla cálida #F8E8D0, Arena dorada clara #F0D0A8, Caramelo claro #E0C8A0, Beige tostado claro #D8B898, Verde menta #B8E0C8, Topo cálido claro #B89878
+  - eyeliner (3): Marrón miel #785838, Café cálido suave #604838, Castaño claro #503820
+  - foundation (3): Porcelana cálida (claro) #F8E0C8, Marfil dorado (medio) #F0D0B0, Beige claro cálido (oscuro) #E0BC98
 
 ### BRIGHT SPRING (bright_spring)
 - Categorization: warm · light · bright
@@ -64,6 +76,12 @@ Diosa Interior uses 14 canonical colorimetric seasons. Below is the complete ref
 - Colors that dull: tonos apagados o muted, negro
 - Jewelry: gold_yellow
 - Validation phrase: "All warm, light, bright — Bright Spring is never muted or earthy."
+- Makeup palettes (use LITERAL hex when populating 'makeup.categories'):
+  - lipstick (5): Coral vivo #FF6040, Rojo coral brillante #FF5060, Fucsia cálido vivo #E83080, Naranja mandarina vivo #FF8030, Frambuesa cálido #FF4878
+  - blush (3): Coral vivo medio #FF9070, Melocotón brillante #FFB098, Salmón vivo #F8A080
+  - eyeshadow (6): Amarillo girasol #FFD030, Turquesa cálido #40C8C8, Turquesa luminoso #80E0C0, Verde brillante #60D040, Albaricoque brillante #FFC080, Cobre vivo #A85020
+  - eyeliner (3): Café espresso cálido #3C2820, Marrón cálido intenso #5C3820, Negro cálido #1A1208
+  - foundation (3): Marfil cálido brillante (claro) #F8D8B0, Beige melocotón vivo (medio) #E8B888, Dorado intenso (oscuro) #D89868
 
 ### DARK SPRING (dark_spring)
 - Categorization: warm · medium · clear
@@ -72,6 +90,12 @@ Diosa Interior uses 14 canonical colorimetric seasons. Below is the complete ref
 - Colors that dull: colores apagados, negro puro, gris frío, pasteles fríos
 - Jewelry: gold_yellow
 - Validation phrase: "All warm, clear, and medium-deep — Dark Spring is never cool or muted."
+- Makeup palettes (use LITERAL hex when populating 'makeup.categories'):
+  - lipstick (5): Coral vivo cálido #E85C30, Rojo tomate cálido #C04020, Rojo cereza cálido #A02830, Naranja rojizo intenso #D04830, Rojo carmín cálido #B83838
+  - blush (3): Coral vivo medio #E08868, Salmón intenso cálido #D07858, Terracota viva #C86848
+  - eyeshadow (6): Dorado intenso #D89020, Verde esmeralda cálido #00A06A, Turquesa cálido #00B8C0, Verde bosque cálido #388048, Ámbar vivo #E0A030, Castaño chocolate #783818
+  - eyeliner (3): Negro cálido #2A1810, Café espresso cálido #3C2820, Marrón intenso #583020
+  - foundation (3): Beige dorado vivo (claro) #E0B898, Bronce intenso (medio) #B88868, Caoba cálido (oscuro) #8C6048
 
 ### TRUE SUMMER (true_summer)
 - Categorization: cool · light · muted
@@ -80,6 +104,12 @@ Diosa Interior uses 14 canonical colorimetric seasons. Below is the complete ref
 - Colors that dull: colores cálidos intensos, naranja, mostaza
 - Jewelry: silver
 - Validation phrase: "All cool and soft — True Summer is never warm or vivid."
+- Makeup palettes (use LITERAL hex when populating 'makeup.categories'):
+  - lipstick (5): Rosa polvoso #C87890, Rosa fresa apagado #B86878, Mauve clásico #A86878, Rosa cuarzo medio #C880A0, Rosa antiguo frío #B07088
+  - blush (3): Rosa polvo frío #D8A8B8, Malva claro #C898A8, Rosa cuarzo frío #D898A8
+  - eyeshadow (6): Gris perla frío #C8D0D8, Lavanda suave #B8B0D0, Azul cenizo #A8B0C0, Malva claro #C8B8C8, Topo frío #A8A0A8, Azul pizarra #8090A8
+  - eyeliner (3): Gris carbón #484850, Azul marino apagado #383848, Gris violáceo #504858
+  - foundation (3): Porcelana rosada (claro) #F0D8D0, Beige rosado neutro (medio) #E0C0B8, Beige frío (oscuro) #C8A098
 
 ### SOFT SUMMER (soft_summer)
 - Categorization: cool · medium · muted
@@ -88,6 +118,12 @@ Diosa Interior uses 14 canonical colorimetric seasons. Below is the complete ref
 - Colors that dull: colores vivos, negro puro, naranja
 - Jewelry: silver_oxidized
 - Validation phrase: "All cool, muted, balanced — Soft Summer is never bright or warm."
+- Makeup palettes (use LITERAL hex when populating 'makeup.categories'):
+  - lipstick (5): Malva suave #C090A0, Rosa antiguo medio #B07888, Mauve apagado #A88898, Ciruela apagada #A07080, Rosa malva frío #B88098
+  - blush (3): Malva polvo #C098A0, Rosa apagado medio #B89098, Topo rosado frío #A89098
+  - eyeshadow (6): Malva apagado #A88898, Gris cálido frío #9890A0, Verde salvia frío #809890, Azul grisáceo #7888A0, Rosa humo #B0A0A8, Gris azulado medio #909098
+  - eyeliner (3): Gris violeta profundo #4A4858, Carbón frío #3C3848, Ciruela carbón #584858
+  - foundation (3): Beige rosado frío (claro) #E8D0C8, Beige neutro frío (medio) #D0B0A8, Almendra apagado (oscuro) #A88880
 
 ### LIGHT SUMMER (light_summer)
 - Categorization: cool · light · clear
@@ -96,6 +132,12 @@ Diosa Interior uses 14 canonical colorimetric seasons. Below is the complete ref
 - Colors that dull: negro puro, naranja saturado, mostaza, colores cálidos vivos
 - Jewelry: silver
 - Validation phrase: "All cool, light, and clear — Light Summer is never warm or muted."
+- Makeup palettes (use LITERAL hex when populating 'makeup.categories'):
+  - lipstick (5): Rosa cuarzo claro #D898B0, Rosa frío vivo #C880A0, Rosa polvo claro #E0A8B8, Malva claro #C098A8, Rosa orquídea suave #D0889C
+  - blush (3): Rosa polvo claro #F0D0DC, Rosa cuarzo #E0C8D0, Lavanda rosada #D8B8C8
+  - eyeshadow (6): Marfil frío #E8E0D8, Lila brumoso #D8D0E0, Menta suave #C8E0D0, Azul humo claro #B0C0D0, Violeta pálido #D0C0D8, Azul cielo suave #A8C5E8
+  - eyeliner (3): Gris azulado #505868, Azul gris medio #586878, Violeta carbón #484058
+  - foundation (3): Porcelana rosa fría (claro) #F8E0DC, Marfil rosado (medio) #F0D0CC, Beige rosa frío (oscuro) #D8B8B0
 
 ### SOFT WINTER (soft_winter)
 - Categorization: cool · medium · muted
@@ -104,6 +146,12 @@ Diosa Interior uses 14 canonical colorimetric seasons. Below is the complete ref
 - Colors that dull: naranja, mostaza, colores cálidos intensos
 - Jewelry: silver
 - Validation phrase: "All cool and muted — Soft Winter is never warm or saturated."
+- Makeup palettes (use LITERAL hex when populating 'makeup.categories'):
+  - lipstick (5): Rosa malva frío #C87890, Ciruela apagada media #B06880, Rosa orquídea apagado #A87090, Vino apagado #984868, Rosa frambuesa frío #B88098
+  - blush (3): Rosa malva fría #B898A8, Mauve rosado frío #C098B0, Rosa apagado frío #A89098
+  - eyeshadow (6): Gris perla #C8C8D0, Lavanda #A89CC8, Azul pizarra frío #7090A8, Violeta humo #A8A8C0, Azul lavanda medio #9098B8, Ciruela apagada #9888A0
+  - eyeliner (3): Azul marino apagado #383848, Carbón violáceo #3C3848, Violeta profundo #484058
+  - foundation (3): Porcelana rosa fría (claro) #F0D8D8, Beige rosado frío (medio) #E0C0C0, Beige rosa apagado (oscuro) #C8A0A0
 
 ### TRUE WINTER (true_winter)
 - Categorization: cool · dark · clear
@@ -112,6 +160,12 @@ Diosa Interior uses 14 canonical colorimetric seasons. Below is the complete ref
 - Colors that dull: tonos tierra, colores cálidos, muted
 - Jewelry: silver
 - Validation phrase: "All cool and clear — Clear Winter is high contrast always. Never warm, never muted."
+- Makeup palettes (use LITERAL hex when populating 'makeup.categories'):
+  - lipstick (5): Rojo cereza frío #CC2244, Frambuesa fría #B80048, Fucsia frío #D02380, Vino tinto frío #8B0040, Rojo carmesí frío #A8002C
+  - blush (3): Rosa fucsia frío #C84878, Frambuesa media #B85878, Rosa cool vivo #D0688C
+  - eyeshadow (6): Blanco puro #FFFFFF, Gris plata frío #C8C8D0, Púrpura intenso #5C0A6B, Esmeralda frío #006B5C, Azul zafiro #0F52BA, Azul medianoche #1C1C2E
+  - eyeliner (3): Negro absoluto #000000, Azul marino profundo #1A1A2A, Berenjena oscura #2A2030
+  - foundation (3): Beige neutro frío (claro) #E8C8B8, Beige medio neutro-frío (medio) #C8A088, Caramelo frío (oscuro) #A07868
 
 ### DEEP WINTER (deep_winter)
 - Categorization: cool · dark · muted
@@ -120,6 +174,12 @@ Diosa Interior uses 14 canonical colorimetric seasons. Below is the complete ref
 - Colors that dull: colores cálidos, pasteles, tonos tierra
 - Jewelry: silver
 - Validation phrase: "All cool and deep — Deep Winter is never warm or light."
+- Makeup palettes (use LITERAL hex when populating 'makeup.categories'):
+  - lipstick (5): Ciruela oscura #581838, Borgoña frío #4A1B2A, Vino tinto profundo #8B0040, Frambuesa oscura #6B1838, Berenjena vino #3A1828
+  - blush (3): Rosa vino apagado #A04868, Ciruela media #883858, Frambuesa apagada #984868
+  - eyeshadow (6): Gris plata frío #C8C8D0, Ciruela oscura #3A1838, Esmeralda frío profundo #0A4838, Azul marino profundo #0A1A3A, Violeta profundo #2A1838, Caoba frío #382828
+  - eyeliner (3): Negro absoluto #000000, Negro azulado #0A0A20, Negro carbón #1A1A1A
+  - foundation (3): Beige neutro frío profundo (claro) #C8A088, Caramelo frío profundo (medio) #9C7860, Chocolate frío (oscuro) #6C5040
 
 ### BRIGHT WINTER (bright_winter)
 - Categorization: cool · dark · bright
@@ -128,6 +188,12 @@ Diosa Interior uses 14 canonical colorimetric seasons. Below is the complete ref
 - Colors that dull: beige, mostaza apagada, tonos tierra, colores muted
 - Jewelry: silver
 - Validation phrase: "All cool, dark, and bright — Bright Winter is never muted or warm."
+- Makeup palettes (use LITERAL hex when populating 'makeup.categories'):
+  - lipstick (5): Rojo intenso frío #E8002C, Fucsia eléctrico #F02888, Rojo cardenal #C00038, Frambuesa vivo frío #D02060, Magenta intenso #8C0040
+  - blush (3): Rosa vivo frío #E04878, Fucsia medio #C83888, Frambuesa brillante #D8588C
+  - eyeshadow (6): Blanco puro #FFFFFF, Púrpura vivo #7028B8, Verde esmeralda vivo #00A878, Turquesa eléctrico #00C0E0, Azul real #0048C4, Amarillo limón vivo #FFD800
+  - eyeliner (3): Negro absoluto #000000, Azul medianoche eléctrico #001870, Violeta profundo #2A0040
+  - foundation (3): Beige cool brillante (claro) #E8C0A8, Beige medio cool vivo (medio) #C89880, Caramelo cool intenso (oscuro) #A07060
 
 ### TRUE AUTUMN (true_autumn)
 - Categorization: warm · medium · muted
@@ -136,6 +202,12 @@ Diosa Interior uses 14 canonical colorimetric seasons. Below is the complete ref
 - Colors that dull: negro puro, blanco brillante, colores fríos
 - Jewelry: bronze
 - Validation phrase: "All warm, rich, earthy — Warm Autumn is never cool or pastel."
+- Makeup palettes (use LITERAL hex when populating 'makeup.categories'):
+  - lipstick (5): Terracota #C4622A, Naranja quemado #A85020, Ladrillo cálido #9C3818, Teja vivo #B85838, Rojo óxido #8C3818
+  - blush (3): Terracota suave #C48060, Cobre apagado #B8704C, Bronce mate #A86848
+  - eyeshadow (6): Mostaza #B8860B, Verde oliva #6B7C45, Caramelo cálido #C48848, Oro antiguo #9C8038, Bronce profundo #806020, Verde musgo #5C6838
+  - eyeliner (3): Café espresso cálido #3C2820, Marrón caoba #5C3820, Negro cálido #2A1810
+  - foundation (3): Beige dorado (claro) #E8C098, Caramelo cálido (medio) #C89870, Bronce profundo (oscuro) #A07050
 
 ### SOFT AUTUMN (soft_autumn)
 - Categorization: neutral_warm · medium · muted
@@ -144,6 +216,12 @@ Diosa Interior uses 14 canonical colorimetric seasons. Below is the complete ref
 - Colors that dull: colores brillantes o fríos
 - Jewelry: bronze
 - Validation phrase: "All muted and warm — Soft Autumn has low chroma always. Never bright, never cool."
+- Makeup palettes (use LITERAL hex when populating 'makeup.categories'):
+  - lipstick (5): Rosa antiguo apagado #C4785A, Terracota suave #B86848, Rosa terracota muted #A87060, Coral apagado profundo #A86048, Bronce rosado #B07058
+  - blush (3): Rosa antiguo cálido #C49878, Beige tostado #B88868, Rosa polvo cálido #C88878
+  - eyeshadow (6): Ocre suave #C4A060, Salvia #8C9E6A, Camel #A88860, Topo cálido #B89878, Mostaza apagada #988858, Caqui apagado #988868
+  - eyeliner (3): Marrón apagado #5C4838, Bronce profundo apagado #785838, Marrón chocolate suave #403028
+  - foundation (3): Beige neutro cálido (claro) #E8C8B0, Beige oliva medio (medio) #C8A088, Almendra tostada (oscuro) #A07868
 
 ### DEEP AUTUMN (deep_autumn)
 - Categorization: warm · dark · muted
@@ -152,6 +230,12 @@ Diosa Interior uses 14 canonical colorimetric seasons. Below is the complete ref
 - Colors that dull: pasteles, colores fríos, negro puro
 - Jewelry: gold_antique
 - Validation phrase: "All deep, warm, rich — Deep Autumn never cool or light."
+- Makeup palettes (use LITERAL hex when populating 'makeup.categories'):
+  - lipstick (5): Rojo ladrillo #8B2A1A, Borgoña cálido #6B1B2A, Rojo ladrillo profundo #7C2820, Vino tinto cálido #5C1B1B, Teja oscura intensa #8C3818
+  - blush (3): Teja apagado #A85838, Cobre oscuro #8C4830, Ladrillo medio #9C5040
+  - eyeshadow (6): Ámbar #B8860B, Verde cazador #355E3B, Cobre quemado #8C5028, Caoba #6B3818, Oliva oscuro #6B5028, Chocolate profundo #4A2820
+  - eyeliner (3): Negro cálido #2A1810, Café espresso intenso #3C2820, Negro caoba #1A0F08
+  - foundation (3): Beige dorado profundo (claro) #C89878, Bronce cálido profundo (medio) #A07050, Chocolate cálido (oscuro) #684830
 
 ---
 
@@ -212,51 +296,82 @@ Your output goes inside the tool call 'submit_colorimetric_analysis'. Field-by-f
 - cie_lab: { L, a, b } numeric — L from Section 3, a and b inferred from undertone
 - contrast_level: "low" | "medium" | "high" — based on hair/skin/eye contrast in the photos
 
-**palette.colors** (array of exactly 6):
-- Six harmonious colors PICKED EXCLUSIVELY from the user's season's irradian list (Section 4)
-- DO NOT invent hex codes. DO NOT pick hex from a different season. DO NOT modify the canonical hex (no "close enough" variations).
-- The KB has 12 hex per season — choose the 6 most representative for this user.
-- Each color object:
-  - hex (#RRGGBB uppercase) — must match a canonical hex from Section 4
-  - nombre (Spanish, descriptive — e.g. "melocotón luminoso") — use the canonical name from Section 4
-  - usage (Spanish free text, prose form — e.g. "blusas, vestidos formales") — context where the color belongs
-  - occasions (REQUIRED): array of 1-4 strings from this enum:
-    - "diario" (everyday wear, casual contexts)
-    - "trabajo" (workplace, professional, business casual)
-    - "noche" (evening, dinner, going out)
-    - "formal" (events with formality requirement, weddings, ceremonies)
-    - "casual" (relaxed weekend, leisure)
-    - "evento" (special occasion, party, celebration)
-    Choose occasions where the color GENUINELY belongs based on:
-    - Saturation level (high → "evento" or "noche", muted → "diario")
-    - Cultural codes in LATAM (negros/oscuros pertenecen a "noche" + "formal")
-    - Practical wearability (a saturated red rarely fits "trabajo" except as accent)
+**palette** (object with three sub-fields: hero, extended, avoid):
 
-**palette.avoid** (array of 5-10 objects, NOT strings):
-- Each object has shape { hex (#RRGGBB), nombre (Spanish, max 50 chars) }
-- Derived from the season's 'apagan' list (Section 4)
-- For each apagan descriptor, pick a canonical hex using this table:
+  **palette.hero** (array of exactly 6 PaletteColor objects):
+  - Six MOST REPRESENTATIVE colors PICKED EXCLUSIVELY from the user's season's irradian list (Section 4).
+  - DO NOT invent hex codes. DO NOT pick hex from a different season. DO NOT modify the canonical hex (no "close enough" variations).
+  - The KB has 12 hex per season — choose the 6 that best anchor this user's identity.
+  - Each color object:
+    - hex (#RRGGBB uppercase) — must match a canonical hex from Section 4
+    - nombre (Spanish, descriptive — e.g. "Melocotón luminoso") — use the canonical name from Section 4
+    - usage (Spanish free text, prose form — e.g. "blusas, vestidos formales") — context where the color belongs
+    - occasions (REQUIRED): array of 1-4 strings from this enum:
+      - "diario" (everyday wear, casual contexts)
+      - "trabajo" (workplace, professional, business casual)
+      - "noche" (evening, dinner, going out)
+      - "formal" (events with formality requirement, weddings, ceremonies)
+      - "casual" (relaxed weekend, leisure)
+      - "evento" (special occasion, party, celebration)
 
-  | Spanish descriptor | Canonical hex | Spanish nombre |
-  |---|---|---|
-  | "negro" / "negro puro" | #000000 | "Negro absoluto" |
-  | "blanco frío" / "blanco brillante" | #FFFFFF | "Blanco frío" |
-  | "gris frío" | #808898 | "Gris frío" |
-  | "azul marino" | #14243B | "Azul marino" |
-  | "burdeos oscuro" | #5C0F18 | "Burdeos oscuro" |
-  | "naranja" / "naranja saturado" | #FF6020 | "Naranja saturado" |
-  | "mostaza" / "mostaza apagada" | #B8860B | "Mostaza" |
-  | "beige" / "beige apagado" | #D9C8A8 | "Beige cálido" |
-  | "verde oliva" / "caqui" | #6B7C45 | "Verde oliva" |
-  | "terracota" | #B85838 | "Terracota cálido" |
+  **palette.extended** (array of 8-15 PaletteColor objects):
+  - Pool ampliado del irradian list de la season. La IA elige cuántos según el balance editorial — 8 mínimo, 15 máximo.
+  - MUST NOT include any hex already in palette.hero (no duplicates).
+  - DO NOT invent hex. Solo del irradian list de Section 4.
+  - Same shape as hero entries.
 
-  For descriptors not in the table ("tonos tierra", "colores cálidos intensos", "colores fríos", "muted", "pasteles", etc), pick ONE representative hex that captures the spirit of the descriptor (e.g. "tonos tierra" → #8B3A2A teja) and give it a Spanish nombre.
+  **palette.avoid** (array of 8-12 objects, NOT strings):
+  - Each object has shape { hex (#RRGGBB uppercase), nombre (Spanish, max 50 chars) }
+  - Derived from the season's 'apagan' list (Section 4)
+  - For each apagan descriptor, pick a canonical hex using this table:
 
-  The resulting array MUST have 5-10 entries. Each apagan descriptor in Section 4 may map to one or multiple hex entries.
+    | Spanish descriptor | Canonical hex | Spanish nombre |
+    |---|---|---|
+    | "negro" / "negro puro" | #000000 | "Negro absoluto" |
+    | "blanco frío" / "blanco brillante" | #FFFFFF | "Blanco frío" |
+    | "gris frío" | #808898 | "Gris frío" |
+    | "azul marino" | #14243B | "Azul marino" |
+    | "burdeos oscuro" | #5C0F18 | "Burdeos oscuro" |
+    | "naranja" / "naranja saturado" | #FF6020 | "Naranja saturado" |
+    | "mostaza" / "mostaza apagada" | #B8860B | "Mostaza" |
+    | "beige" / "beige apagado" | #D9C8A8 | "Beige cálido" |
+    | "verde oliva" / "caqui" | #6B7C45 | "Verde oliva" |
+    | "terracota" | #B85838 | "Terracota cálido" |
 
-**makeup** (object):
-- lipstick: { name, hex } — match the season's lipstick from Section 4
-- blush: { name, hex } — if the season has one defined; otherwise infer from palette
+    For descriptors not in the table ("tonos tierra", "colores cálidos intensos", "colores fríos", "muted", "pasteles", etc), pick ONE representative hex that captures the spirit of the descriptor (e.g. "tonos tierra" → #8B3A2A teja) and give it a Spanish nombre.
+
+    The resulting array MUST have 8-12 entries. Each apagan descriptor in Section 4 may map to one or multiple hex entries.
+
+**occasions** (array of EXACTLY 6 objects, one per OccasionEnum value):
+- The 6 IDs MUST appear in this canonical order: diario, trabajo, noche, formal, casual, evento.
+- Each object:
+  - id: one of "diario" | "trabajo" | "noche" | "formal" | "casual" | "evento"
+  - label (Spanish, max 40 chars): display label (e.g. "Día a día", "Trabajo", "Noche", "Formal", "Casual", "Evento")
+  - description (Spanish, 20-120 chars): one short editorial sentence about how this occasion looks for the user
+  - colors: array of 4-6 hex codes (string format, NOT objects) drawn from palette.hero ∪ palette.extended
+
+**makeup** (object with narrative + categories):
+- narrative (Spanish, 80-400 chars): one paragraph in brand voice §13 introducing the user's makeup approach
+- categories: array of EXACTLY 5 MakeupCategory objects, one per category in this order: lipstick, blush, eyeshadow, eyeliner, foundation
+
+  **Each MakeupCategory object:**
+  - category: one of "lipstick" | "blush" | "eyeshadow" | "eyeliner" | "foundation"
+  - label (Spanish, max 40 chars): "Labios", "Rubor", "Sombras", "Delineador", "Base"
+  - rationale (Spanish, 40-200 chars): one editorial sentence about how the user's category looks
+  - colors: array of MakeupItem objects, with EXACT counts per category:
+    - lipstick: 5 colors
+    - blush: 3 colors
+    - eyeshadow: 6 colors
+    - eyeliner: 3 colors
+    - foundation: 3 colors (claro, medio, oscuro dentro del Fitzpatrick típico)
+
+  **Each MakeupItem object:**
+  - hex (#RRGGBB uppercase) — MUST be a LITERAL hex from the season's makeupPalettes (Section 4)
+  - nombre (Spanish, max 50 chars) — the canonical name from the season's makeupPalettes
+  - tip (Spanish, 10-140 chars, optional): brief usage hint for that specific color
+
+  **CRITICAL — makeup hex rule:**
+  Use ONLY the hex codes listed in the season's makeupPalettes (Section 4). DO NOT invent. DO NOT pick makeup hex from a different season. DO NOT pick from palette.hero or palette.extended — those are wardrobe colors, not makeup. The KB has exactly 5+3+6+3+3=20 makeup hex per season; populate \`categories[].colors\` LITERALLY from those.
 
 **jewelry** (object):
 - type: one of the JewelryType enum values (gold_yellow, gold_warm, silver, platinum, bronze, copper, rose_gold, gold_antique, silver_oxidized) — must match Section 4

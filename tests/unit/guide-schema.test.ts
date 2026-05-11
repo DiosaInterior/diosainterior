@@ -45,12 +45,12 @@ describe("GuideSchema — rechazos", () => {
     expect(() => GuideSchema.parse(bad)).toThrow();
   });
 
-  it("rechaza hex inválido en palette.colors", () => {
+  it("rechaza hex inválido en palette.hero", () => {
     const bad = {
       ...validGuide,
       palette: {
         ...validGuide.palette,
-        colors: validGuide.palette.colors.map((c, i) =>
+        hero: validGuide.palette.hero.map((c, i) =>
           i === 0 ? { ...c, hex: "not-a-hex" } : c,
         ),
       },
@@ -58,12 +58,23 @@ describe("GuideSchema — rechazos", () => {
     expect(() => GuideSchema.parse(bad)).toThrow();
   });
 
-  it("rechaza palette.colors con length distinto a 6", () => {
+  it("rechaza palette.hero con length distinto a 6 (G.6.B)", () => {
     const bad = {
       ...validGuide,
       palette: {
         ...validGuide.palette,
-        colors: validGuide.palette.colors.slice(0, 5),
+        hero: validGuide.palette.hero.slice(0, 5),
+      },
+    };
+    expect(() => GuideSchema.parse(bad)).toThrow();
+  });
+
+  it("rechaza palette.extended con menos de 8 entries (G.6.B)", () => {
+    const bad = {
+      ...validGuide,
+      palette: {
+        ...validGuide.palette,
+        extended: validGuide.palette.extended.slice(0, 7),
       },
     };
     expect(() => GuideSchema.parse(bad)).toThrow();
@@ -195,23 +206,23 @@ describe("GuideSchema — G.6.A endurecimiento", () => {
     expect(() => GuideSchema.parse(bad)).toThrow();
   });
 
-  it("rechaza palette.avoid con menos de 5 entries", () => {
+  it("rechaza palette.avoid con menos de 8 entries (G.6.B min)", () => {
     const bad = {
       ...validGuide,
       palette: {
         ...validGuide.palette,
-        avoid: validGuide.palette.avoid.slice(0, 4),
+        avoid: validGuide.palette.avoid.slice(0, 7),
       },
     };
     expect(() => GuideSchema.parse(bad)).toThrow();
   });
 
-  it("rechaza palette.avoid con más de 10 entries", () => {
+  it("rechaza palette.avoid con más de 12 entries (G.6.B max)", () => {
     const bad = {
       ...validGuide,
       palette: {
         ...validGuide.palette,
-        avoid: Array.from({ length: 11 }, (_, i) => ({
+        avoid: Array.from({ length: 13 }, (_, i) => ({
           hex: "#000000",
           nombre: `color ${i}`,
         })),
@@ -228,6 +239,113 @@ describe("GuideSchema — G.6.A endurecimiento", () => {
         avoid: validGuide.palette.avoid.map((a, i) =>
           i === 0 ? { ...a, hex: "not-hex" } : a,
         ),
+      },
+    };
+    expect(() => GuideSchema.parse(bad)).toThrow();
+  });
+});
+
+describe("GuideSchema — G.6.B endurecimiento", () => {
+  // makeup.categories count canónico por categoría enforced via superRefine.
+  it("rechaza makeup.categories con lipstick != 5 colors", () => {
+    const bad = {
+      ...validGuide,
+      makeup: {
+        ...validGuide.makeup,
+        categories: validGuide.makeup.categories.map((c) =>
+          c.category === "lipstick"
+            ? { ...c, colors: c.colors.slice(0, 4) }
+            : c,
+        ),
+      },
+    };
+    expect(() => GuideSchema.parse(bad)).toThrow();
+  });
+
+  it("rechaza makeup.categories con blush != 3 colors", () => {
+    const bad = {
+      ...validGuide,
+      makeup: {
+        ...validGuide.makeup,
+        categories: validGuide.makeup.categories.map((c) =>
+          c.category === "blush"
+            ? { ...c, colors: c.colors.slice(0, 2) }
+            : c,
+        ),
+      },
+    };
+    expect(() => GuideSchema.parse(bad)).toThrow();
+  });
+
+  it("rechaza makeup.categories con eyeshadow != 6 colors", () => {
+    const bad = {
+      ...validGuide,
+      makeup: {
+        ...validGuide.makeup,
+        categories: validGuide.makeup.categories.map((c) =>
+          c.category === "eyeshadow"
+            ? { ...c, colors: c.colors.slice(0, 5) }
+            : c,
+        ),
+      },
+    };
+    expect(() => GuideSchema.parse(bad)).toThrow();
+  });
+
+  it("rechaza makeup.categories duplicadas", () => {
+    const bad = {
+      ...validGuide,
+      makeup: {
+        ...validGuide.makeup,
+        categories: [
+          ...validGuide.makeup.categories.slice(0, 4),
+          validGuide.makeup.categories[0], // duplicate lipstick
+        ],
+      },
+    };
+    expect(() => GuideSchema.parse(bad)).toThrow();
+  });
+
+  it("rechaza makeup.categories con length != 5", () => {
+    const bad = {
+      ...validGuide,
+      makeup: {
+        ...validGuide.makeup,
+        categories: validGuide.makeup.categories.slice(0, 4),
+      },
+    };
+    expect(() => GuideSchema.parse(bad)).toThrow();
+  });
+
+  it("rechaza occasions con length != 6", () => {
+    const bad = {
+      ...validGuide,
+      occasions: validGuide.occasions.slice(0, 5),
+    };
+    expect(() => GuideSchema.parse(bad)).toThrow();
+  });
+
+  it("rechaza occasion con menos de 4 hex", () => {
+    const bad = {
+      ...validGuide,
+      occasions: validGuide.occasions.map((o, i) =>
+        i === 0 ? { ...o, colors: o.colors.slice(0, 3) } : o,
+      ),
+    };
+    expect(() => GuideSchema.parse(bad)).toThrow();
+  });
+
+  it("rechaza palette.extended con más de 15 entries", () => {
+    const bad = {
+      ...validGuide,
+      palette: {
+        ...validGuide.palette,
+        extended: Array.from({ length: 16 }, (_, i) => ({
+          hex: "#FFBE8C",
+          nombre: `Color ${i}`,
+          usage: "test",
+          occasions: ["diario"] as const,
+        })),
       },
     };
     expect(() => GuideSchema.parse(bad)).toThrow();
