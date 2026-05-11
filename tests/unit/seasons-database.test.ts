@@ -133,3 +133,60 @@ describe("getValidationPhrase", () => {
     }
   });
 });
+
+describe("SEASONS_DATABASE — makeupPalettes (G.6.B)", () => {
+  it("cada season tiene makeupPalettes con las 5 categorías presentes", () => {
+    for (const seasonId of ALL_SEASONS) {
+      const mp = SEASONS_DATABASE[seasonId].makeupPalettes;
+      expect(mp).toBeDefined();
+      expect(mp.lipstick).toBeDefined();
+      expect(mp.blush).toBeDefined();
+      expect(mp.eyeshadow).toBeDefined();
+      expect(mp.eyeliner).toBeDefined();
+      expect(mp.foundation).toBeDefined();
+    }
+  });
+
+  it("cada categoría tiene el count canónico exacto (5/3/6/3/3)", () => {
+    for (const seasonId of ALL_SEASONS) {
+      const mp = SEASONS_DATABASE[seasonId].makeupPalettes;
+      expect(mp.lipstick, `${seasonId}.lipstick`).toHaveLength(5);
+      expect(mp.blush, `${seasonId}.blush`).toHaveLength(3);
+      expect(mp.eyeshadow, `${seasonId}.eyeshadow`).toHaveLength(6);
+      expect(mp.eyeliner, `${seasonId}.eyeliner`).toHaveLength(3);
+      expect(mp.foundation, `${seasonId}.foundation`).toHaveLength(3);
+    }
+  });
+
+  it("todos los hex de makeupPalettes son #RRGGBB válidos con nombre non-empty", () => {
+    for (const seasonId of ALL_SEASONS) {
+      const mp = SEASONS_DATABASE[seasonId].makeupPalettes;
+      const allItems = [
+        ...mp.lipstick,
+        ...mp.blush,
+        ...mp.eyeshadow,
+        ...mp.eyeliner,
+        ...mp.foundation,
+      ];
+      for (const item of allItems) {
+        expect(item.hex, `${seasonId}: ${item.hex}`).toMatch(
+          /^#[0-9A-Fa-f]{6}$/,
+        );
+        expect(item.nombre.length).toBeGreaterThan(0);
+      }
+    }
+  });
+
+  it("el total por estación es exactamente 20 hex de maquillaje (5+3+6+3+3)", () => {
+    for (const seasonId of ALL_SEASONS) {
+      const mp = SEASONS_DATABASE[seasonId].makeupPalettes;
+      const total =
+        mp.lipstick.length +
+        mp.blush.length +
+        mp.eyeshadow.length +
+        mp.eyeliner.length +
+        mp.foundation.length;
+      expect(total, `${seasonId} makeup hex total`).toBe(20);
+    }
+  });
+});

@@ -23,7 +23,7 @@ import {
   type SeasonId,
 } from "@/lib/ai/knowledge/seasons-database";
 
-export const PROMPT_VERSION = "2.1.0";
+export const PROMPT_VERSION = "2.2.0";
 
 // ---------------------------------------------------------------------
 // HELPERS (private — not exported)
@@ -73,11 +73,20 @@ function formatMunsellTable(): string {
   return rows.join("\n");
 }
 
+function formatMakeupPalette(
+  label: string,
+  items: ReadonlyArray<{ hex: string; nombre: string }>,
+): string {
+  const formatted = items.map((c) => `${c.nombre} ${c.hex}`).join(", ");
+  return `  - ${label} (${items.length}): ${formatted}`;
+}
+
 function formatSeasonEntry(seasonId: SeasonId): string {
   const s = SEASONS_DATABASE[seasonId];
   const colors = s.irradian.map((c) => `${c.nombre} ${c.hex}`).join(", ");
   const dull = s.apagan.join(", ");
   const fitz = formatFitzpatrickRange(s.typicalFitzpatrick);
+  const mp = s.makeupPalettes;
   return [
     `### ${s.displayName.toUpperCase()} (${s.id})`,
     `- Categorization: ${s.hue} · ${s.value} · ${s.chroma}`,
@@ -86,6 +95,12 @@ function formatSeasonEntry(seasonId: SeasonId): string {
     `- Colors that dull: ${dull}`,
     `- Jewelry: ${s.jewelry}`,
     `- Validation phrase: "${s.validationPhrase}"`,
+    `- Makeup palettes (use LITERAL hex when populating 'makeup.categories'):`,
+    formatMakeupPalette("lipstick", mp.lipstick),
+    formatMakeupPalette("blush", mp.blush),
+    formatMakeupPalette("eyeshadow", mp.eyeshadow),
+    formatMakeupPalette("eyeliner", mp.eyeliner),
+    formatMakeupPalette("foundation", mp.foundation),
   ].join("\n");
 }
 
@@ -195,51 +210,82 @@ Your output goes inside the tool call 'submit_colorimetric_analysis'. Field-by-f
 - cie_lab: { L, a, b } numeric — L from Section 3, a and b inferred from undertone
 - contrast_level: "low" | "medium" | "high" — based on hair/skin/eye contrast in the photos
 
-**palette.colors** (array of exactly 6):
-- Six harmonious colors PICKED EXCLUSIVELY from the user's season's irradian list (Section 4)
-- DO NOT invent hex codes. DO NOT pick hex from a different season. DO NOT modify the canonical hex (no "close enough" variations).
-- The KB has 12 hex per season — choose the 6 most representative for this user.
-- Each color object:
-  - hex (#RRGGBB uppercase) — must match a canonical hex from Section 4
-  - nombre (Spanish, descriptive — e.g. "melocotón luminoso") — use the canonical name from Section 4
-  - usage (Spanish free text, prose form — e.g. "blusas, vestidos formales") — context where the color belongs
-  - occasions (REQUIRED): array of 1-4 strings from this enum:
-    - "diario" (everyday wear, casual contexts)
-    - "trabajo" (workplace, professional, business casual)
-    - "noche" (evening, dinner, going out)
-    - "formal" (events with formality requirement, weddings, ceremonies)
-    - "casual" (relaxed weekend, leisure)
-    - "evento" (special occasion, party, celebration)
-    Choose occasions where the color GENUINELY belongs based on:
-    - Saturation level (high → "evento" or "noche", muted → "diario")
-    - Cultural codes in LATAM (negros/oscuros pertenecen a "noche" + "formal")
-    - Practical wearability (a saturated red rarely fits "trabajo" except as accent)
+**palette** (object with three sub-fields: hero, extended, avoid):
 
-**palette.avoid** (array of 5-10 objects, NOT strings):
-- Each object has shape { hex (#RRGGBB), nombre (Spanish, max 50 chars) }
-- Derived from the season's 'apagan' list (Section 4)
-- For each apagan descriptor, pick a canonical hex using this table:
+  **palette.hero** (array of exactly 6 PaletteColor objects):
+  - Six MOST REPRESENTATIVE colors PICKED EXCLUSIVELY from the user's season's irradian list (Section 4).
+  - DO NOT invent hex codes. DO NOT pick hex from a different season. DO NOT modify the canonical hex (no "close enough" variations).
+  - The KB has 12 hex per season — choose the 6 that best anchor this user's identity.
+  - Each color object:
+    - hex (#RRGGBB uppercase) — must match a canonical hex from Section 4
+    - nombre (Spanish, descriptive — e.g. "Melocotón luminoso") — use the canonical name from Section 4
+    - usage (Spanish free text, prose form — e.g. "blusas, vestidos formales") — context where the color belongs
+    - occasions (REQUIRED): array of 1-4 strings from this enum:
+      - "diario" (everyday wear, casual contexts)
+      - "trabajo" (workplace, professional, business casual)
+      - "noche" (evening, dinner, going out)
+      - "formal" (events with formality requirement, weddings, ceremonies)
+      - "casual" (relaxed weekend, leisure)
+      - "evento" (special occasion, party, celebration)
 
-  | Spanish descriptor | Canonical hex | Spanish nombre |
-  |---|---|---|
-  | "negro" / "negro puro" | #000000 | "Negro absoluto" |
-  | "blanco frío" / "blanco brillante" | #FFFFFF | "Blanco frío" |
-  | "gris frío" | #808898 | "Gris frío" |
-  | "azul marino" | #14243B | "Azul marino" |
-  | "burdeos oscuro" | #5C0F18 | "Burdeos oscuro" |
-  | "naranja" / "naranja saturado" | #FF6020 | "Naranja saturado" |
-  | "mostaza" / "mostaza apagada" | #B8860B | "Mostaza" |
-  | "beige" / "beige apagado" | #D9C8A8 | "Beige cálido" |
-  | "verde oliva" / "caqui" | #6B7C45 | "Verde oliva" |
-  | "terracota" | #B85838 | "Terracota cálido" |
+  **palette.extended** (array of 8-15 PaletteColor objects):
+  - Pool ampliado del irradian list de la season. La IA elige cuántos según el balance editorial — 8 mínimo, 15 máximo.
+  - MUST NOT include any hex already in palette.hero (no duplicates).
+  - DO NOT invent hex. Solo del irradian list de Section 4.
+  - Same shape as hero entries.
 
-  For descriptors not in the table ("tonos tierra", "colores cálidos intensos", "colores fríos", "muted", "pasteles", etc), pick ONE representative hex that captures the spirit of the descriptor (e.g. "tonos tierra" → #8B3A2A teja) and give it a Spanish nombre.
+  **palette.avoid** (array of 8-12 objects, NOT strings):
+  - Each object has shape { hex (#RRGGBB uppercase), nombre (Spanish, max 50 chars) }
+  - Derived from the season's 'apagan' list (Section 4)
+  - For each apagan descriptor, pick a canonical hex using this table:
 
-  The resulting array MUST have 5-10 entries. Each apagan descriptor in Section 4 may map to one or multiple hex entries.
+    | Spanish descriptor | Canonical hex | Spanish nombre |
+    |---|---|---|
+    | "negro" / "negro puro" | #000000 | "Negro absoluto" |
+    | "blanco frío" / "blanco brillante" | #FFFFFF | "Blanco frío" |
+    | "gris frío" | #808898 | "Gris frío" |
+    | "azul marino" | #14243B | "Azul marino" |
+    | "burdeos oscuro" | #5C0F18 | "Burdeos oscuro" |
+    | "naranja" / "naranja saturado" | #FF6020 | "Naranja saturado" |
+    | "mostaza" / "mostaza apagada" | #B8860B | "Mostaza" |
+    | "beige" / "beige apagado" | #D9C8A8 | "Beige cálido" |
+    | "verde oliva" / "caqui" | #6B7C45 | "Verde oliva" |
+    | "terracota" | #B85838 | "Terracota cálido" |
 
-**makeup** (object):
-- lipstick: { name, hex } — match the season's lipstick from Section 4
-- blush: { name, hex } — if the season has one defined; otherwise infer from palette
+    For descriptors not in the table ("tonos tierra", "colores cálidos intensos", "colores fríos", "muted", "pasteles", etc), pick ONE representative hex that captures the spirit of the descriptor (e.g. "tonos tierra" → #8B3A2A teja) and give it a Spanish nombre.
+
+    The resulting array MUST have 8-12 entries. Each apagan descriptor in Section 4 may map to one or multiple hex entries.
+
+**occasions** (array of EXACTLY 6 objects, one per OccasionEnum value):
+- The 6 IDs MUST appear in this canonical order: diario, trabajo, noche, formal, casual, evento.
+- Each object:
+  - id: one of "diario" | "trabajo" | "noche" | "formal" | "casual" | "evento"
+  - label (Spanish, max 40 chars): display label (e.g. "Día a día", "Trabajo", "Noche", "Formal", "Casual", "Evento")
+  - description (Spanish, 20-120 chars): one short editorial sentence about how this occasion looks for the user
+  - colors: array of 4-6 hex codes (string format, NOT objects) drawn from palette.hero ∪ palette.extended
+
+**makeup** (object with narrative + categories):
+- narrative (Spanish, 80-400 chars): one paragraph in brand voice §13 introducing the user's makeup approach
+- categories: array of EXACTLY 5 MakeupCategory objects, one per category in this order: lipstick, blush, eyeshadow, eyeliner, foundation
+
+  **Each MakeupCategory object:**
+  - category: one of "lipstick" | "blush" | "eyeshadow" | "eyeliner" | "foundation"
+  - label (Spanish, max 40 chars): "Labios", "Rubor", "Sombras", "Delineador", "Base"
+  - rationale (Spanish, 40-200 chars): one editorial sentence about how the user's category looks
+  - colors: array of MakeupItem objects, with EXACT counts per category:
+    - lipstick: 5 colors
+    - blush: 3 colors
+    - eyeshadow: 6 colors
+    - eyeliner: 3 colors
+    - foundation: 3 colors (claro, medio, oscuro dentro del Fitzpatrick típico)
+
+  **Each MakeupItem object:**
+  - hex (#RRGGBB uppercase) — MUST be a LITERAL hex from the season's makeupPalettes (Section 4)
+  - nombre (Spanish, max 50 chars) — the canonical name from the season's makeupPalettes
+  - tip (Spanish, 10-140 chars, optional): brief usage hint for that specific color
+
+  **CRITICAL — makeup hex rule:**
+  Use ONLY the hex codes listed in the season's makeupPalettes (Section 4). DO NOT invent. DO NOT pick makeup hex from a different season. DO NOT pick from palette.hero or palette.extended — those are wardrobe colors, not makeup. The KB has exactly 5+3+6+3+3=20 makeup hex per season; populate \`categories[].colors\` LITERALLY from those.
 
 **jewelry** (object):
 - type: one of the JewelryType enum values (gold_yellow, gold_warm, silver, platinum, bronze, copper, rose_gold, gold_antique, silver_oxidized) — must match Section 4

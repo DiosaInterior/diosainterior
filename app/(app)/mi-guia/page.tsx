@@ -15,7 +15,7 @@ import { redirect } from "next/navigation";
 import { Logo } from "@/components/brand/Logo";
 import { AddToHomeButton } from "@/components/guide/AddToHomeButton";
 import { CorteCard } from "@/components/guide/CorteCard";
-import { EvitarList } from "@/components/guide/EvitarList";
+import { EvitarGrid } from "@/components/guide/EvitarGrid";
 import { MaquillajeCard } from "@/components/guide/MaquillajeCard";
 import { MetalesCard } from "@/components/guide/MetalesCard";
 import { OcasionesGrid } from "@/components/guide/OcasionesGrid";
@@ -46,15 +46,15 @@ export default async function MiGuiaPage() {
         <PerfilCard guide={guide} />
 
         <div className="mt-20">
-          <PaletaGrid colors={guide.palette.colors} />
+          <PaletaGrid palette={guide.palette} />
         </div>
 
         <div className="mt-20">
-          <EvitarList avoid={guide.palette.avoid ?? []} />
+          <EvitarGrid avoid={guide.palette.avoid} />
         </div>
 
         <div className="mt-20">
-          <OcasionesGrid colors={guide.palette.colors} />
+          <OcasionesGrid occasions={guide.occasions} />
         </div>
 
         <div className="mt-20">

@@ -6,8 +6,8 @@ import {
 } from "@/lib/ai/prompts/colorimetry-v2";
 
 describe("colorimetry-v2 prompt — smoke", () => {
-  it("exporta PROMPT_VERSION = '2.1.0' (bumpeado en G.6.A)", () => {
-    expect(PROMPT_VERSION).toBe("2.1.0");
+  it("exporta PROMPT_VERSION = '2.2.0' (bumpeado en G.6.B)", () => {
+    expect(PROMPT_VERSION).toBe("2.2.0");
   });
 
   it("buildColorimetryPrompt es una función pura sin argumentos", () => {

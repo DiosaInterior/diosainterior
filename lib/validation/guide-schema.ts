@@ -22,6 +22,18 @@
 //    cross-field season ↔ hue/value/chroma (antes una guía podía decir
 //    "true_winter" con value=medium y pasar validación, contradiciendo
 //    el canon).
+//
+// G.6.B — mejoras visibles:
+//  - palette.colors (legacy 6 fijos) reemplazada por palette.hero (6) +
+//    palette.extended (8-15 del pool irradian).
+//  - palette.avoid expandido a min 8 max 12 (antes 5-10) para soportar
+//    la visualización con swatches en EvitarGrid.
+//  - makeup migra de {lipstick, blush?} a {narrative, categories(5)} con
+//    counts fijos por categoría (lipstick:5, blush:3, eyeshadow:6,
+//    eyeliner:3, foundation:3) enforzado vía superRefine.
+//  - occasions promovido a bloque top-level (antes derivado de
+//    palette.colors[].occasions). 6 items fijos con label, description
+//    y 4-6 hex cada uno.
 // =====================================================================
 
 import { z } from "zod";
@@ -174,15 +186,11 @@ export const PaletteColorSchema = z.object({
   nombre: z.string().min(1),
   // Cómo y cuándo usar este color. ej: "blusas, vestidos formales".
   usage: z.string().min(1),
-  // Categoría estructurada de ocasiones donde brilla el color.
-  // Min 1, max 4 — un color rara vez sirve para >4 contextos.
-  // Cubre los contextos más comunes en LATAM. Permite OcasionesGrid (G.2).
-  //
-  // Optional a nivel Zod para no romper guides legacy en BD (las creadas
-  // antes de G.2.0 NO tienen este campo). El prompt sí lo pide REQUIRED
-  // a Anthropic — guides nuevas siempre llegan con occasions populadas.
-  // UI G.2 hace defensive render: `color.occasions ?? []`.
-  occasions: z.array(OccasionEnum).min(1).max(4).optional(),
+  // G.6.B — ahora REQUIRED. El prompt siempre la pide y las guides
+  // legacy con `avoid` como string[] ya fueron borradas en producción.
+  // Útil aunque las ocasiones top-level se rendericen desde
+  // `guide.occasions` — cada color sigue cargando su contexto propio.
+  occasions: z.array(OccasionEnum).min(1).max(4),
 });
 
 // G.6.A — palette.avoid ahora es array de {hex, nombre} en vez de
@@ -194,23 +202,105 @@ export const AvoidColorSchema = z.object({
 });
 
 export const PaletteSchema = z.object({
-  // 6 colores base — biblia §slide-1 de V1: "6 colores exactamente tuyos".
-  colors: z.array(PaletteColorSchema).length(6),
-  // 5-10 colores a evitar, derivados del listado `apagan` de la estación
+  // G.6.B — hero (6 colores fijos) reemplaza al legacy palette.colors.
+  // Son los 6 más representativos del pool irradian de la estación.
+  hero: z.array(PaletteColorSchema).length(6),
+  // Pool extendido 8-15 del irradian (12 hex disponibles por estación).
+  // La IA elige cuántos según el balance editorial de cada paleta.
+  extended: z.array(PaletteColorSchema).min(8).max(15),
+  // 8-12 colores a evitar, derivados del listado `apagan` de la estación
   // canónica. El prompt pide a la IA convertir descriptores cualitativos
   // ("negro puro") a hex canónicos ("#000000") usando un mapping.
-  avoid: z.array(AvoidColorSchema).min(5).max(10),
+  avoid: z.array(AvoidColorSchema).min(8).max(12),
 });
 
 export const MakeupItemSchema = z.object({
-  name: z.string().min(1),
   hex: HexColorSchema,
+  nombre: z.string().min(1).max(50),
+  // Tip opcional por color (ej. "para foco labial diurno"). La IA puede
+  // omitirlo si no aporta valor.
+  tip: z.string().min(10).max(140).optional(),
 });
 
-export const MakeupSchema = z.object({
-  lipstick: MakeupItemSchema,
-  blush: MakeupItemSchema.optional(),
+export const MakeupCategoryEnum = z.enum([
+  "lipstick",
+  "blush",
+  "eyeshadow",
+  "eyeliner",
+  "foundation",
+]);
+
+export const MakeupCategorySchema = z.object({
+  category: MakeupCategoryEnum,
+  label: z.string().min(1).max(40),
+  rationale: z.string().min(40).max(200),
+  colors: z.array(MakeupItemSchema),
 });
+
+// G.6.B — 5 categorías fijas con counts canónicos: lipstick(5), blush(3),
+// eyeshadow(6), eyeliner(3), foundation(3). El superRefine verifica
+// presencia única de cada categoría + count correcto por categoría.
+const MAKEUP_CATEGORY_COUNTS: Readonly<
+  Record<z.infer<typeof MakeupCategoryEnum>, number>
+> = {
+  lipstick: 5,
+  blush: 3,
+  eyeshadow: 6,
+  eyeliner: 3,
+  foundation: 3,
+};
+
+export const MakeupSchema = z
+  .object({
+    // Texto general que introduce la paleta de maquillaje. Voz §13.
+    narrative: z.string().min(80).max(400),
+    categories: z.array(MakeupCategorySchema).length(5),
+  })
+  .superRefine((data, ctx) => {
+    const seen = new Set<z.infer<typeof MakeupCategoryEnum>>();
+    data.categories.forEach((cat, i) => {
+      if (seen.has(cat.category)) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ["categories", i, "category"],
+          message: `Duplicate category: ${cat.category}`,
+        });
+      }
+      seen.add(cat.category);
+      const expected = MAKEUP_CATEGORY_COUNTS[cat.category];
+      if (cat.colors.length !== expected) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ["categories", i, "colors"],
+          message: `Category ${cat.category} must have ${expected} colors, got ${cat.colors.length}`,
+        });
+      }
+    });
+    for (const required of Object.keys(MAKEUP_CATEGORY_COUNTS) as ReadonlyArray<
+      z.infer<typeof MakeupCategoryEnum>
+    >) {
+      if (!seen.has(required)) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ["categories"],
+          message: `Missing required category: ${required}`,
+        });
+      }
+    }
+  });
+
+// G.6.B — occasions promovido a bloque top-level. 6 items fijos en el
+// orden canónico del enum (diario, trabajo, noche, formal, casual,
+// evento). Cada uno con narrativa propia + 4-6 hex sacados del pool
+// extended de la paleta.
+export const OccasionSchema = z.object({
+  id: OccasionEnum,
+  label: z.string().min(1).max(40),
+  description: z.string().min(20).max(120),
+  colors: z.array(HexColorSchema).min(4).max(6),
+});
+
+export const OccasionsSchema = z.array(OccasionSchema).length(6);
 
 // JewelryType debe matchear el enum del knowledge base (lib/ai/knowledge).
 export const JewelrySchema = z.object({
@@ -240,6 +330,7 @@ export const HaircutSchema = z.object({
 export const GuideSchema = z.object({
   scientific: ScientificProfileSchema,
   palette: PaletteSchema,
+  occasions: OccasionsSchema,
   makeup: MakeupSchema,
   jewelry: JewelrySchema,
   haircut: HaircutSchema,
@@ -256,6 +347,10 @@ export type PaletteColor = z.infer<typeof PaletteColorSchema>;
 export type AvoidColor = z.infer<typeof AvoidColorSchema>;
 export type Makeup = z.infer<typeof MakeupSchema>;
 export type MakeupItem = z.infer<typeof MakeupItemSchema>;
+export type MakeupCategory = z.infer<typeof MakeupCategorySchema>;
+export type MakeupCategoryId = z.infer<typeof MakeupCategoryEnum>;
+export type OccasionEntry = z.infer<typeof OccasionSchema>;
+export type Occasions = z.infer<typeof OccasionsSchema>;
 export type Jewelry = z.infer<typeof JewelrySchema>;
 export type Haircut = z.infer<typeof HaircutSchema>;
 export type Occasion = z.infer<typeof OccasionEnum>;
