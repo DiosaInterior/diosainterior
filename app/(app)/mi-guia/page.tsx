@@ -13,6 +13,7 @@
 import { redirect } from "next/navigation";
 
 import { Logo } from "@/components/brand/Logo";
+import { AddToHomeButton } from "@/components/guide/AddToHomeButton";
 import { CorteCard } from "@/components/guide/CorteCard";
 import { EvitarList } from "@/components/guide/EvitarList";
 import { MaquillajeCard } from "@/components/guide/MaquillajeCard";
@@ -67,6 +68,8 @@ export default async function MiGuiaPage() {
         <div className="mt-20">
           <CorteCard haircut={guide.haircut} />
         </div>
+
+        <AddToHomeButton />
 
         <div className="mt-32 mb-8 text-center">
           <p className="font-dm-mono text-xs uppercase tracking-widest text-marfil-suave/30">
