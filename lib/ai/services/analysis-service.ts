@@ -1,5 +1,5 @@
 import "server-only";
-import { eventIdFromPurchase } from "@/lib/analytics/event-id";
+import { eventIdFromPurchase } from "@/lib/analytics/event-id-server";
 import { sendCapiEvent } from "@/lib/analytics/meta-capi";
 import { getAdminClient } from "@/lib/db/admin";
 import { getAnthropicClient } from "@/lib/ai/clients/anthropic";

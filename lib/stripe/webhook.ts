@@ -24,7 +24,7 @@ import "server-only";
 import type Stripe from "stripe";
 
 import { inngest } from "@/inngest/client";
-import { eventIdFromPurchase } from "@/lib/analytics/event-id";
+import { eventIdFromPurchase } from "@/lib/analytics/event-id-server";
 import { sendCapiEvent } from "@/lib/analytics/meta-capi";
 import { getAdminClient } from "@/lib/db/admin";
 import { APP_URL } from "./config";
