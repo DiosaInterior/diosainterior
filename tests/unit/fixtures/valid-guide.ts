@@ -263,6 +263,9 @@ export const validGuide: Guide = {
     rationale:
       "El movimiento abre los pómulos y refuerza la luminosidad cálida característica de tu estación.",
   },
-  rationale:
+  // G.7.2 — campo top-level renombrado de `rationale` a `narrative_voice`.
+  // Las 3 rationales nested (jewelry.rationale, haircut.rationale,
+  // makeup.categories[].rationale) siguen como antes.
+  narrative_voice:
     "Tu paleta vive en el filo entre el durazno y el dorado: una luz que llevas cuando todo lo demás guarda silencio. Los colores que irradian en tu piel comparten una claridad cálida — nunca apagada, nunca fría. Cada hex en esta guía fue elegido para multiplicar esa luz, no para imponerse sobre ella. El oro amarillo es tu metal. El melocotón #E8785A es tu labial ancla. La paleta de seis se usa en capas, sin miedo: vos sos la que da el tono.",
 };

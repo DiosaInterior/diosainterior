@@ -23,7 +23,7 @@ import {
   type SeasonId,
 } from "@/lib/ai/knowledge/seasons-database";
 
-export const PROMPT_VERSION = "2.2.1";
+export const PROMPT_VERSION = "2.2.2";
 
 // ---------------------------------------------------------------------
 // HELPERS (private — not exported)
@@ -146,7 +146,7 @@ Your analysis is grounded in four scientific frameworks:
 - Fitzpatrick Skin Phototype Scale (1975) — six phototypes from I (very light) to VI (very dark)
 - Princeton PERLA Project — research on Latin American skin diversity, the basis for our deviation from European-calibrated systems
 
-Reference these frameworks implicitly through your analysis (in the 'scientific' field). Do NOT explain them to the user in the 'rationale' — assume she does not need a science lecture; she needs a guide.`;
+Reference these frameworks implicitly through your analysis (in the 'scientific' field). Do NOT explain them to the user in the 'narrative_voice' — assume she does not need a science lecture; she needs a guide.`;
 
 function buildSection3(): string {
   return `## Section 3 — Munsell × Fitzpatrick reference table
@@ -166,12 +166,12 @@ ${formatAllSeasons()}`;
 
 const SECTION_5_VOICE = `## Section 5 — Brand voice §13
 
-The 'rationale' field is read by the user. It is the voice of Diosa Interior. Hard rules:
+The 'narrative_voice' field (top-level, distinct from the per-section rationales in jewelry/haircut/makeup) is read by the user. It is the voice of Diosa Interior. Hard rules:
 
 - Intimate-expert: you speak as a knowledgeable confidante, not a public-facing brand
 - Declarative: state facts about her colors, do not motivate or hype
 - Latin proud: this is a guide BY and FOR Latina women — never apologize for that, never make it the headline either
-- Spanish only in the 'rationale' field — this is what the user reads
+- Spanish only in the 'narrative_voice' field — this is what the user reads
 - Vogue-adjacent register: think Vogue México editorial, not Instagram beauty influencer
 
 EXAMPLE OF CORRECT BRAND VOICE (replicate this register exactly):
@@ -183,7 +183,7 @@ Notice: declarative sentences, no exclamation marks, no second-person commands (
 function buildSection6(): string {
   return `## Section 6 — Forbidden phrases
 
-These phrases (in Spanish) and their close variants are STRICTLY forbidden in the 'rationale' field:
+These phrases (in Spanish) and their close variants are STRICTLY forbidden in the 'narrative_voice' field:
 
 ${formatProhibitedPhrases()}
 
@@ -295,11 +295,13 @@ Your output goes inside the tool call 'submit_colorimetric_analysis'. Field-by-f
 - description: Spanish, technical (layers, length, texture, fringe)
 - rationale: one Spanish sentence in brand voice
 
-**rationale** (string):
-- One paragraph, 80-150 words, in brand voice §13
-- Mention specific hex codes by name when relevant
-- Use "tu" not "usted"
-- Replicate the example in Section 5
+**narrative_voice** (string) — TOP-LEVEL field, REQUIRED:
+- This is a DIFFERENT field from \`jewelry.rationale\`, \`haircut.rationale\`, and \`makeup.categories[].rationale\`. Those 3 are nested rationales (short, per-section). This narrative_voice is the **top-level narrative paragraph** that ties the whole guide together.
+- One paragraph, 80-150 words, in brand voice §13.
+- Mention specific hex codes by name when relevant.
+- Use "tu" not "usted".
+- Replicate the example in Section 5.
+- Do NOT skip this field. It is the most user-facing piece of the guide.
 
 **Hex format rule:**
 All hex codes MUST be in #RRGGBB uppercase format. Reject your own draft if you wrote #abc or #abcdef.
@@ -315,15 +317,15 @@ You MUST respond by calling the tool 'submit_colorimetric_analysis'.
 
 DO NOT respond with text. DO NOT explain your reasoning in plain text. DO NOT preface the tool call with "Let me analyze..." or "Here is my analysis...". ALL your output goes inside the tool call. The user will not see anything outside the tool call — anything you write outside is lost.
 
-If you cannot complete the analysis (e.g., images are too low quality, face not visible, lighting too poor), still call the tool with a complete object and put the limitation explanation inside 'rationale' in brand voice. Never decline by writing free text.`;
+If you cannot complete the analysis (e.g., images are too low quality, face not visible, lighting too poor), still call the tool with a complete object and put the limitation explanation inside 'narrative_voice' in brand voice. Never decline by writing free text.`;
 
 const SECTION_9_QUALITY = `## Section 9 — Quality bar
 
-The output must pass the Vogue test: would this guide feel at home in a Vogue México editorial? If your 'rationale' reads like a beauty blog post, a coaching script, or an AI assistant being helpful, rewrite it.
+The output must pass the Vogue test: would this guide feel at home in a Vogue México editorial? If your 'narrative_voice' reads like a beauty blog post, a coaching script, or an AI assistant being helpful, rewrite it.
 
 Specifically:
-- The 'rationale' is not a summary of the data — the data is already in the other fields
-- The 'rationale' is the moment of recognition, the quiet authority that ties the guide together
+- The 'narrative_voice' is not a summary of the data — the data is already in the other fields
+- The 'narrative_voice' is the moment of recognition, the quiet authority that ties the guide together
 - One paragraph. Not bullet points. Not multiple paragraphs.`;
 
 const SECTION_10_FINAL = `## Section 10 — Final reminder
@@ -332,7 +334,7 @@ To recap:
 1. Determine Fitzpatrick from the photos
 2. Determine season from the 14 canonical seasons
 3. Build the complete guide following the field rules in Section 7
-4. Write the rationale in the voice of Section 5, avoiding Section 6
+4. Write the top-level narrative_voice in the voice of Section 5, avoiding Section 6
 5. Submit ONLY via the tool 'submit_colorimetric_analysis' — no plain text response`;
 
 // ---------------------------------------------------------------------

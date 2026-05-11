@@ -18,7 +18,7 @@ function renderHTML(node: ReactElement): string {
 }
 
 describe("PerfilCard", () => {
-  it("renderiza season en formato display, fitzpatrick, undertone, hue y rationale", () => {
+  it("renderiza season en formato display, fitzpatrick, undertone, hue y narrative_voice", () => {
     const html = renderHTML(<PerfilCard guide={validGuide} />);
 
     // season "true_spring" → "True Spring" (replace _ + capitalize)
@@ -29,8 +29,8 @@ describe("PerfilCard", () => {
     expect(html).toContain(validGuide.scientific.undertone.replace(/_/g, " "));
     // hue "warm" → "warm"
     expect(html).toContain(validGuide.scientific.hue.replace(/_/g, " "));
-    // primeros chars del rationale
-    expect(html).toContain(validGuide.rationale.slice(0, 50));
+    // G.7.2 — campo renombrado de `rationale` a `narrative_voice`.
+    expect(html).toContain(validGuide.narrative_voice.slice(0, 50));
   });
 });
 
