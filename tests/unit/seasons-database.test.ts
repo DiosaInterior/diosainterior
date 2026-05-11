@@ -9,23 +9,35 @@ import {
   type SeasonId,
 } from "@/lib/ai/knowledge/seasons-database";
 
+// G.6.A — 14 estaciones canónicas (antes 11, +3 nuevas). Cada una con
+// exactamente 12 hex irradian curados (antes 4-5 por estación,
+// obligando a la IA a inventar para llegar a 6 en la paleta).
+// Ver header de seasons-database.ts para el racional de "por qué 14".
 const ALL_SEASONS: SeasonId[] = [
   "true_spring",
   "light_spring",
   "bright_spring",
+  "dark_spring",
   "true_summer",
   "soft_summer",
+  "light_summer",
   "soft_winter",
   "true_winter",
   "deep_winter",
+  "bright_winter",
   "true_autumn",
   "soft_autumn",
   "deep_autumn",
 ];
 
-describe("SEASONS_DATABASE — integridad de las 11 estaciones", () => {
-  it("contiene exactamente 11 entradas", () => {
-    expect(Object.keys(SEASONS_DATABASE)).toHaveLength(11);
+describe("SEASONS_DATABASE — integridad de las 14 estaciones", () => {
+  it("contiene exactamente 14 entradas (11 V2 + 3 nuevas G.6.A)", () => {
+    // El tipo SeasonId está declarado con 14 valores: las 11 V2
+    // originales (con soft_winter rescatada de §3.3 + Apéndice B) +
+    // las 3 nuevas G.6.A (light_summer, bright_winter, dark_spring,
+    // reincorporadas desde §3.1). Ver header de seasons-database.ts
+    // para el racional de "por qué 14 y no 12".
+    expect(Object.keys(SEASONS_DATABASE)).toHaveLength(ALL_SEASONS.length);
   });
 
   it("cada season tiene id idéntico al key", () => {
@@ -34,10 +46,10 @@ describe("SEASONS_DATABASE — integridad de las 11 estaciones", () => {
     }
   });
 
-  it("cada season tiene irradian con 4+ colores y todos los hex válidos #RRGGBB", () => {
+  it("cada season tiene exactamente 12 hex irradian con formato #RRGGBB", () => {
     for (const seasonId of ALL_SEASONS) {
       const season = SEASONS_DATABASE[seasonId];
-      expect(season.irradian.length).toBeGreaterThanOrEqual(4);
+      expect(season.irradian).toHaveLength(12);
       for (const c of season.irradian) {
         expect(c.hex).toMatch(/^#[0-9A-Fa-f]{6}$/);
         expect(c.nombre.length).toBeGreaterThan(0);
@@ -55,6 +67,16 @@ describe("SEASONS_DATABASE — integridad de las 11 estaciones", () => {
     for (const seasonId of others) {
       expect(SEASONS_DATABASE[seasonId].aliases).toBeUndefined();
     }
+  });
+
+  it("incluye las 3 estaciones nuevas de G.6.A (light_summer, bright_winter, dark_spring)", () => {
+    expect(SEASONS_DATABASE.light_summer).toBeDefined();
+    expect(SEASONS_DATABASE.bright_winter).toBeDefined();
+    expect(SEASONS_DATABASE.dark_spring).toBeDefined();
+    // Cada una con sus 12 hex.
+    expect(SEASONS_DATABASE.light_summer.irradian).toHaveLength(12);
+    expect(SEASONS_DATABASE.bright_winter.irradian).toHaveLength(12);
+    expect(SEASONS_DATABASE.dark_spring.irradian).toHaveLength(12);
   });
 });
 
@@ -77,7 +99,7 @@ describe("MUNSELL_BY_FITZPATRICK", () => {
 
 describe("isHexValidForSeason", () => {
   it("true cuando el hex está en irradian (case-insensitive)", () => {
-    // True Spring tiene #FFBE8C (melocotón luminoso, §11 BIBLIA) en irradian.
+    // True Spring tiene #FFBE8C (Melocotón luminoso) en irradian.
     expect(isHexValidForSeason("#FFBE8C", "true_spring")).toBe(true);
     expect(isHexValidForSeason("#ffbe8c", "true_spring")).toBe(true);
   });
@@ -91,10 +113,10 @@ describe("isHexValidForSeason", () => {
 });
 
 describe("getValidHexesForSeason", () => {
-  it("retorna array de strings con al menos 4 hex codes por season", () => {
+  it("retorna array de exactamente 12 hex codes por season", () => {
     for (const seasonId of ALL_SEASONS) {
       const hexes = getValidHexesForSeason(seasonId);
-      expect(hexes.length).toBeGreaterThanOrEqual(4);
+      expect(hexes).toHaveLength(12);
       for (const hex of hexes) {
         expect(hex).toMatch(/^#[0-9A-Fa-f]{6}$/);
       }
@@ -103,7 +125,7 @@ describe("getValidHexesForSeason", () => {
 });
 
 describe("getValidationPhrase", () => {
-  it("retorna phrase non-empty para las 11 estaciones", () => {
+  it("retorna phrase non-empty para las 14 estaciones canónicas", () => {
     for (const seasonId of ALL_SEASONS) {
       const phrase = getValidationPhrase(seasonId);
       expect(typeof phrase).toBe("string");

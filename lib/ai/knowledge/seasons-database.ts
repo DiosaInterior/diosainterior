@@ -1,34 +1,40 @@
 // =====================================================================
-// Diosa Interior — Knowledge base de las 11 estaciones canónicas V2
+// Diosa Interior — Knowledge base de las 14 estaciones canónicas V2.1
 // =====================================================================
 // Single source of truth. Toda otra capa (Zod schemas, tool definitions,
 // prompts, analysis service) importa de aquí. No duplicar season ids
 // ni hex codes en otros archivos — siempre re-exportar o leer.
 //
-// Fuente: BIBLIA_IMAGEN_DIOSA_INTERIOR.md (en /docs/) §3.1 (12 estaciones
-// canónicas), §3.2 (Munsell por Fitzpatrick), §3.3 (irradian/apagan
-// detallado por estación), Apéndice B (validation phrases).
+// Por qué 14 y no 12 de la biblia §3.1:
+// - §3.1 lista 12 estaciones pero omite soft_winter (omisión editorial;
+//   §3.3 + Apéndice B la respaldan con data válida).
+// - V2 original incluyó las 11 con respaldo §3.3 (las 12 de §3.1 menos
+//   light_summer/bright_winter/dark_spring que faltaban en §3.3, más
+//   soft_winter rescatada de §3.3+Apéndice B).
+// - G.6.A reincorpora light_summer, bright_winter y dark_spring con
+//   hex propios — quedan 11 V2 + 3 nuevas = 14 totales.
+// - La biblia se actualiza a V1.1 post-G.6 para reflejar las 14.
 //
-// La lista canónica V2 son 11 estaciones (no 12). Decisiones tomadas
-// en F.1 plan:
-//   - light_summer EXCLUIDA: §3.1 la lista pero §3.3 no la detalla,
-//     no hay irradian/apagan para validación cruzada en F.3.
-//   - bright_winter EXCLUIDA: en §3.1 pero sin data en §3.3.
-//   - dark_spring EXCLUIDA: en §3.3 + Apéndice B pero fuera del scope V2.
-//   - soft_winter INCLUIDA: ausente en §3.1 (omisión editorial), pero
-//     §3.3 + Apéndice B la respaldan.
+// Si en uso real una estación se demuestra redundante o falta otra,
+// ajustar via PR explícito documentando la razón editorial.
 //
-// Aliases canónicos (Q5 del plan):
+// Fuente original: BIBLIA_IMAGEN_DIOSA_INTERIOR.md (en /docs/) §3.1
+// (12 estaciones canónicas según biblia, sin soft_winter), §3.2 (Munsell
+// por Fitzpatrick), §3.3 (irradian/apagan detallado por estación,
+// incluye soft_winter), Apéndice B (validation phrases).
+//
+// G.6.A — expansión:
+//   - SeasonId pasa de 11 a 14 (se incorporan light_summer, bright_winter,
+//     dark_spring que estaban listadas en §3.1 pero quedaron fuera de V2).
+//   - Cada irradian ahora tiene exactamente 12 hex curados — antes había
+//     4-5 por estación, obligando a la IA a inventar para llegar a 6 en
+//     la paleta. Hex curados por César a partir de biblia §3.3 + análisis
+//     de coherencia hue/value/chroma + Munsell típico. NO son hex
+//     inventados en sesión — son la versión canónica V1 de Diosa Interior.
+//
+// Aliases canónicos:
 //   - true_autumn ←→ warm_autumn (Apéndice B usa "Warm Autumn").
 //   - true_winter ←→ clear_winter (Apéndice B usa "Clear Winter").
-//
-// TODO(post-F.1): actualizar comment del schema BD en migration 000X
-// para reflejar la lista canónica de 11 ids (true_autumn no warm_autumn).
-//
-// Hex inference: cuando §3.3 menciona un color por nombre sin código
-// hex (ej. "lavanda suave"), se asignó un hex canónico estándar y se
-// marca con comentario `// hex inferido por nombre`. Las entradas con
-// hex literal de §3.3 NO llevan ese comentario.
 // =====================================================================
 
 // ---------------------------------------------------------------------
@@ -39,11 +45,14 @@ export type SeasonId =
   | "true_spring"
   | "light_spring"
   | "bright_spring"
+  | "dark_spring"
   | "true_summer"
   | "soft_summer"
+  | "light_summer"
   | "soft_winter"
   | "true_winter"
   | "deep_winter"
+  | "bright_winter"
   | "true_autumn"
   | "soft_autumn"
   | "deep_autumn";
@@ -108,7 +117,7 @@ export const MUNSELL_BY_FITZPATRICK: Readonly<
 };
 
 // ---------------------------------------------------------------------
-// SEASONS DATABASE
+// SEASONS DATABASE — 14 estaciones × 12 hex irradian
 // ---------------------------------------------------------------------
 
 export const SEASONS_DATABASE: Readonly<Record<SeasonId, Season>> = {
@@ -120,11 +129,18 @@ export const SEASONS_DATABASE: Readonly<Record<SeasonId, Season>> = {
     chroma: "clear",
     typicalFitzpatrick: [1, 2],
     irradian: [
-      { hex: "#FFBE8C", nombre: "melocotón luminoso" }, // §11 BIBLIA, paleta validada en producción (Repostera)
-      { hex: "#FF7F5C", nombre: "coral cálido" }, // §11 BIBLIA + §14.2
-      { hex: "#C8E08C", nombre: "verde manzana" }, // §11 BIBLIA, paleta validada
-      { hex: "#F4DEB3", nombre: "crema dorada" }, // hex inferido por nombre
-      { hex: "#F8E59B", nombre: "amarillo claro" }, // hex inferido por nombre
+      { hex: "#FFBE8C", nombre: "Melocotón luminoso" },
+      { hex: "#FF7F5C", nombre: "Coral cálido" },
+      { hex: "#C8E08C", nombre: "Verde manzana" },
+      { hex: "#F5E6C8", nombre: "Crema dorada" },
+      { hex: "#FFE680", nombre: "Amarillo claro" },
+      { hex: "#FFA060", nombre: "Durazno cálido" },
+      { hex: "#A8D870", nombre: "Verde primavera" },
+      { hex: "#FFD060", nombre: "Amarillo mantequilla" },
+      { hex: "#FF8C70", nombre: "Salmón vivo" },
+      { hex: "#88C898", nombre: "Verde menta cálido" },
+      { hex: "#FFC080", nombre: "Albaricoque" },
+      { hex: "#E8B870", nombre: "Miel clara" },
     ],
     apagan: ["negro puro", "gris frío", "azul marino", "burdeos oscuro", "blanco frío"],
     jewelry: "gold_yellow",
@@ -143,16 +159,22 @@ export const SEASONS_DATABASE: Readonly<Record<SeasonId, Season>> = {
     chroma: "muted",
     typicalFitzpatrick: [1, 2],
     irradian: [
-      { hex: "#FFD1B5", nombre: "melocotón pálido" }, // hex inferido por nombre
-      { hex: "#FFB7A0", nombre: "coral luminoso suave" }, // hex inferido por nombre
-      { hex: "#B8E0C8", nombre: "verde menta" }, // hex inferido por nombre
-      { hex: "#FAEFD8", nombre: "crema" }, // hex inferido por nombre
+      { hex: "#FFD0B8", nombre: "Melocotón pálido" },
+      { hex: "#FFB8A0", nombre: "Coral luminoso suave" },
+      { hex: "#B8E0C8", nombre: "Verde menta" },
+      { hex: "#F8E8D0", nombre: "Crema cálida" },
+      { hex: "#FFE0C8", nombre: "Beige melocotón" },
+      { hex: "#F0D0A8", nombre: "Arena dorada clara" },
+      { hex: "#D0E0B8", nombre: "Verde lima suave" },
+      { hex: "#FFC8B8", nombre: "Rosa coral pálido" },
+      { hex: "#F8D8A8", nombre: "Amarillo trigo" },
+      { hex: "#E0C8A0", nombre: "Caramelo claro" },
+      { hex: "#FFE8B8", nombre: "Vainilla cálida" },
+      { hex: "#E8D0B0", nombre: "Champaña" },
     ],
     apagan: ["colores oscuros o muy saturados", "negro"],
     jewelry: "gold_yellow",
-    lipstick: { name: "coral pálido", hex: "#FFB7A0" }, // hex inferido por nombre
-    // validationPhrase generada en F.1 (no aparece en Apéndice B):
-    // patrón derivado de las phrases existentes + características §3.1.
+    lipstick: { name: "coral pálido", hex: "#FFB8A0" },
     validationPhrase:
       "All warm, light, soft — Light Spring is never deep or saturated.",
   },
@@ -165,17 +187,52 @@ export const SEASONS_DATABASE: Readonly<Record<SeasonId, Season>> = {
     chroma: "bright",
     typicalFitzpatrick: [2],
     irradian: [
-      { hex: "#FF6040", nombre: "coral vivo" },
-      { hex: "#4DBFB8", nombre: "turquesa cálido" }, // hex inferido por nombre
-      { hex: "#F4E04A", nombre: "amarillo limón" }, // hex inferido por nombre
-      { hex: "#5BC862", nombre: "verde brillante" }, // hex inferido por nombre
+      { hex: "#FF6040", nombre: "Coral vivo" },
+      { hex: "#40C8C8", nombre: "Turquesa cálido" },
+      { hex: "#F0E020", nombre: "Amarillo limón" },
+      { hex: "#60D040", nombre: "Verde brillante" },
+      { hex: "#FF8030", nombre: "Naranja mandarina" },
+      { hex: "#FFD030", nombre: "Amarillo girasol" },
+      { hex: "#20B0E0", nombre: "Azul aqua vivo" },
+      { hex: "#E83080", nombre: "Fucsia cálido" },
+      { hex: "#FF5060", nombre: "Rojo coral" },
+      { hex: "#80E0C0", nombre: "Turquesa luminoso" },
+      { hex: "#A0D830", nombre: "Verde lima vivo" },
+      { hex: "#FF9050", nombre: "Durazno vivo" },
     ],
     apagan: ["tonos apagados o muted", "negro"],
     jewelry: "gold_yellow",
     lipstick: { name: "coral vivo", hex: "#FF6040" },
-    // validationPhrase generada en F.1.
     validationPhrase:
       "All warm, light, bright — Bright Spring is never muted or earthy.",
+  },
+
+  dark_spring: {
+    id: "dark_spring",
+    displayName: "Dark Spring",
+    hue: "warm",
+    value: "medium",
+    chroma: "clear",
+    typicalFitzpatrick: [3, 4],
+    irradian: [
+      { hex: "#E85C30", nombre: "Coral vivo cálido" },
+      { hex: "#00A06A", nombre: "Verde esmeralda cálido" },
+      { hex: "#00B8C0", nombre: "Turquesa cálido" },
+      { hex: "#D89020", nombre: "Dorado intenso" },
+      { hex: "#C04020", nombre: "Rojo tomate" },
+      { hex: "#A8C830", nombre: "Verde lima dorado" },
+      { hex: "#E0A030", nombre: "Ámbar vivo" },
+      { hex: "#783818", nombre: "Castaño chocolate" },
+      { hex: "#B85838", nombre: "Teja brillante" },
+      { hex: "#388048", nombre: "Verde bosque cálido" },
+      { hex: "#D0C040", nombre: "Amarillo mostaza claro" },
+      { hex: "#A02830", nombre: "Rojo cereza cálido" },
+    ],
+    apagan: ["colores apagados", "negro puro", "gris frío", "pasteles fríos"],
+    jewelry: "gold_yellow",
+    lipstick: { name: "coral cálido vivo", hex: "#E85C30" },
+    validationPhrase:
+      "All warm, clear, and medium-deep — Dark Spring is never cool or muted.",
   },
 
   true_summer: {
@@ -186,10 +243,18 @@ export const SEASONS_DATABASE: Readonly<Record<SeasonId, Season>> = {
     chroma: "muted",
     typicalFitzpatrick: [1, 2],
     irradian: [
-      { hex: "#D8A6B5", nombre: "rosa polvoso" }, // hex inferido por nombre
-      { hex: "#C9B8D9", nombre: "lavanda suave" }, // hex inferido por nombre
-      { hex: "#6F8AA8", nombre: "azul pizarra" }, // hex inferido por nombre
-      { hex: "#BFA9A9", nombre: "gris rosado" }, // hex inferido por nombre
+      { hex: "#D8A8B8", nombre: "Rosa polvoso" },
+      { hex: "#B8B0D0", nombre: "Lavanda suave" },
+      { hex: "#8090A8", nombre: "Azul pizarra" },
+      { hex: "#C0B0B0", nombre: "Gris rosado" },
+      { hex: "#A8C0D0", nombre: "Azul polvo" },
+      { hex: "#C8B8C8", nombre: "Malva claro" },
+      { hex: "#B0A8B8", nombre: "Gris lavanda" },
+      { hex: "#D8C0C8", nombre: "Rosa cuarzo frío" },
+      { hex: "#98A8B0", nombre: "Azul humo" },
+      { hex: "#C8D0D8", nombre: "Gris perla frío" },
+      { hex: "#A8B0C0", nombre: "Azul cenizo" },
+      { hex: "#B8C8D0", nombre: "Azul brumoso" },
     ],
     apagan: ["colores cálidos intensos", "naranja", "mostaza"],
     jewelry: "silver",
@@ -206,33 +271,74 @@ export const SEASONS_DATABASE: Readonly<Record<SeasonId, Season>> = {
     chroma: "muted",
     typicalFitzpatrick: [2, 3],
     irradian: [
-      { hex: "#B69BA8", nombre: "malva apagado" }, // hex inferido por nombre
-      { hex: "#8FA0AB", nombre: "azul grisáceo" }, // hex inferido por nombre
-      { hex: "#C49A99", nombre: "rosa antiguo" }, // hex inferido por nombre
-      { hex: "#A6938B", nombre: "gris cálido" }, // hex inferido por nombre
+      { hex: "#A88898", nombre: "Malva apagado" },
+      { hex: "#7888A0", nombre: "Azul grisáceo" },
+      { hex: "#B89898", nombre: "Rosa antiguo" },
+      { hex: "#9890A0", nombre: "Gris cálido" },
+      { hex: "#809890", nombre: "Verde salvia frío" },
+      { hex: "#A8A0A8", nombre: "Gris violeta" },
+      { hex: "#909098", nombre: "Gris azulado" },
+      { hex: "#B0A098", nombre: "Topo apagado" },
+      { hex: "#9888A0", nombre: "Lavanda apagada" },
+      { hex: "#A09898", nombre: "Beige rosado frío" },
+      { hex: "#8898A8", nombre: "Azul polvo medio" },
+      { hex: "#B0A0A8", nombre: "Rosa humo" },
     ],
     apagan: ["colores vivos", "negro puro", "naranja"],
     jewelry: "silver_oxidized",
     lipstick: { name: "malva suave", hex: "#C090A0" },
-    // validationPhrase generada en F.1.
     validationPhrase:
       "All cool, muted, balanced — Soft Summer is never bright or warm.",
   },
 
+  light_summer: {
+    id: "light_summer",
+    displayName: "Light Summer",
+    hue: "cool",
+    value: "light",
+    chroma: "clear",
+    typicalFitzpatrick: [1, 2],
+    irradian: [
+      { hex: "#A8C5E8", nombre: "Azul cielo suave" },
+      { hex: "#D8B8D0", nombre: "Lavanda clara" },
+      { hex: "#F0D0DC", nombre: "Rosa polvo claro" },
+      { hex: "#C8D8E0", nombre: "Gris azulado claro" },
+      { hex: "#E8E0D8", nombre: "Marfil frío" },
+      { hex: "#A8B8C8", nombre: "Azul pizarra claro" },
+      { hex: "#B8C8D8", nombre: "Azul perla" },
+      { hex: "#D0C0D8", nombre: "Violeta pálido" },
+      { hex: "#C8E0D0", nombre: "Menta suave" },
+      { hex: "#E0C8D0", nombre: "Rosa cuarzo" },
+      { hex: "#B0C0D0", nombre: "Azul humo" },
+      { hex: "#D8D0E0", nombre: "Lila brumoso" },
+    ],
+    apagan: ["negro puro", "naranja saturado", "mostaza", "colores cálidos vivos"],
+    jewelry: "silver",
+    lipstick: { name: "rosa polvo claro", hex: "#F0D0DC" },
+    validationPhrase:
+      "All cool, light, and clear — Light Summer is never warm or muted.",
+  },
+
   soft_winter: {
     id: "soft_winter",
-    // Ausente en §3.1 (canon list) pero presente en §3.3 + Apéndice B.
-    // Decisión Q2: incluir como canónica V2.
     displayName: "Soft Winter",
     hue: "cool",
     value: "medium",
     chroma: "muted",
     typicalFitzpatrick: [1, 2],
     irradian: [
-      { hex: "#9090C8", nombre: "lavanda" }, // §11 BIBLIA, paleta validada en producción (Adolescente fresa)
-      { hex: "#C5C0BD", nombre: "gris perla" }, // hex inferido por nombre
-      { hex: "#6F8AA8", nombre: "azul pizarra" }, // hex inferido por nombre
-      { hex: "#BC8C9F", nombre: "rosa malva fría" }, // hex inferido por nombre
+      { hex: "#A89CC8", nombre: "Lavanda" },
+      { hex: "#C8C8D0", nombre: "Gris perla" },
+      { hex: "#7090A8", nombre: "Azul pizarra frío" },
+      { hex: "#B898A8", nombre: "Rosa malva fría" },
+      { hex: "#9098B8", nombre: "Azul lavanda" },
+      { hex: "#A8A8C0", nombre: "Violeta humo" },
+      { hex: "#88A0B8", nombre: "Azul acero suave" },
+      { hex: "#C098A8", nombre: "Rosa antiguo frío" },
+      { hex: "#8898B0", nombre: "Azul grisáceo medio" },
+      { hex: "#A0B0C0", nombre: "Azul niebla" },
+      { hex: "#B0A0B8", nombre: "Lila brumoso" },
+      { hex: "#9888A0", nombre: "Ciruela apagada" },
     ],
     apagan: ["naranja", "mostaza", "colores cálidos intensos"],
     jewelry: "silver",
@@ -250,17 +356,23 @@ export const SEASONS_DATABASE: Readonly<Record<SeasonId, Season>> = {
     typicalFitzpatrick: [3, 4, 5],
     aliases: ["clear_winter"],
     irradian: [
-      { hex: "#000000", nombre: "negro" },
-      { hex: "#FFFFFF", nombre: "blanco puro" },
-      { hex: "#0F52BA", nombre: "azul zafiro" }, // hex inferido por nombre
-      { hex: "#DC1A2D", nombre: "rojo puro" }, // hex inferido por nombre
-      { hex: "#D02380", nombre: "fucsia" }, // hex inferido por nombre
+      { hex: "#000000", nombre: "Negro absoluto" },
+      { hex: "#FFFFFF", nombre: "Blanco puro" },
+      { hex: "#0F52BA", nombre: "Azul zafiro" },
+      { hex: "#DC1A2D", nombre: "Rojo puro" },
+      { hex: "#D02380", nombre: "Fucsia frío" },
+      { hex: "#1C1C2E", nombre: "Azul medianoche" },
+      { hex: "#5C0A6B", nombre: "Púrpura intenso" },
+      { hex: "#006B5C", nombre: "Verde esmeralda frío" },
+      { hex: "#B80024", nombre: "Rojo cardenal" },
+      { hex: "#2050A0", nombre: "Azul real" },
+      { hex: "#001848", nombre: "Azul marino profundo" },
+      { hex: "#8C0040", nombre: "Magenta intenso" },
     ],
     apagan: ["tonos tierra", "colores cálidos", "muted"],
     jewelry: "silver",
     lipstick: { name: "rojo cereza", hex: "#CC2244" },
     // validationPhrase literal del Apéndice B (bajo alias "Clear Winter").
-    // El alias warm_autumn no aplica aquí; éste es clear_winter ←→ true_winter.
     validationPhrase:
       "All cool and clear — Clear Winter is high contrast always. Never warm, never muted.",
   },
@@ -273,17 +385,52 @@ export const SEASONS_DATABASE: Readonly<Record<SeasonId, Season>> = {
     chroma: "muted",
     typicalFitzpatrick: [5, 6],
     irradian: [
-      { hex: "#5C0F18", nombre: "borgoña frío" }, // hex inferido por nombre
-      { hex: "#14243B", nombre: "azul marino" }, // hex inferido por nombre
-      { hex: "#000000", nombre: "negro" },
-      { hex: "#14704A", nombre: "esmeralda frío" }, // hex inferido por nombre
-      { hex: "#4D1A35", nombre: "ciruela" }, // hex inferido por nombre
+      { hex: "#4A1B2A", nombre: "Borgoña frío" },
+      { hex: "#0A1A3A", nombre: "Azul marino profundo" },
+      { hex: "#000000", nombre: "Negro absoluto" },
+      { hex: "#0A4838", nombre: "Esmeralda frío" },
+      { hex: "#3A1838", nombre: "Ciruela oscura" },
+      { hex: "#1A1A1A", nombre: "Negro carbón" },
+      { hex: "#2A0A28", nombre: "Berenjena profunda" },
+      { hex: "#1A2838", nombre: "Azul medianoche oscuro" },
+      { hex: "#380A20", nombre: "Vino oscuro" },
+      { hex: "#0A2828", nombre: "Verde botella" },
+      { hex: "#2A1838", nombre: "Violeta profundo" },
+      { hex: "#382828", nombre: "Caoba frío" },
     ],
     apagan: ["colores cálidos", "pasteles", "tonos tierra"],
     jewelry: "silver",
-    lipstick: { name: "ciruela oscura", hex: "#4D1A35" }, // hex inferido por nombre
+    lipstick: { name: "ciruela oscura", hex: "#3A1838" },
     validationPhrase:
       "All cool and deep — Deep Winter is never warm or light.",
+  },
+
+  bright_winter: {
+    id: "bright_winter",
+    displayName: "Bright Winter",
+    hue: "cool",
+    value: "dark",
+    chroma: "bright",
+    typicalFitzpatrick: [3, 4, 5],
+    irradian: [
+      { hex: "#000000", nombre: "Negro absoluto" },
+      { hex: "#FFFFFF", nombre: "Blanco puro" },
+      { hex: "#E8002C", nombre: "Rojo intenso" },
+      { hex: "#0048C4", nombre: "Azul real brillante" },
+      { hex: "#00A878", nombre: "Verde esmeralda vivo" },
+      { hex: "#F02888", nombre: "Fucsia eléctrico" },
+      { hex: "#FFD800", nombre: "Amarillo limón vivo" },
+      { hex: "#7028B8", nombre: "Púrpura intenso" },
+      { hex: "#00C0E0", nombre: "Turquesa frío vivo" },
+      { hex: "#1A1A1A", nombre: "Negro carbón" },
+      { hex: "#C00038", nombre: "Rojo cardenal" },
+      { hex: "#001870", nombre: "Azul medianoche eléctrico" },
+    ],
+    apagan: ["beige", "mostaza apagada", "tonos tierra", "colores muted"],
+    jewelry: "silver",
+    lipstick: { name: "rojo intenso", hex: "#E8002C" },
+    validationPhrase:
+      "All cool, dark, and bright — Bright Winter is never muted or warm.",
   },
 
   true_autumn: {
@@ -295,10 +442,18 @@ export const SEASONS_DATABASE: Readonly<Record<SeasonId, Season>> = {
     typicalFitzpatrick: [3, 4],
     aliases: ["warm_autumn"],
     irradian: [
-      { hex: "#8B3A2A", nombre: "teja" },
-      { hex: "#B8860B", nombre: "mostaza" },
-      { hex: "#6B7C45", nombre: "verde oliva" },
-      { hex: "#C4622A", nombre: "siena" },
+      { hex: "#8B3A2A", nombre: "Teja" },
+      { hex: "#B8860B", nombre: "Mostaza" },
+      { hex: "#6B7C45", nombre: "Verde oliva" },
+      { hex: "#C4622A", nombre: "Siena" },
+      { hex: "#A85020", nombre: "Naranja quemado" },
+      { hex: "#7C4A20", nombre: "Marrón cobrizo" },
+      { hex: "#C48848", nombre: "Caramelo cálido" },
+      { hex: "#9C8038", nombre: "Oro antiguo" },
+      { hex: "#5C6838", nombre: "Verde musgo" },
+      { hex: "#A04830", nombre: "Ladrillo" },
+      { hex: "#806020", nombre: "Bronce mate" },
+      { hex: "#D89048", nombre: "Ámbar dorado" },
     ],
     apagan: ["negro puro", "blanco brillante", "colores fríos"],
     jewelry: "bronze",
@@ -316,10 +471,18 @@ export const SEASONS_DATABASE: Readonly<Record<SeasonId, Season>> = {
     chroma: "muted",
     typicalFitzpatrick: [3, 4],
     irradian: [
-      { hex: "#C4724A", nombre: "terracota apagada" },
-      { hex: "#C4A060", nombre: "ocre suave" },
-      { hex: "#8C9E6A", nombre: "salvia" },
-      { hex: "#C4B49A", nombre: "arena" },
+      { hex: "#C4724A", nombre: "Terracota apagada" },
+      { hex: "#C4A060", nombre: "Ocre suave" },
+      { hex: "#8C9E6A", nombre: "Salvia" },
+      { hex: "#C4B49A", nombre: "Arena" },
+      { hex: "#A88860", nombre: "Camel" },
+      { hex: "#B89878", nombre: "Topo cálido" },
+      { hex: "#988868", nombre: "Caqui apagado" },
+      { hex: "#C49878", nombre: "Rosa antiguo cálido" },
+      { hex: "#A09078", nombre: "Lino cálido" },
+      { hex: "#B08868", nombre: "Caramelo apagado" },
+      { hex: "#988858", nombre: "Mostaza apagada" },
+      { hex: "#C4A088", nombre: "Beige tostado" },
     ],
     apagan: ["colores brillantes o fríos"],
     jewelry: "bronze",
@@ -336,14 +499,22 @@ export const SEASONS_DATABASE: Readonly<Record<SeasonId, Season>> = {
     chroma: "muted",
     typicalFitzpatrick: [4, 5],
     irradian: [
-      { hex: "#6B1B2A", nombre: "borgoña" },
-      { hex: "#B8860B", nombre: "ámbar" },
-      { hex: "#355E3B", nombre: "verde cazador" },
-      { hex: "#8B3A2A", nombre: "teja oscura" },
+      { hex: "#6B1B2A", nombre: "Borgoña" },
+      { hex: "#B8860B", nombre: "Ámbar" },
+      { hex: "#355E3B", nombre: "Verde cazador" },
+      { hex: "#8B3A2A", nombre: "Teja oscura" },
+      { hex: "#4A2820", nombre: "Chocolate profundo" },
+      { hex: "#6B3818", nombre: "Caoba" },
+      { hex: "#7C2820", nombre: "Rojo ladrillo profundo" },
+      { hex: "#3A4A28", nombre: "Verde bosque profundo" },
+      { hex: "#5C3820", nombre: "Castaño oscuro" },
+      { hex: "#8C5028", nombre: "Cobre quemado" },
+      { hex: "#5C1B1B", nombre: "Vino tinto" },
+      { hex: "#6B5028", nombre: "Oliva oscuro" },
     ],
     apagan: ["pasteles", "colores fríos", "negro puro"],
     jewelry: "gold_antique",
-    lipstick: { name: "rojo ladrillo", hex: "#8B2A1A" },
+    lipstick: { name: "rojo ladrillo", hex: "#7C2820" },
     validationPhrase:
       "All deep, warm, rich — Deep Autumn never cool or light.",
   },
@@ -377,7 +548,7 @@ export function getValidHexesForSeason(
 }
 
 /**
- * Validation phrase de una season. Las 11 estaciones canónicas tienen
+ * Validation phrase de una season. Las 14 estaciones canónicas tienen
  * phrase obligatoria — nunca retorna null. La diseñamos así para que
  * el prompt en F.2 pueda incluirla siempre sin checks defensivos.
  */

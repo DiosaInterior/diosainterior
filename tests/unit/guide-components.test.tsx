@@ -58,10 +58,12 @@ describe("PaletaGrid", () => {
 });
 
 describe("EvitarList", () => {
-  it("con avoid populado renderiza los items", () => {
+  it("con avoid populado renderiza los nombres de los colores", () => {
     const html = renderHTML(<EvitarList avoid={validGuide.palette.avoid} />);
 
-    expect(html).toContain(validGuide.palette.avoid[0]);
+    // G.6.A — avoid ahora es AvoidColor[{hex, nombre}], antes string[].
+    // Renderiza el nombre; el hex se aprovechará en G.6.B con swatches.
+    expect(html).toContain(validGuide.palette.avoid[0].nombre);
   });
 
   it("con avoid vacío renderiza null (HTML vacío)", () => {

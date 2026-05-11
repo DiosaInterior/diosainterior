@@ -1,7 +1,15 @@
 // Fixture canónico para tests de guide-schema y colorimetry-tool.
 // Representa una guía válida para una usuaria True Spring Fitzpatrick II.
 // Datos consistentes con SEASONS_DATABASE.true_spring (lipstick, blush,
-// jewelry) y MUNSELL_BY_FITZPATRICK[2] (5YR 7/4, L≈72).
+// jewelry, hex irradian) y MUNSELL_BY_FITZPATRICK[2] (5YR 7/4, L≈72).
+//
+// G.6.A — actualizaciones:
+//  - palette.avoid migra de string[] a AvoidColor[{hex, nombre}].
+//  - Los 6 hex de palette.colors usan hex canónicos del KB expandido
+//    (algunos cambiaron de version vs G.6.0: crema dorada
+//    #F4DEB3 → #F5E6C8, amarillo claro #F8E59B → #FFE680).
+//  - El 6to color cambia de "melocotón intenso" (#E8785A — invent
+//    legacy) a "Durazno cálido" (#FFA060 — canónico del KB).
 
 import type { Guide } from "@/lib/validation/guide-schema";
 
@@ -21,42 +29,48 @@ export const validGuide: Guide = {
     colors: [
       {
         hex: "#FFBE8C",
-        nombre: "melocotón luminoso",
+        nombre: "Melocotón luminoso",
         usage: "blusas, vestidos formales",
         occasions: ["formal", "diario", "evento"],
       },
       {
         hex: "#FF7F5C",
-        nombre: "coral cálido",
+        nombre: "Coral cálido",
         usage: "labial, accesorios",
         occasions: ["evento", "noche"],
       },
       {
         hex: "#C8E08C",
-        nombre: "verde manzana",
+        nombre: "Verde manzana",
         usage: "tops casuales, sweaters",
         occasions: ["diario", "casual"],
       },
       {
-        hex: "#F4DEB3",
-        nombre: "crema dorada",
+        hex: "#F5E6C8",
+        nombre: "Crema dorada",
         usage: "neutros base, capas",
         occasions: ["diario", "trabajo"],
       },
       {
-        hex: "#F8E59B",
-        nombre: "amarillo claro",
+        hex: "#FFE680",
+        nombre: "Amarillo claro",
         usage: "verano, eventos diurnos",
         occasions: ["diario", "evento"],
       },
       {
-        hex: "#E8785A",
-        nombre: "melocotón intenso",
+        hex: "#FFA060",
+        nombre: "Durazno cálido",
         usage: "labial principal, foco",
         occasions: ["evento", "noche"],
       },
     ],
-    avoid: ["negro puro", "gris frío", "azul marino", "burdeos oscuro"],
+    avoid: [
+      { hex: "#000000", nombre: "Negro absoluto" },
+      { hex: "#808898", nombre: "Gris frío" },
+      { hex: "#14243B", nombre: "Azul marino" },
+      { hex: "#5C0F18", nombre: "Burdeos oscuro" },
+      { hex: "#FFFFFF", nombre: "Blanco frío" },
+    ],
   },
   makeup: {
     lipstick: { name: "melocotón", hex: "#E8785A" },

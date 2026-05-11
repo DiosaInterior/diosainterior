@@ -37,14 +37,14 @@ Use this table to determine the user's Fitzpatrick phototype, Munsell notation, 
 
 ---
 
-## Section 4 — The 11 canonical seasons
+## Section 4 — The 14 canonical seasons
 
-Diosa Interior uses 11 canonical colorimetric seasons. Below is the complete reference for each one. Determine the user's season from these 11 — DO NOT invent new seasons or use names outside this list.
+Diosa Interior uses 14 canonical colorimetric seasons. Below is the complete reference for each one. Determine the user's season from these 14 — DO NOT invent new seasons or use names outside this list.
 
 ### TRUE SPRING (true_spring)
 - Categorization: warm · light · clear
 - Typical Fitzpatrick: I-II
-- Colors that radiate: melocotón luminoso #FFBE8C, coral cálido #FF7F5C, verde manzana #C8E08C, crema dorada #F4DEB3, amarillo claro #F8E59B
+- Colors that radiate: Melocotón luminoso #FFBE8C, Coral cálido #FF7F5C, Verde manzana #C8E08C, Crema dorada #F5E6C8, Amarillo claro #FFE680, Durazno cálido #FFA060, Verde primavera #A8D870, Amarillo mantequilla #FFD060, Salmón vivo #FF8C70, Verde menta cálido #88C898, Albaricoque #FFC080, Miel clara #E8B870
 - Colors that dull: negro puro, gris frío, azul marino, burdeos oscuro, blanco frío
 - Jewelry: gold_yellow
 - Validation phrase: "All warm, bright, luminous — True Spring is never muted or cool."
@@ -52,7 +52,7 @@ Diosa Interior uses 11 canonical colorimetric seasons. Below is the complete ref
 ### LIGHT SPRING (light_spring)
 - Categorization: warm · light · muted
 - Typical Fitzpatrick: I-II
-- Colors that radiate: melocotón pálido #FFD1B5, coral luminoso suave #FFB7A0, verde menta #B8E0C8, crema #FAEFD8
+- Colors that radiate: Melocotón pálido #FFD0B8, Coral luminoso suave #FFB8A0, Verde menta #B8E0C8, Crema cálida #F8E8D0, Beige melocotón #FFE0C8, Arena dorada clara #F0D0A8, Verde lima suave #D0E0B8, Rosa coral pálido #FFC8B8, Amarillo trigo #F8D8A8, Caramelo claro #E0C8A0, Vainilla cálida #FFE8B8, Champaña #E8D0B0
 - Colors that dull: colores oscuros o muy saturados, negro
 - Jewelry: gold_yellow
 - Validation phrase: "All warm, light, soft — Light Spring is never deep or saturated."
@@ -60,15 +60,23 @@ Diosa Interior uses 11 canonical colorimetric seasons. Below is the complete ref
 ### BRIGHT SPRING (bright_spring)
 - Categorization: warm · light · bright
 - Typical Fitzpatrick: II
-- Colors that radiate: coral vivo #FF6040, turquesa cálido #4DBFB8, amarillo limón #F4E04A, verde brillante #5BC862
+- Colors that radiate: Coral vivo #FF6040, Turquesa cálido #40C8C8, Amarillo limón #F0E020, Verde brillante #60D040, Naranja mandarina #FF8030, Amarillo girasol #FFD030, Azul aqua vivo #20B0E0, Fucsia cálido #E83080, Rojo coral #FF5060, Turquesa luminoso #80E0C0, Verde lima vivo #A0D830, Durazno vivo #FF9050
 - Colors that dull: tonos apagados o muted, negro
 - Jewelry: gold_yellow
 - Validation phrase: "All warm, light, bright — Bright Spring is never muted or earthy."
 
+### DARK SPRING (dark_spring)
+- Categorization: warm · medium · clear
+- Typical Fitzpatrick: III-IV
+- Colors that radiate: Coral vivo cálido #E85C30, Verde esmeralda cálido #00A06A, Turquesa cálido #00B8C0, Dorado intenso #D89020, Rojo tomate #C04020, Verde lima dorado #A8C830, Ámbar vivo #E0A030, Castaño chocolate #783818, Teja brillante #B85838, Verde bosque cálido #388048, Amarillo mostaza claro #D0C040, Rojo cereza cálido #A02830
+- Colors that dull: colores apagados, negro puro, gris frío, pasteles fríos
+- Jewelry: gold_yellow
+- Validation phrase: "All warm, clear, and medium-deep — Dark Spring is never cool or muted."
+
 ### TRUE SUMMER (true_summer)
 - Categorization: cool · light · muted
 - Typical Fitzpatrick: I-II
-- Colors that radiate: rosa polvoso #D8A6B5, lavanda suave #C9B8D9, azul pizarra #6F8AA8, gris rosado #BFA9A9
+- Colors that radiate: Rosa polvoso #D8A8B8, Lavanda suave #B8B0D0, Azul pizarra #8090A8, Gris rosado #C0B0B0, Azul polvo #A8C0D0, Malva claro #C8B8C8, Gris lavanda #B0A8B8, Rosa cuarzo frío #D8C0C8, Azul humo #98A8B0, Gris perla frío #C8D0D8, Azul cenizo #A8B0C0, Azul brumoso #B8C8D0
 - Colors that dull: colores cálidos intensos, naranja, mostaza
 - Jewelry: silver
 - Validation phrase: "All cool and soft — True Summer is never warm or vivid."
@@ -76,15 +84,23 @@ Diosa Interior uses 11 canonical colorimetric seasons. Below is the complete ref
 ### SOFT SUMMER (soft_summer)
 - Categorization: cool · medium · muted
 - Typical Fitzpatrick: II-III
-- Colors that radiate: malva apagado #B69BA8, azul grisáceo #8FA0AB, rosa antiguo #C49A99, gris cálido #A6938B
+- Colors that radiate: Malva apagado #A88898, Azul grisáceo #7888A0, Rosa antiguo #B89898, Gris cálido #9890A0, Verde salvia frío #809890, Gris violeta #A8A0A8, Gris azulado #909098, Topo apagado #B0A098, Lavanda apagada #9888A0, Beige rosado frío #A09898, Azul polvo medio #8898A8, Rosa humo #B0A0A8
 - Colors that dull: colores vivos, negro puro, naranja
 - Jewelry: silver_oxidized
 - Validation phrase: "All cool, muted, balanced — Soft Summer is never bright or warm."
 
+### LIGHT SUMMER (light_summer)
+- Categorization: cool · light · clear
+- Typical Fitzpatrick: I-II
+- Colors that radiate: Azul cielo suave #A8C5E8, Lavanda clara #D8B8D0, Rosa polvo claro #F0D0DC, Gris azulado claro #C8D8E0, Marfil frío #E8E0D8, Azul pizarra claro #A8B8C8, Azul perla #B8C8D8, Violeta pálido #D0C0D8, Menta suave #C8E0D0, Rosa cuarzo #E0C8D0, Azul humo #B0C0D0, Lila brumoso #D8D0E0
+- Colors that dull: negro puro, naranja saturado, mostaza, colores cálidos vivos
+- Jewelry: silver
+- Validation phrase: "All cool, light, and clear — Light Summer is never warm or muted."
+
 ### SOFT WINTER (soft_winter)
 - Categorization: cool · medium · muted
 - Typical Fitzpatrick: I-II
-- Colors that radiate: lavanda #9090C8, gris perla #C5C0BD, azul pizarra #6F8AA8, rosa malva fría #BC8C9F
+- Colors that radiate: Lavanda #A89CC8, Gris perla #C8C8D0, Azul pizarra frío #7090A8, Rosa malva fría #B898A8, Azul lavanda #9098B8, Violeta humo #A8A8C0, Azul acero suave #88A0B8, Rosa antiguo frío #C098A8, Azul grisáceo medio #8898B0, Azul niebla #A0B0C0, Lila brumoso #B0A0B8, Ciruela apagada #9888A0
 - Colors that dull: naranja, mostaza, colores cálidos intensos
 - Jewelry: silver
 - Validation phrase: "All cool and muted — Soft Winter is never warm or saturated."
@@ -92,7 +108,7 @@ Diosa Interior uses 11 canonical colorimetric seasons. Below is the complete ref
 ### TRUE WINTER (true_winter)
 - Categorization: cool · dark · clear
 - Typical Fitzpatrick: III-V
-- Colors that radiate: negro #000000, blanco puro #FFFFFF, azul zafiro #0F52BA, rojo puro #DC1A2D, fucsia #D02380
+- Colors that radiate: Negro absoluto #000000, Blanco puro #FFFFFF, Azul zafiro #0F52BA, Rojo puro #DC1A2D, Fucsia frío #D02380, Azul medianoche #1C1C2E, Púrpura intenso #5C0A6B, Verde esmeralda frío #006B5C, Rojo cardenal #B80024, Azul real #2050A0, Azul marino profundo #001848, Magenta intenso #8C0040
 - Colors that dull: tonos tierra, colores cálidos, muted
 - Jewelry: silver
 - Validation phrase: "All cool and clear — Clear Winter is high contrast always. Never warm, never muted."
@@ -100,15 +116,23 @@ Diosa Interior uses 11 canonical colorimetric seasons. Below is the complete ref
 ### DEEP WINTER (deep_winter)
 - Categorization: cool · dark · muted
 - Typical Fitzpatrick: V-VI
-- Colors that radiate: borgoña frío #5C0F18, azul marino #14243B, negro #000000, esmeralda frío #14704A, ciruela #4D1A35
+- Colors that radiate: Borgoña frío #4A1B2A, Azul marino profundo #0A1A3A, Negro absoluto #000000, Esmeralda frío #0A4838, Ciruela oscura #3A1838, Negro carbón #1A1A1A, Berenjena profunda #2A0A28, Azul medianoche oscuro #1A2838, Vino oscuro #380A20, Verde botella #0A2828, Violeta profundo #2A1838, Caoba frío #382828
 - Colors that dull: colores cálidos, pasteles, tonos tierra
 - Jewelry: silver
 - Validation phrase: "All cool and deep — Deep Winter is never warm or light."
 
+### BRIGHT WINTER (bright_winter)
+- Categorization: cool · dark · bright
+- Typical Fitzpatrick: III-V
+- Colors that radiate: Negro absoluto #000000, Blanco puro #FFFFFF, Rojo intenso #E8002C, Azul real brillante #0048C4, Verde esmeralda vivo #00A878, Fucsia eléctrico #F02888, Amarillo limón vivo #FFD800, Púrpura intenso #7028B8, Turquesa frío vivo #00C0E0, Negro carbón #1A1A1A, Rojo cardenal #C00038, Azul medianoche eléctrico #001870
+- Colors that dull: beige, mostaza apagada, tonos tierra, colores muted
+- Jewelry: silver
+- Validation phrase: "All cool, dark, and bright — Bright Winter is never muted or warm."
+
 ### TRUE AUTUMN (true_autumn)
 - Categorization: warm · medium · muted
 - Typical Fitzpatrick: III-IV
-- Colors that radiate: teja #8B3A2A, mostaza #B8860B, verde oliva #6B7C45, siena #C4622A
+- Colors that radiate: Teja #8B3A2A, Mostaza #B8860B, Verde oliva #6B7C45, Siena #C4622A, Naranja quemado #A85020, Marrón cobrizo #7C4A20, Caramelo cálido #C48848, Oro antiguo #9C8038, Verde musgo #5C6838, Ladrillo #A04830, Bronce mate #806020, Ámbar dorado #D89048
 - Colors that dull: negro puro, blanco brillante, colores fríos
 - Jewelry: bronze
 - Validation phrase: "All warm, rich, earthy — Warm Autumn is never cool or pastel."
@@ -116,7 +140,7 @@ Diosa Interior uses 11 canonical colorimetric seasons. Below is the complete ref
 ### SOFT AUTUMN (soft_autumn)
 - Categorization: neutral_warm · medium · muted
 - Typical Fitzpatrick: III-IV
-- Colors that radiate: terracota apagada #C4724A, ocre suave #C4A060, salvia #8C9E6A, arena #C4B49A
+- Colors that radiate: Terracota apagada #C4724A, Ocre suave #C4A060, Salvia #8C9E6A, Arena #C4B49A, Camel #A88860, Topo cálido #B89878, Caqui apagado #988868, Rosa antiguo cálido #C49878, Lino cálido #A09078, Caramelo apagado #B08868, Mostaza apagada #988858, Beige tostado #C4A088
 - Colors that dull: colores brillantes o fríos
 - Jewelry: bronze
 - Validation phrase: "All muted and warm — Soft Autumn has low chroma always. Never bright, never cool."
@@ -124,7 +148,7 @@ Diosa Interior uses 11 canonical colorimetric seasons. Below is the complete ref
 ### DEEP AUTUMN (deep_autumn)
 - Categorization: warm · dark · muted
 - Typical Fitzpatrick: IV-V
-- Colors that radiate: borgoña #6B1B2A, ámbar #B8860B, verde cazador #355E3B, teja oscura #8B3A2A
+- Colors that radiate: Borgoña #6B1B2A, Ámbar #B8860B, Verde cazador #355E3B, Teja oscura #8B3A2A, Chocolate profundo #4A2820, Caoba #6B3818, Rojo ladrillo profundo #7C2820, Verde bosque profundo #3A4A28, Castaño oscuro #5C3820, Cobre quemado #8C5028, Vino tinto #5C1B1B, Oliva oscuro #6B5028
 - Colors that dull: pasteles, colores fríos, negro puro
 - Jewelry: gold_antique
 - Validation phrase: "All deep, warm, rich — Deep Autumn never cool or light."
@@ -174,19 +198,28 @@ Your output goes inside the tool call 'submit_colorimetric_analysis'. Field-by-f
 
 **scientific** (object):
 - fitzpatrick: integer 1-6, determined from photos via the Munsell × Fitzpatrick table
-- season: one of the 11 canonical season IDs (snake_case, see Section 4)
-- undertone: descriptive string (e.g. "warm_golden", "cool_pink", "neutral_olive")
+- season: one of the 14 canonical season IDs (snake_case, see Section 4)
+- undertone: ONE of these 6 enum values:
+  - "warm_golden" (warm with yellow-gold cast)
+  - "warm_peach" (warm with pink-peach cast)
+  - "neutral_olive" (neutral with greenish undertone, typical in Mediterranean and Latin skin)
+  - "neutral_balanced" (true neutral, neither warm nor cool dominant)
+  - "cool_pink" (cool with pink cast)
+  - "cool_blue" (cool with blue cast)
+  Do NOT invent values outside this list (e.g. "cool_neutral_olive" is INVALID).
 - hue / value / chroma: must match the season's categorization from Section 4
 - munsell_notation: from Section 3 table for the user's Fitzpatrick
 - cie_lab: { L, a, b } numeric — L from Section 3, a and b inferred from undertone
 - contrast_level: "low" | "medium" | "high" — based on hair/skin/eye contrast in the photos
 
 **palette.colors** (array of exactly 6):
-- Six harmonious colors from the user's season's irradian list (Section 4)
-- Each with:
-  - hex (#RRGGBB uppercase)
-  - nombre (Spanish, descriptive — e.g. "melocotón luminoso")
-  - usage (Spanish free text, prose form — e.g. "blusas, vestidos formales")
+- Six harmonious colors PICKED EXCLUSIVELY from the user's season's irradian list (Section 4)
+- DO NOT invent hex codes. DO NOT pick hex from a different season. DO NOT modify the canonical hex (no "close enough" variations).
+- The KB has 12 hex per season — choose the 6 most representative for this user.
+- Each color object:
+  - hex (#RRGGBB uppercase) — must match a canonical hex from Section 4
+  - nombre (Spanish, descriptive — e.g. "melocotón luminoso") — use the canonical name from Section 4
+  - usage (Spanish free text, prose form — e.g. "blusas, vestidos formales") — context where the color belongs
   - occasions (REQUIRED): array of 1-4 strings from this enum:
     - "diario" (everyday wear, casual contexts)
     - "trabajo" (workplace, professional, business casual)
@@ -199,9 +232,27 @@ Your output goes inside the tool call 'submit_colorimetric_analysis'. Field-by-f
     - Cultural codes in LATAM (negros/oscuros pertenecen a "noche" + "formal")
     - Practical wearability (a saturated red rarely fits "trabajo" except as accent)
 
-**palette.avoid** (array of strings):
-- 5 descriptive concepts in Spanish (NOT hex codes), e.g. "negro puro", "gris frío"
-- Drawn from the season's apagan list
+**palette.avoid** (array of 5-10 objects, NOT strings):
+- Each object has shape { hex (#RRGGBB), nombre (Spanish, max 50 chars) }
+- Derived from the season's 'apagan' list (Section 4)
+- For each apagan descriptor, pick a canonical hex using this table:
+
+  | Spanish descriptor | Canonical hex | Spanish nombre |
+  |---|---|---|
+  | "negro" / "negro puro" | #000000 | "Negro absoluto" |
+  | "blanco frío" / "blanco brillante" | #FFFFFF | "Blanco frío" |
+  | "gris frío" | #808898 | "Gris frío" |
+  | "azul marino" | #14243B | "Azul marino" |
+  | "burdeos oscuro" | #5C0F18 | "Burdeos oscuro" |
+  | "naranja" / "naranja saturado" | #FF6020 | "Naranja saturado" |
+  | "mostaza" / "mostaza apagada" | #B8860B | "Mostaza" |
+  | "beige" / "beige apagado" | #D9C8A8 | "Beige cálido" |
+  | "verde oliva" / "caqui" | #6B7C45 | "Verde oliva" |
+  | "terracota" | #B85838 | "Terracota cálido" |
+
+  For descriptors not in the table ("tonos tierra", "colores cálidos intensos", "colores fríos", "muted", "pasteles", etc), pick ONE representative hex that captures the spirit of the descriptor (e.g. "tonos tierra" → #8B3A2A teja) and give it a Spanish nombre.
+
+  The resulting array MUST have 5-10 entries. Each apagan descriptor in Section 4 may map to one or multiple hex entries.
 
 **makeup** (object):
 - lipstick: { name, hex } — match the season's lipstick from Section 4
@@ -225,7 +276,7 @@ Your output goes inside the tool call 'submit_colorimetric_analysis'. Field-by-f
 All hex codes MUST be in #RRGGBB uppercase format. Reject your own draft if you wrote #abc or #abcdef.
 
 **Season categorization rule:**
-The hue, value, and chroma you report in 'scientific' MUST match the canonical categorization of the season you assigned. Do not contradict yourself.
+The hue, value, and chroma you report in 'scientific' MUST match the canonical categorization of the season you assigned. Do not contradict yourself. The Zod validator will reject a guide that says season=true_winter with value=medium (canonical=dark).
 
 ---
 
@@ -256,7 +307,7 @@ Specifically:
 
 To recap:
 1. Determine Fitzpatrick from the photos
-2. Determine season from the 11 canonical seasons
+2. Determine season from the 14 canonical seasons
 3. Build the complete guide following the field rules in Section 7
 4. Write the rationale in the voice of Section 5, avoiding Section 6
 5. Submit ONLY via the tool 'submit_colorimetric_analysis' — no plain text response"

@@ -6,8 +6,8 @@ import {
 } from "@/lib/ai/prompts/colorimetry-v2";
 
 describe("colorimetry-v2 prompt — smoke", () => {
-  it("exporta PROMPT_VERSION = '2.0.0'", () => {
-    expect(PROMPT_VERSION).toBe("2.0.0");
+  it("exporta PROMPT_VERSION = '2.1.0' (bumpeado en G.6.A)", () => {
+    expect(PROMPT_VERSION).toBe("2.1.0");
   });
 
   it("buildColorimetryPrompt es una función pura sin argumentos", () => {
@@ -47,8 +47,8 @@ describe("colorimetry-v2 prompt — embedded scientific data", () => {
     expect(prompt).toContain("#FFBE8C");
   });
 
-  it("incluye el hex de Soft Winter lavanda (#9090C8)", () => {
-    expect(prompt).toContain("#9090C8");
+  it("incluye el hex de Soft Winter Lavanda (#A89CC8 tras G.6.A KB expansion)", () => {
+    expect(prompt).toContain("#A89CC8");
   });
 
   it("incluye el jewelry type 'gold_antique' (Deep Autumn)", () => {
@@ -65,16 +65,19 @@ describe("colorimetry-v2 prompt — embedded scientific data", () => {
     );
   });
 
-  it("incluye los 11 ids de season canónicos en snake_case", () => {
+  it("incluye los 14 ids de season canónicos en snake_case (11 V2 + 3 nuevas G.6.A)", () => {
     const ids = [
       "true_spring",
       "light_spring",
       "bright_spring",
+      "dark_spring",
       "true_summer",
       "soft_summer",
+      "light_summer",
       "soft_winter",
       "true_winter",
       "deep_winter",
+      "bright_winter",
       "true_autumn",
       "soft_autumn",
       "deep_autumn",
