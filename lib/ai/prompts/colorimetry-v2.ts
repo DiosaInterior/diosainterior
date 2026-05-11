@@ -23,7 +23,7 @@ import {
   type SeasonId,
 } from "@/lib/ai/knowledge/seasons-database";
 
-export const PROMPT_VERSION = "2.0.0";
+export const PROMPT_VERSION = "2.1.0";
 
 // ---------------------------------------------------------------------
 // HELPERS (private — not exported)
@@ -142,9 +142,9 @@ Use this table to determine the user's Fitzpatrick phototype, Munsell notation, 
 }
 
 function buildSection4(): string {
-  return `## Section 4 — The 11 canonical seasons
+  return `## Section 4 — The 14 canonical seasons
 
-Diosa Interior uses 11 canonical colorimetric seasons. Below is the complete reference for each one. Determine the user's season from these 11 — DO NOT invent new seasons or use names outside this list.
+Diosa Interior uses 14 canonical colorimetric seasons. Below is the complete reference for each one. Determine the user's season from these 14 — DO NOT invent new seasons or use names outside this list.
 
 ${formatAllSeasons()}`;
 }
@@ -181,19 +181,28 @@ Your output goes inside the tool call 'submit_colorimetric_analysis'. Field-by-f
 
 **scientific** (object):
 - fitzpatrick: integer 1-6, determined from photos via the Munsell × Fitzpatrick table
-- season: one of the 11 canonical season IDs (snake_case, see Section 4)
-- undertone: descriptive string (e.g. "warm_golden", "cool_pink", "neutral_olive")
+- season: one of the 14 canonical season IDs (snake_case, see Section 4)
+- undertone: ONE of these 6 enum values:
+  - "warm_golden" (warm with yellow-gold cast)
+  - "warm_peach" (warm with pink-peach cast)
+  - "neutral_olive" (neutral with greenish undertone, typical in Mediterranean and Latin skin)
+  - "neutral_balanced" (true neutral, neither warm nor cool dominant)
+  - "cool_pink" (cool with pink cast)
+  - "cool_blue" (cool with blue cast)
+  Do NOT invent values outside this list (e.g. "cool_neutral_olive" is INVALID).
 - hue / value / chroma: must match the season's categorization from Section 4
 - munsell_notation: from Section 3 table for the user's Fitzpatrick
 - cie_lab: { L, a, b } numeric — L from Section 3, a and b inferred from undertone
 - contrast_level: "low" | "medium" | "high" — based on hair/skin/eye contrast in the photos
 
 **palette.colors** (array of exactly 6):
-- Six harmonious colors from the user's season's irradian list (Section 4)
-- Each with:
-  - hex (#RRGGBB uppercase)
-  - nombre (Spanish, descriptive — e.g. "melocotón luminoso")
-  - usage (Spanish free text, prose form — e.g. "blusas, vestidos formales")
+- Six harmonious colors PICKED EXCLUSIVELY from the user's season's irradian list (Section 4)
+- DO NOT invent hex codes. DO NOT pick hex from a different season. DO NOT modify the canonical hex (no "close enough" variations).
+- The KB has 12 hex per season — choose the 6 most representative for this user.
+- Each color object:
+  - hex (#RRGGBB uppercase) — must match a canonical hex from Section 4
+  - nombre (Spanish, descriptive — e.g. "melocotón luminoso") — use the canonical name from Section 4
+  - usage (Spanish free text, prose form — e.g. "blusas, vestidos formales") — context where the color belongs
   - occasions (REQUIRED): array of 1-4 strings from this enum:
     - "diario" (everyday wear, casual contexts)
     - "trabajo" (workplace, professional, business casual)
@@ -206,9 +215,27 @@ Your output goes inside the tool call 'submit_colorimetric_analysis'. Field-by-f
     - Cultural codes in LATAM (negros/oscuros pertenecen a "noche" + "formal")
     - Practical wearability (a saturated red rarely fits "trabajo" except as accent)
 
-**palette.avoid** (array of strings):
-- 5 descriptive concepts in Spanish (NOT hex codes), e.g. "negro puro", "gris frío"
-- Drawn from the season's apagan list
+**palette.avoid** (array of 5-10 objects, NOT strings):
+- Each object has shape { hex (#RRGGBB), nombre (Spanish, max 50 chars) }
+- Derived from the season's 'apagan' list (Section 4)
+- For each apagan descriptor, pick a canonical hex using this table:
+
+  | Spanish descriptor | Canonical hex | Spanish nombre |
+  |---|---|---|
+  | "negro" / "negro puro" | #000000 | "Negro absoluto" |
+  | "blanco frío" / "blanco brillante" | #FFFFFF | "Blanco frío" |
+  | "gris frío" | #808898 | "Gris frío" |
+  | "azul marino" | #14243B | "Azul marino" |
+  | "burdeos oscuro" | #5C0F18 | "Burdeos oscuro" |
+  | "naranja" / "naranja saturado" | #FF6020 | "Naranja saturado" |
+  | "mostaza" / "mostaza apagada" | #B8860B | "Mostaza" |
+  | "beige" / "beige apagado" | #D9C8A8 | "Beige cálido" |
+  | "verde oliva" / "caqui" | #6B7C45 | "Verde oliva" |
+  | "terracota" | #B85838 | "Terracota cálido" |
+
+  For descriptors not in the table ("tonos tierra", "colores cálidos intensos", "colores fríos", "muted", "pasteles", etc), pick ONE representative hex that captures the spirit of the descriptor (e.g. "tonos tierra" → #8B3A2A teja) and give it a Spanish nombre.
+
+  The resulting array MUST have 5-10 entries. Each apagan descriptor in Section 4 may map to one or multiple hex entries.
 
 **makeup** (object):
 - lipstick: { name, hex } — match the season's lipstick from Section 4
@@ -232,7 +259,7 @@ Your output goes inside the tool call 'submit_colorimetric_analysis'. Field-by-f
 All hex codes MUST be in #RRGGBB uppercase format. Reject your own draft if you wrote #abc or #abcdef.
 
 **Season categorization rule:**
-The hue, value, and chroma you report in 'scientific' MUST match the canonical categorization of the season you assigned. Do not contradict yourself.`;
+The hue, value, and chroma you report in 'scientific' MUST match the canonical categorization of the season you assigned. Do not contradict yourself. The Zod validator will reject a guide that says season=true_winter with value=medium (canonical=dark).`;
 
 const SECTION_8_TOOL_USE = `## Section 8 — Tool use mandatory
 
@@ -257,7 +284,7 @@ const SECTION_10_FINAL = `## Section 10 — Final reminder
 
 To recap:
 1. Determine Fitzpatrick from the photos
-2. Determine season from the 11 canonical seasons
+2. Determine season from the 14 canonical seasons
 3. Build the complete guide following the field rules in Section 7
 4. Write the rationale in the voice of Section 5, avoiding Section 6
 5. Submit ONLY via the tool 'submit_colorimetric_analysis' — no plain text response`;
