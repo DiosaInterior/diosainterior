@@ -1,30 +1,25 @@
 // =====================================================================
-// Diosa Interior — Event IDs para deduplicación / idempotencia Meta
+// Diosa Interior — Event IDs (client-safe, Web Crypto API)
 // =====================================================================
-// Helpers para generar event_id de los eventos Meta Pixel + CAPI.
+// Helper de generación de event_id usable tanto en cliente como en
+// server. Usa Web Crypto API (globalThis.crypto) — disponible en
+// Node 19+ y en todos los browsers modernos (Safari 15.4+, Chrome
+// 92+, Firefox 95+).
 //
-// G.7 — dos modos:
-//  - generateEventId(): UUID v4 random, para eventos client-side
-//    (InitiateCheckout). No es persistido, no hace falta dedup.
-//  - eventIdFromPurchase(purchaseId, suffix?): determinístico, derivado
-//    del purchase_id. Garantiza idempotencia si un webhook reprocesa
-//    el mismo evento (Meta deduplica por event_id). Suffix opcional
-//    diferencia Purchase de CompleteRegistration sobre la misma
-//    purchase (mismo ID base sin suffix colisionaría en Meta dedup).
+// G.7.1 — split del archivo original. El módulo G.7 importaba
+// `randomUUID` desde "crypto" de Node, lo cual bundlea polyfills
+// rotos en el cliente: en browser `randomUUID` quedaba undefined y
+// `generateEventId()` tiraba TypeError. Eso bloqueaba 100% el flow
+// de checkout (useCheckout llamaba esta función antes del fetch a
+// /api/checkout/create-session → la excepción dejaba setLoading en
+// true para siempre y nunca disparaba el fetch).
+//
+// El hash determinístico (eventIdFromPurchase) se movió a
+// `event-id-server.ts` para mantener separación clara: este archivo
+// es seguro de importar en cualquier contexto. NO importar
+// node:crypto acá.
 // =====================================================================
-
-import { createHash, randomUUID } from "crypto";
 
 export function generateEventId(): string {
-  return randomUUID();
-}
-
-export function eventIdFromPurchase(
-  purchaseId: string,
-  suffix?: string,
-): string {
-  const input = suffix ? `${purchaseId}::${suffix}` : purchaseId;
-  // SHA-256 truncado a 32 hex chars (128 bits) — suficiente para no
-  // colisionar en práctica, más legible en logs que un hash completo.
-  return createHash("sha256").update(input).digest("hex").slice(0, 32);
+  return globalThis.crypto.randomUUID();
 }

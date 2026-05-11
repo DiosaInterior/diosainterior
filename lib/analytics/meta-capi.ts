@@ -23,7 +23,7 @@
 // =====================================================================
 
 import "server-only";
-import { createHash } from "crypto";
+import { createHash } from "node:crypto";
 
 import * as Sentry from "@sentry/nextjs";
 
