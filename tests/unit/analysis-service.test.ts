@@ -48,6 +48,16 @@ function chainSelectEqSingle(resolveValue: unknown) {
   };
 }
 
+// .from(table).select(cols).eq(col, val).maybeSingle() → Promise
+// (G.7 — lookup de profiles.email para CompleteRegistration usa maybeSingle)
+function chainSelectEqMaybeSingle(resolveValue: unknown) {
+  return {
+    select: vi.fn().mockReturnThis(),
+    eq: vi.fn().mockReturnThis(),
+    maybeSingle: vi.fn().mockResolvedValue(resolveValue),
+  };
+}
+
 // .from(table).update({...}).eq(col, val) → Promise
 function chainUpdateEq(resolveValue: unknown) {
   return {
@@ -142,7 +152,13 @@ describe("runColorimetricAnalysis — happy path", () => {
       .mockReturnValueOnce(chainUpdateEq({ error: null })) // 3. UPDATE calling_ai
       .mockReturnValueOnce(chainUpdateEq({ error: null })) // 4. UPDATE persisting
       .mockReturnValueOnce(chainInsert({ error: null })) // 5. INSERT guide
-      .mockReturnValueOnce(chainUpdateEq({ error: null })); // 6. UPDATE succeeded + done
+      .mockReturnValueOnce(chainUpdateEq({ error: null })) // 6. UPDATE succeeded + done
+      .mockReturnValueOnce(
+        chainSelectEqMaybeSingle({
+          data: { email: "fake@example.com" },
+          error: null,
+        }),
+      ); // 7. G.7 — SELECT profiles.email para CompleteRegistration CAPI
 
     messagesCreate.mockResolvedValue(makeToolUseResponse(validGuide));
 
@@ -150,8 +166,9 @@ describe("runColorimetricAnalysis — happy path", () => {
 
     expect(loadPhotosMock).toHaveBeenCalledWith(USER_ID);
     expect(messagesCreate).toHaveBeenCalledOnce();
-    // 6 .from() calls: SELECT + 4 UPDATEs + 1 INSERT (G.0 progress ticks).
-    expect(fromMock).toHaveBeenCalledTimes(6);
+    // 7 .from() calls: SELECT job + 4 UPDATEs + 1 INSERT + SELECT profiles
+    // (la 7ª es G.7 lookup de email para Meta CAPI CompleteRegistration).
+    expect(fromMock).toHaveBeenCalledTimes(7);
 
     // Verify substage transitions emitted in order (G.0).
     const updates = allUpdateCalls();
@@ -339,7 +356,13 @@ describe("runColorimetricAnalysis — soft hex cross-validation", () => {
       .mockReturnValueOnce(chainUpdateEq({ error: null })) // UPDATE calling_ai
       .mockReturnValueOnce(chainUpdateEq({ error: null })) // UPDATE persisting
       .mockReturnValueOnce(chainInsert({ error: null })) // INSERT guide
-      .mockReturnValueOnce(chainUpdateEq({ error: null })); // UPDATE succeeded + done
+      .mockReturnValueOnce(chainUpdateEq({ error: null })) // UPDATE succeeded + done
+      .mockReturnValueOnce(
+        chainSelectEqMaybeSingle({
+          data: { email: "fake@example.com" },
+          error: null,
+        }),
+      ); // G.7 — SELECT profiles.email para CompleteRegistration CAPI
 
     messagesCreate.mockResolvedValue(makeToolUseResponse(guideWithBadHex));
 

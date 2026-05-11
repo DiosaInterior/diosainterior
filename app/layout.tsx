@@ -1,5 +1,8 @@
 import type { Metadata } from "next";
 import { Cormorant_Garamond, Raleway, DM_Mono } from "next/font/google";
+
+import { MetaPixelScript } from "@/components/MetaPixelScript";
+
 import "./globals.css";
 
 const cormorant = Cormorant_Garamond({
@@ -39,6 +42,7 @@ export default function RootLayout({
       className={`${cormorant.variable} ${raleway.variable} ${dmMono.variable} h-full`}
     >
       <body className="min-h-full flex flex-col bg-vino-profundo text-marfil font-raleway antialiased">
+        <MetaPixelScript />
         {children}
       </body>
     </html>

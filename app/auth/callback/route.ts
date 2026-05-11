@@ -15,6 +15,8 @@
 
 import { NextResponse } from "next/server";
 
+import { generateEventId } from "@/lib/analytics/event-id";
+import { sendCapiEvent } from "@/lib/analytics/meta-capi";
 import { createClient } from "@/lib/db/server";
 import { getLatestGuideForUser } from "@/lib/db/guides";
 
@@ -40,6 +42,28 @@ export async function GET(request: Request) {
   if (error || !data.user) {
     return NextResponse.redirect(`${origin}/login?error=auth_failed`);
   }
+
+  // G.7 — Meta CAPI 'Lead' fire-and-forget. Se dispara en CADA OAuth
+  // exitoso (no solo primer signup) — Meta deduplica por user-side
+  // matching de email. Si CAPI falla, sendCapiEvent loguea a Sentry y
+  // no rompe el flow. Usamos generateEventId() (no determinístico)
+  // porque cada login es un evento independiente para optimización.
+  sendCapiEvent({
+    eventName: "Lead",
+    eventId: generateEventId(),
+    userData: {
+      email: data.user.email ?? undefined,
+      client_ip_address:
+        request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ??
+        undefined,
+      client_user_agent: request.headers.get("user-agent") ?? undefined,
+    },
+    customData: { content_name: "signup_completed" },
+    eventSourceUrl: `${origin}/auth/callback`,
+  }).catch(() => {
+    // sendCapiEvent ya loguea a Sentry internamente. Este catch es por
+    // si rejecta antes de su propio try (defensive).
+  });
 
   // Caso (1): next explícito y válido → respetarlo, EXCEPTO cuando es
   // exactamente "/upload" (el default que setea signInWithGoogle). Si

@@ -24,7 +24,10 @@ import "server-only";
 import type Stripe from "stripe";
 
 import { inngest } from "@/inngest/client";
+import { eventIdFromPurchase } from "@/lib/analytics/event-id";
+import { sendCapiEvent } from "@/lib/analytics/meta-capi";
 import { getAdminClient } from "@/lib/db/admin";
+import { APP_URL } from "./config";
 import { getStripe } from "./client";
 
 export type WebhookHandlerResult =
@@ -125,6 +128,35 @@ export async function handleCheckoutCompleted(
       error: `db_update_failed: ${updateError.message}`,
     };
   }
+
+  // G.7 — Meta CAPI 'Purchase' fire-and-forget.
+  //
+  // NO IP/UA: el webhook recibe request del servidor de Stripe, no del
+  // browser de la usuaria. Email del checkout session es identifier
+  // suficiente per Meta CAPI docs (al menos un campo de PII hashed).
+  //
+  // event_id determinístico desde purchase_id → idempotencia si Stripe
+  // reentregar el webhook. Meta deduplica por event_id en ventana ~7d.
+  //
+  // value: amount_total real (incluye descuentos como cesar100 100% off
+  // → value=0). currency siempre MXN per producto base.
+  const customerEmail =
+    session.customer_details?.email ?? session.customer_email ?? undefined;
+  const purchaseValue = (session.amount_total ?? 0) / 100;
+  sendCapiEvent({
+    eventName: "Purchase",
+    eventId: eventIdFromPurchase(purchaseId),
+    userData: { email: customerEmail },
+    customData: {
+      value: purchaseValue,
+      currency: session.currency?.toUpperCase() ?? "MXN",
+      content_type: "product",
+      content_ids: ["base-guide"],
+    },
+    eventSourceUrl: `${APP_URL}/upload`,
+  }).catch(() => {
+    // sendCapiEvent loguea a Sentry. Caller no se entera.
+  });
 
   // Emitir evento a Inngest para encolar el análisis colorimétrico (F.4).
   // Defense in depth: webhook_events.id ya provee idempotencia primaria;
