@@ -1,6 +1,15 @@
 import "server-only";
+import { eventIdFromPurchase } from "@/lib/analytics/event-id";
+import { sendCapiEvent } from "@/lib/analytics/meta-capi";
 import { getAdminClient } from "@/lib/db/admin";
 import { getAnthropicClient } from "@/lib/ai/clients/anthropic";
+
+// G.7 — APP_URL inline. Antes pensaba importar APP_URL de
+// `lib/stripe/config`, pero ese módulo valida env vars de Stripe al
+// import time, contaminando tests del servicio que no tienen esas vars.
+// Mantenemos la URL local con el mismo fallback canónico.
+const APP_URL =
+  process.env.NEXT_PUBLIC_APP_URL ?? "https://diosainterior.app";
 import {
   loadPhotosForUser,
   type Base64Photo,
@@ -133,6 +142,34 @@ export async function runColorimetricAnalysis(jobId: string): Promise<void> {
         substage: "done",
       })
       .eq("id", jobId);
+
+    // 9. G.7 — Meta CAPI 'CompleteRegistration' fire-and-forget.
+    //
+    // Inngest job no tiene IP/UA del cliente (todo el flow es async);
+    // se omiten per Meta CAPI policy (email hashed es identifier suficiente).
+    //
+    // event_id determinístico con suffix 'registration' para no colisionar
+    // con el event_id de Purchase (que usa eventIdFromPurchase sin suffix).
+    //
+    // Lookup del email vía profiles (admin client bypass RLS).
+    try {
+      const { data: profile } = await supabase
+        .from("profiles")
+        .select("email")
+        .eq("id", job.user_id)
+        .maybeSingle();
+      sendCapiEvent({
+        eventName: "CompleteRegistration",
+        eventId: eventIdFromPurchase(job.purchase_id, "registration"),
+        userData: { email: profile?.email ?? undefined },
+        customData: { content_name: "guide_generated" },
+        eventSourceUrl: `${APP_URL}/mi-guia`,
+      }).catch(() => {
+        // sendCapiEvent loguea a Sentry. Caller (Inngest) no se entera.
+      });
+    } catch {
+      // Lookup falló — no rompemos el succeed del job por analytics.
+    }
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error);
     console.error(`[F.3] Job ${jobId} failed:`, message);

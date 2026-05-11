@@ -13,9 +13,15 @@
 import { useCallback, useState } from "react";
 import { useRouter } from "next/navigation";
 
+import { generateEventId } from "@/lib/analytics/event-id";
+import { trackEvent } from "@/lib/analytics/meta-pixel";
 import type { CheckoutSessionResponse } from "@/lib/api/checkout.types";
 
 import { checkoutFailureToToast } from "./_errors";
+
+// Precio canónico G.3 — $499 MXN one-shot. Si esto cambia, actualizar
+// también en lib/stripe/config.ts y aquí en sync.
+const CHECKOUT_VALUE_MXN = 499;
 
 const REDIRECT_DELAY_MS = 800;
 
@@ -28,6 +34,15 @@ export async function performCheckout(opts: {
   setLoading: (loading: boolean) => void;
 }): Promise<void> {
   opts.setLoading(true);
+
+  // G.7 — Meta Pixel InitiateCheckout antes del network call. eventId
+  // se genera aquí pero no se persiste: Purchase (server-side via CAPI)
+  // usa su propio eventId derivado de purchase_id, sin dedup vs este.
+  trackEvent(
+    "InitiateCheckout",
+    { value: CHECKOUT_VALUE_MXN, currency: "MXN" },
+    generateEventId(),
+  );
 
   let body: CheckoutSessionResponse;
   try {

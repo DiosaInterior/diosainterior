@@ -4,6 +4,7 @@ import { FAQ } from "./FAQ";
 import { Footer } from "./Footer";
 import { Hero } from "./Hero";
 import { InstagramCTA } from "./InstagramCTA";
+import { LandingViewContent } from "./_LandingViewContent";
 import { LoQueRecibes } from "./LoQueRecibes";
 import { PorQueEsDiferente } from "./PorQueEsDiferente";
 import { Testimonios } from "./Testimonios";
@@ -16,6 +17,7 @@ import { Testimonios } from "./Testimonios";
 export function Landing() {
   return (
     <main>
+      <LandingViewContent />
       <Hero />
       <ComoFunciona />
       <PorQueEsDiferente />
