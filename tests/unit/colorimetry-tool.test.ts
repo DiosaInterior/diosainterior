@@ -28,21 +28,57 @@ describe("colorimetryTool — Anthropic tool definition", () => {
     expect(serialized).not.toContain("definitions");
   });
 
-  it("input_schema tiene las properties top-level esperadas (scientific, palette, makeup, jewelry, haircut, rationale)", () => {
+  it("input_schema tiene las properties top-level esperadas (scientific, palette, occasions, makeup, jewelry, haircut, narrative_voice)", () => {
     const schema = colorimetryTool.input_schema as {
       properties?: Record<string, unknown>;
     };
     expect(schema.properties).toBeDefined();
     const keys = Object.keys(schema.properties ?? {});
+    // G.7.2 — `rationale` top-level renombrado a `narrative_voice`.
+    // Los rationales nested (jewelry.rationale, haircut.rationale,
+    // makeup.categories[].rationale) NO aparecen como properties
+    // top-level del GuideSchema — viven dentro de sus respectivos
+    // sub-schemas. La lista de abajo cubre solo los top-level.
     expect(keys).toEqual(
       expect.arrayContaining([
         "scientific",
         "palette",
+        "occasions",
         "makeup",
         "jewelry",
         "haircut",
-        "rationale",
+        "narrative_voice",
       ]),
     );
+  });
+
+  // G.7.2 — el bug original (jobs G.7.1 fallando con
+  // `rationale missing`) sugería que la IA podía omitir el campo.
+  // Para descartar que `z.toJSONSchema` no marcara el campo como
+  // required (hipótesis B del diagnóstico), validamos el array
+  // `required` explícitamente.
+  it("input_schema.required incluye narrative_voice y los demás top-level críticos", () => {
+    const schema = colorimetryTool.input_schema as {
+      required?: string[];
+    };
+    expect(schema.required).toBeDefined();
+    expect(schema.required).toEqual(
+      expect.arrayContaining([
+        "scientific",
+        "palette",
+        "occasions",
+        "makeup",
+        "jewelry",
+        "haircut",
+        "narrative_voice",
+      ]),
+    );
+  });
+
+  it("input_schema NO contiene la palabra 'rationale' como property top-level (renombrada en G.7.2)", () => {
+    const schema = colorimetryTool.input_schema as {
+      properties?: Record<string, unknown>;
+    };
+    expect(Object.keys(schema.properties ?? {})).not.toContain("rationale");
   });
 });

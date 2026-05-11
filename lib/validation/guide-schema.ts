@@ -341,9 +341,19 @@ export const GuideSchema = z.object({
   makeup: MakeupSchema,
   jewelry: JewelrySchema,
   haircut: HaircutSchema,
+  // G.7.2 — renombrado de `rationale` (top-level) a `narrative_voice`
+  // para evitar colisión con los 3 rationales anidados:
+  //   - makeup.categories[].rationale (40-200 chars)
+  //   - jewelry.rationale (1+ chars)
+  //   - haircut.rationale (1+ chars)
+  // La IA en G.7.1 omitía este campo top-level (Zod fallaba con
+  // 'invalid_type expected string received undefined') probablemente
+  // por confusión de multi-rationale con los 3 nested. El rename a
+  // narrative_voice elimina la ambigüedad de raíz.
+  //
   // Texto narrativo principal de la guía — voz §13 (íntima-experta,
   // declarativa, latinamente orgullosa). 600-1200 chars indicativo.
-  rationale: z.string().min(120).max(2400),
+  narrative_voice: z.string().min(120).max(2400),
 });
 
 // Tipos inferidos para uso en componentes / services.

@@ -26,12 +26,21 @@ import { GuideSchema } from "@/lib/validation/guide-schema";
 
 export const COLORIMETRY_TOOL_NAME = "submit_colorimetric_analysis" as const;
 
-const TOOL_DESCRIPTION = `Submits the complete colorimetric analysis for the user's photos. \
+const TOOL_DESCRIPTION = `Submits the complete colorimetric guide for the user's photos. \
 You MUST call this tool exactly once with the full guide payload. \
-The analysis covers scientific profile (Fitzpatrick, season, Munsell, CIE Lab), \
-6-color personal palette, makeup recommendations (lipstick, optional blush), \
-jewelry metal recommendation, haircut suggestion, and a narrative rationale \
-in the brand voice (intimate-expert, declarative, never coach-style).`;
+Returns a comprehensive colorimetric guide including: \
+scientific profile (Fitzpatrick I-VI, season from 14 canonical categories, \
+Munsell hue/value/chroma, CIE Lab, undertone enum, contrast level), \
+hero palette (6 colors from the season's irradian list) + \
+extended palette (8-15 colors from irradian, may overlap with hero), \
+colors to avoid (8-12 with descriptive Spanish names), \
+6 occasion-specific sub-palettes (diario, trabajo, noche, formal, casual, evento), \
+makeup recommendations across 5 categories with fixed counts \
+(lipstick: 5, blush: 3, eyeshadow: 6, eyeliner: 3, foundation: 3), \
+jewelry metal recommendation with rationale, \
+haircut suggestion with rationale, \
+and a top-level narrative_voice paragraph (80-150 words) in brand tone \
+(intimate-expert, declarative, addressing the user as 'tu').`;
 
 const inputSchema = z.toJSONSchema(GuideSchema, {
   // Inline reused sub-schemas en lugar de extraerlos a $defs/$ref.

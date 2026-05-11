@@ -8,7 +8,7 @@ function toDisplay(value: string): string {
 }
 
 export function PerfilCard({ guide }: { guide: Guide }) {
-  const { scientific, rationale } = guide;
+  const { scientific, narrative_voice } = guide;
   const seasonDisplay = toDisplay(scientific.season);
   const undertoneDisplay = scientific.undertone.replace(/_/g, " ");
   const hueDisplay = scientific.hue.replace(/_/g, " ");
@@ -26,7 +26,7 @@ export function PerfilCard({ guide }: { guide: Guide }) {
       <div className="mt-8 h-px w-12 bg-marfil/10" />
 
       <p className="font-cormorant text-lg md:text-xl text-marfil leading-relaxed mt-8 max-w-prose">
-        {rationale}
+        {narrative_voice}
       </p>
     </section>
   );

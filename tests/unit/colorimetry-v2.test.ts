@@ -6,8 +6,8 @@ import {
 } from "@/lib/ai/prompts/colorimetry-v2";
 
 describe("colorimetry-v2 prompt — smoke", () => {
-  it("exporta PROMPT_VERSION = '2.2.1' (hotfix G.6.B.1 — overlap permitido)", () => {
-    expect(PROMPT_VERSION).toBe("2.2.1");
+  it("exporta PROMPT_VERSION = '2.2.2' (hotfix G.7.2 — narrative_voice rename)", () => {
+    expect(PROMPT_VERSION).toBe("2.2.2");
   });
 
   it("buildColorimetryPrompt es una función pura sin argumentos", () => {
