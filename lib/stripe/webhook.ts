@@ -114,6 +114,12 @@ export async function handleCheckoutCompleted(
       // amount_total viene en cents desde Stripe — se actualiza al valor
       // real cobrado (puede divergir del hardcoded si hay taxes/discounts).
       amount_cents: session.amount_total ?? undefined,
+      // G.8 — Stripe Adaptive Pricing puede cobrar en moneda local (COP,
+      // ARS, etc) según geolocalización de la usuaria. La currency del
+      // INSERT inicial era 'mxn' hardcoded; acá actualizamos a la moneda
+      // REAL del cobro para que analytics internas no asuman MXN cuando
+      // la conversión fue a otra divisa.
+      currency: session.currency ?? "mxn",
       metadata: {
         stripe_session_id: session.id,
         payment_status: session.payment_status,
